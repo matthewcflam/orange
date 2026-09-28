@@ -1,0 +1,53 @@
+/* Shared chrome (z10). Positions are mockup coordinates at 1440×1024 (spec §6.2). */
+
+/* ---- Name block ---- */
+.name-block {
+  position: absolute;
+  left: calc(112 * var(--px));
+  top: calc(486 * var(--px));
+}
+
+.name-block__name {
+  margin: 0;
+  font-family: var(--font-name);
+  font-size: calc(39 * var(--px));
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.name-block__wip {
+  margin-left: calc(-5 * var(--px));
+  margin-top: calc(1 * var(--px));
+  width: calc(113 * var(--px));
+}
+
+.name-block__wip svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* ---- Mute toggle (placeholder position: open question #6) ---- */
+.mute-toggle {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: var(--font-station);
+  font-size: 14px;
+  padding: 6px 8px;
+  color: var(--color-text);
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.mute-toggle:hover,
+.mute-toggle:focus-visible {
+  opacity: 1;
+}
+
+.mute-toggle:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 2px;
+}

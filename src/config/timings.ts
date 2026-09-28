@@ -17,6 +17,8 @@ export const GATE_UI = {
   /** `>` cursor slide between options. */
   CURSOR_SLIDE: 0.12,
   CURSOR_EASE: "power2.out",
+  /** TODO(milestone 4): temporary gate exit fade, replaced by the paint-over. */
+  TEMP_LEAVE: 0.3,
 } as const;
 
 /** Gate → Home timeline (§6.5). Positions are seconds from the click. */

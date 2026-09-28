@@ -11,9 +11,13 @@ import "./global.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { preloadSounds } from "./audio/engine";
 
 // The router owns scrolling (spec §4.3).
 history.scrollRestoration = "manual";
+
+// Fetch + decode every sound while the gate idles (spec §9.2). No AudioContext yet.
+void preloadSounds();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

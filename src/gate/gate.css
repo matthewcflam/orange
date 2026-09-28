@@ -1,0 +1,41 @@
+/* Gate options, bottom-left (spec §6.2). Sizes matched to the mockup's glyph widths. */
+.gate {
+  position: absolute;
+  left: calc(99 * var(--px));
+  top: calc(799 * var(--px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(2 * var(--px));
+}
+
+.gate__option {
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.gate__option:focus {
+  outline: none; /* the `>` cursor is the focus indicator */
+}
+
+.gate__option--sound {
+  font-family: var(--font-sound);
+  font-size: calc(60 * var(--px));
+}
+
+.gate__option--muted {
+  font-family: var(--font-muted);
+  font-size: calc(45 * var(--px));
+}
+
+.gate__cursor {
+  position: absolute;
+  top: calc(4 * var(--px));
+  left: calc(-34 * var(--px));
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: calc(38 * var(--px));
+  line-height: 1;
+  /* vertical centering is yPercent: -50 in Gate.tsx; GSAP owns the transform */
+  pointer-events: none;
+}
