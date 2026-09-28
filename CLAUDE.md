@@ -43,7 +43,8 @@ Finish and verify each milestone before starting the next. After each one, summa
 |---|---|---|
 | 1 | Done. User confirmed all five fonts render. | `0ec6beb` |
 | 2 | Done. User confirmed sound works. | `147c368` |
-| 3 | **Next.** | |
+| 3 | Done, awaiting user check. | (this commit) |
+| 4 | **Next.** | |
 
 **Decisions made while building (these override the spec's approximations):**
 - **Colors**: sampled from the mockups into `tokens.css` (route `#0664DF`, mini-map border `#7C6C6C`, link underline `#BE4525`, Oyster circle `#D24F39`). `--color-station-active: #FFA62A` is used for both the mini-map current dot and the Palimpsest Phase 1 dot fill (the spec's `#F5B700` was unified into it).
@@ -51,10 +52,14 @@ Finish and verify each milestone before starting the next. After each one, summa
 - **Layout unit**: `--px: min(100vw / 1440, 100vh / 1024)` in `src/global.css`. Write mockup coordinates as `calc(N * var(--px))`. Mobile layout is still open question #7.
 - **Mute toggle** mounts only after the gate (on the gate, SOUND/Muted is the choice).
 - **Files not listed in spec §3**: `src/global.css` (reset + layer classes), `src/chrome/` (`NameBlock.tsx` with `wip.svg` inlined via `?raw`, `MuteToggle.tsx`, `chrome.css`), `src/lib/prefs.ts` (`pref.sound`, storage wrapped in try/catch), `src/lib/tokens.ts` (`readToken()` to read CSS tokens from canvas/GSAP code). Pages add a `.css` beside the component (e.g. `gate/gate.css`).
+- **Transit map** (`src/transit/`): one SVG with a 1440×1024 viewBox; geometry for both layouts is in `stations.ts` (measured from `02` and `06`, labels within ~2px). The mini map is **not** a uniform scale of the full one and the route stays 10px thick in both, so the morph tweens that geometry (`lerpLayout`) instead of using Flip on the SVG. Labels are placed by cap-top, using Fragment Mono's cap ratio measured on a canvas. Station hrefs are real links (Projects → `/projects/oyster-news`).
+- **Router** (`src/lib/router.ts`): `navigate()`, `onNavClick()`, `useRoute()`, `setTransitionRunner(fn)`. A runner is `(to, commit) => Promise<void>`: call `commit()` at black (it flushes React synchronously), resolve when input can unlock; the router then runs `queued`. Palimpsest in M6 registers itself as the runner. Route table and station list: `src/config/routes.ts`; path → component: `src/pages/Outlet.tsx`. Unknown paths redirect to `/`.
+- **Name block** fades out off home (`CHROME.NAME_FADE`).
 - **Audio API** (`src/audio/engine.ts`): `preloadSounds()` (called in `main.tsx`), `unlock({ muted })`, `play(id, { when, gain, rate, pan, loop, vary })` returns a `Voice` (`stop(fade)`, `setGain(v, tc)`) or null, `setMuted()`, `getContext()` / `getBus()` for procedural graphs (spray hiss M5, tunnel rumble M6). `procedural.ts` has `whiteNoise()` / `brownNoise()`. `STATION_HOVER_SEMITONES` + `semitonesToRate()` are in `config/sounds.ts` for §7.3.
 
 **Temporary code to remove:**
-- `src/pages/SoundTest.tsx`, rendered after the gate in `App.tsx`. Replace it with the router outlet in **M3**.
+- `src/transition/tempTransition.ts` (registered in `main.tsx`) and `TEMP_NAV` in `timings.ts`: page fade + visible map morph. Replace with Palimpsest in **M6** (the map morph then uses `PALIMPSEST.MAP_MORPH`, see `TODO(milestone 6)` in `TransitMap.tsx`).
+- The map's fade-in after the gate (`TEMP_NAV.MAP_IN`, `TODO(milestone 4)` in `TransitMap.tsx`). Replace it with the route draw-in in **M4**.
 - The gate's exit fade (`GATE_UI.TEMP_LEAVE`, `TODO(milestone 4)` in `Gate.tsx`). Replace it with the paint-over in **M4**. The grey squares go in `App.tsx` after `<Gate>` in DOM order (marked TODO).
 
 **Tooling notes:** headless checks use gstack `/browse` (dev server: `npm run dev`, port 5173). To sample mockup colors or compare ink bounding boxes, use `sharp` (installed with vite-imagetools); PIL and ffmpeg are not on this machine. Git's LF→CRLF warnings are harmless.

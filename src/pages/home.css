@@ -1,0 +1,18 @@
+/* Home (spec §7.1). Mockup coordinates at 1440×1024. */
+.home {
+  position: relative;
+  min-height: 100vh;
+}
+
+.home__smiley {
+  position: absolute;
+  left: calc(1023 * var(--px));
+  top: calc(42 * var(--px));
+  width: calc(297 * var(--px));
+}
+
+.home__smiley svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}

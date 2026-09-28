@@ -82,6 +82,26 @@ export const SPRAY = {
   HISS_TIME_CONSTANT: 0.015,
 } as const;
 
+/** Shared chrome visibility (§4.1). */
+export const CHROME = {
+  /** Name block fades out off home and back in on home. */
+  NAME_FADE: 0.3,
+} as const;
+
+/**
+ * TEMPORARY (milestone 3): stand-in page swap until Palimpsest (milestone 6).
+ * Page fades out, map morphs visibly, page fades in.
+ */
+export const TEMP_NAV = {
+  OUT: 0.2,
+  IN: 0.3,
+  /** Visible here so the morph can be checked; Palimpsest does it at black. */
+  MAP_MORPH: 0.6,
+  MAP_MORPH_EASE: "power3.inOut",
+  /** TODO(milestone 4): map fade-in after the gate, replaced by the route draw-in. */
+  MAP_IN: 0.4,
+} as const;
+
 /** Station hover/click on either map layout (§7.3). */
 export const STATION = {
   HOVER_SCALE: 1.25,

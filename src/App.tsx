@@ -5,7 +5,9 @@ import { GATE_UI } from "./config/timings";
 import Gate, { type GatePhase } from "./gate/Gate";
 import NameBlock from "./chrome/NameBlock";
 import MuteToggle from "./chrome/MuteToggle";
-import SoundTest from "./pages/SoundTest";
+import TransitMap from "./transit/TransitMap";
+import Outlet from "./pages/Outlet";
+import { useRoute } from "./lib/router";
 
 /**
  * Layer stack (spec §4.1), bottom to top:
@@ -22,6 +24,7 @@ export default function App() {
   const [gatePhase, setGatePhase] = useState<GatePhase>("showing");
   const rootRef = useRef<HTMLDivElement>(null);
   const gated = gatePhase !== "done";
+  const route = useRoute();
 
   useEffect(() => {
     let cancelled = false;
@@ -45,12 +48,12 @@ export default function App() {
       {fontsReady && (
         <>
           <main className="layer--page" inert={gated}>
-            {/* TODO(milestone 3): router outlet. */}
-            {!gated && <SoundTest />}
+            {!gated && <Outlet />}
           </main>
 
           <div className="layer layer--chrome">
-            <NameBlock />
+            {/* Name block: gate and home only (§4.1). */}
+            <NameBlock visible={gated || route === "/"} />
             {gated && (
               <Gate
                 phase={gatePhase}
@@ -63,7 +66,9 @@ export default function App() {
             {!gated && <MuteToggle enabled />}
           </div>
 
-          <div className="layer layer--map" inert={gated} />
+          <div className="layer layer--map" inert={gated}>
+            <TransitMap visible={!gated} />
+          </div>
           <div className="layer layer--overlay" />
         </>
       )}
