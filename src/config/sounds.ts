@@ -45,7 +45,11 @@ export const SOUNDS = {
 
 export type SoundId = keyof typeof SOUNDS;
 
-/** station.hover pitch per station index (About → Inspo), in semitones: a
+/** Volume of the whole site: the master gain when unmuted (every sound and
+ *  bus passes through it). 0.5 = the user asked for everything 50% quieter. */
+export const MASTER_GAIN = 0.5;
+
+/** station.hover pitch per station index (Home → Inspo), in semitones: a
  *  pentatonic run, so moving along the line sounds like a scale (§7.3). */
 export const STATION_HOVER_SEMITONES = [0, 2, 4, 7, 9] as const;
 export const semitonesToRate = (st: number) => 2 ** (st / 12);
@@ -58,8 +62,9 @@ export const PROCEDURAL_IDS = ["spray.hiss"] as const;
  *  like every noise sound here. */
 export const SPRAY_HISS = {
   bus: "ambient",
-  /** Gain at full nozzle speed. */
-  gain: 0.08,
+  /** Gain at full nozzle speed (0.08, then 35% and another 25% quieter at the
+   *  user's request). */
+  gain: 0.020,
   highpassHz: 1500,
   bandpassHz: 4500,
   bandpassQ: 0.8,

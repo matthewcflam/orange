@@ -3,7 +3,6 @@ import { useRoute } from "../lib/router";
 import Home from "./Home";
 import About from "./placeholders/About";
 import Experience from "./placeholders/Experience";
-import Unknown from "./placeholders/Unknown";
 import Inspo from "./placeholders/Inspo";
 import OysterNews from "./projects/OysterNews";
 import Mango from "./projects/Mango";
@@ -17,7 +16,6 @@ const PAGES: Record<string, ComponentType> = {
   "/projects/oyster-news": OysterNews,
   "/projects/mango": Mango,
   "/projects/portfolio": Portfolio,
-  "/unknown": Unknown,
   "/inspo": Inspo,
 };
 

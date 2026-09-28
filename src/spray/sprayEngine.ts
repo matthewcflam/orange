@@ -16,7 +16,8 @@ import whoSvg from "../../assets-src/svg/who-spray.svg?raw";
 import { gsap } from "../lib/gsap";
 import { readToken } from "../lib/tokens";
 import { SPRAY } from "../config/timings";
-import { play } from "../audio/engine";
+// TODO(spray rattle): restore with the play() call in spray().
+// import { play } from "../audio/engine";
 import { startHiss, type Hiss } from "../audio/sprayHiss";
 
 // ---------------------------------------------------------------------------
@@ -108,8 +109,18 @@ interface Drip {
   progress: number;
 }
 
+/** A finished "who?", kept while Home is unmounted so a return visit shows
+ *  the same picture without respraying. */
+export interface SprayPicture {
+  seed: number;
+  stamps: number[];
+  drips: Drip[];
+  /** The canvas as it last looked, reused when the size hasn't changed. */
+  bitmap: HTMLCanvasElement | null;
+}
+
 export interface SprayOptions {
-  /** Duration multiplier: 1 = full, SPRAY.RESPRAY_SPEED on returns home. */
+  /** Duration multiplier: 1 = full, lower is faster. */
   speed?: number;
   /** Reduced motion: render the finished picture in one frame, silently. */
   instant?: boolean;
@@ -133,6 +144,11 @@ export class SprayEngine {
 
   private timeline: gsap.core.Timeline | null = null;
   private hiss: Hiss | null = null;
+  /** finish() is jumping to the end: record only, no drawing, no sound. */
+  private fastForward = false;
+  private sized = false;
+  /** From show(): drawn instead of a replay if the canvas size matches. */
+  private cached: HTMLCanvasElement | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -148,9 +164,11 @@ export class SprayEngine {
     this.timeline = tl;
 
     if (!instant) {
-      // The rattle leads the first stroke (§7.2); the hiss starts silent.
+      // The hiss starts silent. TODO(spray rattle): the rattle that led the
+      // first stroke (§7.2) was cut: it was ~8 dB louder than the full hiss.
       tl.call(() => {
-        play("spray.rattle");
+        if (this.fastForward) return;
+        // play("spray.rattle");
         this.hiss ??= startHiss();
       }, undefined, 0);
     }
@@ -179,6 +197,39 @@ export class SprayEngine {
     }
     if (import.meta.env.DEV) Object.assign(window, { __whoSpray: tl });
     return tl;
+  }
+
+  /** Jump any running spray to its end (silently, without drawing; the
+   *  engine is about to go) and return the finished picture. */
+  finish(): SprayPicture {
+    const tl = this.timeline;
+    let complete = true;
+    if (tl) {
+      this.stopHiss();
+      this.fastForward = true;
+      tl.progress(1).kill();
+      this.fastForward = false;
+      this.timeline = null;
+      complete = false;
+    }
+    let bitmap: HTMLCanvasElement | null = null;
+    if (complete && this.sized) {
+      bitmap = document.createElement("canvas");
+      bitmap.width = this.canvas.width;
+      bitmap.height = this.canvas.height;
+      bitmap.getContext("2d")!.drawImage(this.canvas, 0, 0);
+    }
+    return { seed: this.seed, stamps: this.stamps.slice(), drips: this.drips.map((d) => ({ ...d })), bitmap };
+  }
+
+  /** Show a finished picture exactly as it was, with no animation or sound. */
+  show(p: SprayPicture): void {
+    this.clear();
+    this.seed = p.seed;
+    this.stamps = p.stamps.slice();
+    this.drips = p.drips.map((d) => ({ ...d }));
+    this.cached = p.bitmap;
+    if (this.sized) this.replay();
   }
 
   /** Stop any spray and wipe the canvas (before a respray, §7.2 step 5). */
@@ -262,7 +313,7 @@ export class SprayEngine {
       ease: SPRAY.DRIP_EASE,
       onStart: () => void (this.drips.includes(drip) || this.drips.push(drip)),
       onUpdate: () => {
-        if (drip.progress > drawn) this.drawDrip(drip, drawn, drip.progress);
+        if (drip.progress > drawn && !this.fastForward) this.drawDrip(drip, drawn, drip.progress);
         drawn = drip.progress;
       },
     });
@@ -277,7 +328,7 @@ export class SprayEngine {
     for (let s = 1; s <= stamps; s++) {
       const [x, y] = pointAt(guide, from + (dist * s) / stamps);
       this.stamps.push(x, y, perStamp);
-      this.drawStamp(x, y, perStamp);
+      if (!this.fastForward) this.drawStamp(x, y, perStamp);
     }
   }
 
@@ -337,6 +388,7 @@ export class SprayEngine {
     this.scale = width / (VIEW_W + 2 * SPRAY.CANVAS_PAD_PX);
     this.canvas.width = Math.max(1, Math.round(width * this.dpr));
     this.canvas.height = Math.max(1, Math.round(height * this.dpr));
+    this.sized = true;
     this.replay();
   }
 
@@ -353,6 +405,15 @@ export class SprayEngine {
 
   /** Redraw everything recorded so far, identically (same seed). */
   private replay() {
+    const cached = this.cached;
+    this.cached = null;
+    if (cached && cached.width === this.canvas.width && cached.height === this.canvas.height) {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.globalAlpha = 1;
+      this.ctx.drawImage(cached, 0, 0);
+      this.applyTransform();
+      return;
+    }
     this.applyTransform(); // resizing the canvas already cleared it and reset state
     this.rng = seeded(this.seed);
     const s = this.stamps;

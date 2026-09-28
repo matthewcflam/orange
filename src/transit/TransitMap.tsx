@@ -128,7 +128,7 @@ export default function TransitMap({ visible }: { visible: boolean }) {
                 href={s.path}
                 className={`station interactive${isCurrent ? " station--current" : ""}`}
                 aria-current={isCurrent ? "page" : undefined}
-                aria-label={s.id === "unknown" ? "??? (mystery station)" : s.label}
+                aria-label={s.label}
                 onClick={(e) => {
                   if (isCurrent) e.preventDefault(); // clicking the current station does nothing (§7.3)
                   else onNavClick(e, s.path);

@@ -3,7 +3,7 @@
  * pages/Outlet.tsx so this file stays free of React.
  */
 
-export type StationId = "about" | "experience" | "projects" | "unknown" | "inspo";
+export type StationId = "home" | "about" | "experience" | "projects" | "inspo";
 
 export interface Station {
   id: StationId;
@@ -14,12 +14,12 @@ export interface Station {
   track: "upper" | "lower";
 }
 
-/** Line order, left to right: About → Experience → Projects → ??? → Inspo. */
+/** Line order, left to right: Home → About → Experience → Projects → Inspo. */
 export const STATIONS: readonly Station[] = [
+  { id: "home", label: "Home", path: "/", track: "upper" },
   { id: "about", label: "About", path: "/about", track: "upper" },
-  { id: "experience", label: "Experience", path: "/experience", track: "upper" },
+  { id: "experience", label: "Experience", path: "/experience", track: "lower" },
   { id: "projects", label: "Projects", path: "/projects/oyster-news", track: "lower" },
-  { id: "unknown", label: "???", path: "/unknown", track: "lower" },
   { id: "inspo", label: "Inspo", path: "/inspo", track: "lower" },
 ];
 
@@ -27,18 +27,17 @@ export interface RouteDef {
   path: string;
   /** Page name for document.title and "Coming soon" placeholders. */
   title: string;
-  /** null = home (full map, no current station). */
-  station: StationId | null;
+  /** The station shown as current on the map. */
+  station: StationId;
 }
 
 export const ROUTES: readonly RouteDef[] = [
-  { path: "/", title: "Matthew Lam", station: null },
+  { path: "/", title: "Matthew Lam", station: "home" },
   { path: "/about", title: "About", station: "about" },
   { path: "/experience", title: "Experience", station: "experience" },
   { path: "/projects/oyster-news", title: "Oyster News", station: "projects" },
   { path: "/projects/mango", title: "Mango", station: "projects" },
   { path: "/projects/portfolio", title: "Portfolio", station: "projects" },
-  { path: "/unknown", title: "???", station: "unknown" },
   { path: "/inspo", title: "Inspo", station: "inspo" },
 ];
 
@@ -61,5 +60,5 @@ export function routeFor(path: string): RouteDef {
 }
 
 export function documentTitle(route: RouteDef): string {
-  return route.station ? `${route.title} · Matthew Lam` : route.title;
+  return route.path === "/" ? route.title : `${route.title} · Matthew Lam`;
 }

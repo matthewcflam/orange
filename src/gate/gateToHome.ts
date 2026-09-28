@@ -50,7 +50,7 @@ export function gateToHome({ root, home, reduced, onOptionsGone }: Options): gsa
   }
 
   const line = q(".transit-map__line");
-  const dots = q(".station__dot"); // DOM order is About → Inspo, left to right
+  const dots = q(".station__dot"); // DOM order is Home → Inspo, left to right
   const labels = q(".station__label");
   const smiley = q(".home__smiley");
   gsap.set([line, dots, labels, smiley], { autoAlpha: 0 });

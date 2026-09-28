@@ -1,7 +1,8 @@
 /**
  * Transit map geometry for the two layouts (spec §7.1, §8.4), in mockup px
  * (the SVG's viewBox is the 1440×1024 reference frame). Measured from
- * 02-home.png (full) and 06-projects-oyster-news.png (mini).
+ * 02-home.png (full; labels re-measured from the Home-station redesign) and
+ * 06-projects-oyster-news.png (mini).
  *
  * The mini map is not a uniform scale of the full one (station spacing and the
  * diagonal's slope differ, and the route stays 10px thick), so the morph
@@ -35,8 +36,9 @@ export interface Layout {
 /** Label font size the <text> elements are set at; layouts scale from it. */
 export const LABEL_BASE_SIZE = 38;
 
-/** Mini-map card (§8.4): 381×156 grey card, 12px border right, 5px bottom. */
-export const CARD = { w: 381, h: 156, borderRight: 12, borderBottom: 5 } as const;
+/** Mini-map card (§8.4): 440×156 grey card (widened from the mockup's 381 to fit
+ *  Home), 12px border right, 5px bottom. */
+export const CARD = { w: 440, h: 156, borderRight: 12, borderBottom: 5 } as const;
 
 const FULL: Layout = {
   upperY: 204.5,
@@ -44,7 +46,7 @@ const FULL: Layout = {
   startX: -20,
   endX: 1460, // stretched to the viewport's right edge at runtime
   x: [92, 420.5, 686.5, 1022, 1323],
-  labelTop: [30.5, -62.5, 34, 33, 35],
+  labelTop: [-69.5, -69.5, 53, 53, 53],
   labelSize: 38,
   lineWidth: 10,
   dotR: 12,
@@ -60,8 +62,8 @@ const MINI: Layout = {
   lowerY: 99.5,
   startX: -20,
   endX: CARD.w + 20,
-  x: [33.7, 111, 181.7, 273.7, 351.7],
-  labelTop: [8.5, -29, 14, 14, 14],
+  x: [36, 118, 196, 316, 405],
+  labelTop: [-29, -29, 14, 14, 14],
   labelSize: 15,
   lineWidth: 10,
   dotR: 7,

@@ -104,9 +104,6 @@ export const SPRAY = {
   SPIT_RADIUS_PX: [2, 3.8],
   /** Rattle sample plays this long before the first stroke. */
   RATTLE_LEAD: 0.25,
-  /** TODO(open-question #2): respray on later returns home runs at this
-   *  fraction of the full duration. */
-  RESPRAY_SPEED: 0.6,
   /** Chance that a stroke end grows a drip (the nozzle lingers there). */
   DRIP_CHANCE: 0.35,
   /** At most this many drips per spray. */

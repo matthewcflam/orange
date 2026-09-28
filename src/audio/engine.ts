@@ -13,7 +13,7 @@
  *    AudioContext and resumes it. Creating it earlier makes Chrome warn.
  * 3. play() anywhere after that.
  */
-import { SOUNDS, SOUND_FILES, variantKeys, type Bus, type SoundDef, type SoundId } from "../config/sounds";
+import { MASTER_GAIN, SOUNDS, SOUND_FILES, variantKeys, type Bus, type SoundDef, type SoundId } from "../config/sounds";
 import { AUDIO } from "../config/timings";
 import { SAMPLE_RATE, synthPlaceholder } from "./procedural";
 
@@ -147,7 +147,7 @@ export function unlock({ muted: startMuted }: { muted: boolean }): void {
   limiter.knee.value = 0;
   limiter.connect(ctx.destination);
 
-  master = new GainNode(ctx, { gain: muted ? 0 : 1 });
+  master = new GainNode(ctx, { gain: muted ? 0 : MASTER_GAIN });
   master.connect(limiter);
 
   buses = {
@@ -164,7 +164,7 @@ export function unlock({ muted: startMuted }: { muted: boolean }): void {
 function applyMute() {
   if (!ctx || !master) return;
   // setTargetAtTime reaches ~95% in 3 time constants: a 50ms ramp, no click.
-  master.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, AUDIO.MUTE_RAMP / 3);
+  master.gain.setTargetAtTime(muted ? 0 : MASTER_GAIN, ctx.currentTime, AUDIO.MUTE_RAMP / 3);
 }
 
 /** Mute or unmute with a short ramp. The caller persists the preference. */
