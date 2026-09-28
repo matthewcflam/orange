@@ -1,0 +1,43 @@
+/*
+ * Design tokens: every color and font stack lives here.
+ * Colors were sampled from design/mockups/ at 1440×1024 unless noted.
+ * TS code that needs a color at runtime (canvas, GSAP) reads it with
+ * readToken() from src/lib/tokens.ts, so there is one source of truth.
+ */
+:root {
+  /* ---- Fonts (spec §5). Family names must match Fontsource exactly. ---- */
+  --font-body:    "Inter Variable", system-ui, sans-serif;
+  --font-name:    "Newsreader Variable", Georgia, serif;
+  --font-station: "Fragment Mono", ui-monospace, monospace;
+  --font-sound:   "Monofett", monospace;
+  --font-muted:   "Megrim", sans-serif;
+
+  /* ---- Base ---- */
+  --color-bg:   #FFFFFF;
+  --color-text: #000000;
+
+  /* ---- Brand ---- */
+  --color-orange: #FF7700;          /* wip, "who?", scribbles, Portfolio hero */
+  --color-green:  #41AE55;          /* smiley */
+
+  /* ---- Transit map ---- */
+  --color-route:          #0664DF;  /* spec said ≈#0A64E0; sampled */
+  --color-station-fill:   #FFFFFF;
+  --color-station-active: #FFA62A;  /* mini-map current dot, sampled. Spec's Palimpsest ≈#F5B700 unified to this */
+  --color-minimap-card:   #D9D9D9;
+  --color-minimap-border: #7C6C6C;  /* spec said ≈#7A6E6E; sampled */
+
+  /* ---- Home ---- */
+  --color-square: #D9D9D9;          /* grey paint-over squares */
+
+  /* ---- Palimpsest ---- */
+  --color-tunnel:      #000000;
+  --color-light-bleed: #FFFFFF;
+
+  /* ---- Project pages ---- */
+  --color-link-underline: #BE4525;  /* spec said ≈#C8452F; sampled. Asset missing */
+  --color-obstacle-oyster: #D24F39; /* spec said ≈#D9503A; sampled */
+  --color-mango:       #FFA62A;     /* from mango.svg */
+  --color-mango-stem:  #76C933;     /* from mango.svg */
+  --color-portfolio-grey: #77736F;  /* Portfolio hero back circle, sampled */
+}
