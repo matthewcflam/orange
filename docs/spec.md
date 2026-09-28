@@ -1,18 +1,6 @@
-# CLAUDE.md — Matthew Lam Portfolio
+# Build spec — Matthew Lam Portfolio
 
-This file is the build spec for this repository. Read it fully before writing any code, and re-read the relevant section before starting each milestone.
-
-The site is a personal portfolio whose navigation is a transit map. Its two defining qualities are **smooth, choreographed animation** and **fast, highly interactive sound design**. Every decision in this document serves those two goals. When in doubt, choose the option that keeps animation at 60fps and sound instant.
-
----
-
-## 0. Before you write any code
-
-1. **View every mockup in `design/mockups/`.** They are numbered in flow order. They are desktop frames at **1440 × 1024**; treat that as the reference viewport.
-2. **Read `design/ASSETS.md`.** It is the source of truth for what each file in `assets-src/` is, which page it belongs to, and its role. If a filename in this document disagrees with the actual repo, the repo and `ASSETS.md` win.
-3. **Inspect the SVGs in `assets-src/svg/`.** Check that layer IDs exist and that the "who?" drawing is made of stroked paths (see §8.2). Report any problems to the user rather than working around them silently.
-4. **Check §15 (Open questions).** Do not invent answers to those questions. Build a clearly marked placeholder and keep going, or ask the user.
-5. If a `assets-src/fonts/` folder exists, **ignore it.** Fonts are installed from npm (§5). Tell the user it can be deleted.
+Detailed spec referenced from `CLAUDE.md`. Section numbers are stable; `CLAUDE.md` holds §0 (before you code), §14 (milestones), §15 (open questions) and §16 (gotchas).
 
 ---
 
@@ -23,7 +11,7 @@ The site is a personal portfolio whose navigation is a transit map. Its two defi
 | Build | **Vite** | Fast dev server, hashed asset output, simple static deploy |
 | UI | **React 19 + TypeScript (strict)** | Component model; `useGSAP` integration |
 | App shape | **Single-page app** | One persistent `AudioContext` and one persistent transition overlay across all navigation. A full page load would destroy both. |
-| Animation | **GSAP** (core + Flip, Draggable, InertiaPlugin, MotionPathPlugin, DrawSVGPlugin, CustomEase, GSDevTools in dev only) | Timeline control, scrubbing, plugins |
+| Animation | **GSAP** (core + Flip, Draggable, InertiaPlugin, DrawSVGPlugin, CustomEase, GSDevTools in dev only) | Timeline control, scrubbing, plugins |
 | Text reflow | **`@chenglou/pretext`** | Arithmetic text layout without DOM reflow; per-line widths for obstacle wrapping |
 | Audio | **Custom engine on the raw Web Audio API** (no Howler, no Tone.js) | Procedural sound (noise, filter sweeps) and sample-accurate scheduling |
 | Images | **`vite-imagetools`** | AVIF/WebP + responsive sizes generated at build time |
@@ -39,8 +27,10 @@ Do **not** use:
 
 ## 2. Installation
 
+**Scaffold safely.** The repo root is not empty (`CLAUDE.md`, `docs/`, `design/`, `assets-src/`). `npm create vite@latest .` prompts on a non-empty dir, and one option is *"Remove existing files and continue"* — never pick it. Scaffold into a temp dir and move the generated files in (don't overwrite existing ones), or choose "Ignore files". Make sure everything is committed first.
+
 ```bash
-npm create vite@latest . -- --template react-ts
+npm create vite@latest . -- --template react-ts   # see warning above
 npm install gsap @gsap/react @chenglou/pretext
 npm install @fontsource/monofett @fontsource/megrim @fontsource-variable/newsreader @fontsource/fragment-mono @fontsource-variable/inter
 npm install -D vite-imagetools
@@ -60,12 +50,11 @@ import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 import { Draggable } from "gsap/Draggable";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(Flip, Draggable, InertiaPlugin, MotionPathPlugin, DrawSVGPlugin, CustomEase, useGSAP);
+gsap.registerPlugin(Flip, Draggable, InertiaPlugin, DrawSVGPlugin, CustomEase, useGSAP);
 
 if (import.meta.env.DEV) {
   // GSDevTools gives a scrubber for tuning timelines. Dev only.
@@ -82,21 +71,28 @@ Pretext is young and its API has changed between versions. **Before writing the 
 - `layoutWithLines(prepared, maxWidth, lineHeight)` — returns every line at one fixed width.
 - A **variable-width, cursor-based** function (expected name `layoutNextLine`) that lays out one line at a time with a different `maxWidth` per line, returning the line and the next cursor. **This is the function the obstacle wrap depends on.** If its name or signature differs, adapt to what the package actually exports.
 
+Checked against the Pretext README (Sep 2026): `prepareWithSegments(text, font, opts?)` and `layoutNextLine(prepared, start: LayoutCursor, maxWidth): LayoutLine | null` exist, plus a cheaper `layoutNextLineRange` with the same arguments. `LayoutCursor` is `{ segmentIndex, graphemeIndex }`; pass the previous line's `end` as the next `start`. Also from the README:
+- Use a **named** font. `system-ui` and `-apple-system` are unsafe for accurate measurement.
+- Firefox measures canvas text at a **rounded** font size, so keep body text at integer px sizes.
+- Pretext has no justification, which is why §11.3 does it with `word-spacing`.
+
 ---
 
 ## 3. Project structure
 
 ```
-portfolio/
-├── CLAUDE.md
+orange/
+├── CLAUDE.md                    # slim entry point: rules, milestones, open questions, gotchas
+├── docs/spec.md                 # this file (§1–§13)
 ├── design/                      # reference only — never imported by the app
-│   ├── mockups/                 # numbered PNG frames, flow order
+│   ├── mockups/                 # 01-landing.png … 08-projects-portfolio.png, flow order
 │   └── ASSETS.md                # manifest: file → page → role → notes
 ├── assets-src/                  # full-quality originals, imported via vite-imagetools
 │   ├── svg/
-│   └── images/{oyster-news,mango,portfolio}/
-├── public/
-│   └── sounds/                  # final audio files (.m4a); may be empty early on
+│   ├── images/                  # flat, lowercase-hyphen names (see ASSETS.md)
+│   └── sounds/                  # <sound-id>.m4a, discovered at build time (§9.5); may be empty
+├── scripts/
+│   └── check-asset-names.mjs    # prebuild: fail on non-lowercase-hyphen names in assets-src/
 └── src/
     ├── main.tsx                 # font imports, global CSS, mounts <App/>
     ├── App.tsx                  # layer stack (§4)
@@ -105,6 +101,8 @@ portfolio/
     │   ├── tokens.css           # colors, font stacks, spacing
     │   ├── routes.ts            # route table + station metadata
     │   └── sounds.ts            # sound manifest (§9.6)
+    ├── content/
+    │   └── projects.ts          # per-project copy: title, body, date, link, images
     ├── lib/
     │   ├── gsap.ts
     │   ├── router.ts            # custom router (§4.3)
@@ -127,7 +125,7 @@ portfolio/
     │   └── sprayEngine.ts       # canvas spray renderer (§7.2)
     ├── textflow/
     │   ├── ObstacleText.tsx     # Pretext-driven paragraph
-    │   ├── obstacles.ts         # circle + alpha-mask shapes
+    │   ├── obstacles.ts         # circle + ellipse-union shapes
     │   └── justify.ts
     └── pages/
         ├── Home.tsx
@@ -147,16 +145,23 @@ portfolio/
 | z | Layer | Persistent? | Contents |
 |---|---|---|---|
 | 0 | **Page layer** | No — swaps per route | Current page content |
-| 10 | **Shared chrome** | Yes | "Matthew Lam (wip)" name block (visible on gate and home only), mute toggle |
+| 10 | **Shared chrome** | Yes | "Matthew Lam (wip)" name block (visible on gate and home only), the two grey squares (home only, painted in during gate → home, §6.6), mute toggle |
 | 20 | **Transit map** | Yes | Single `TransitMap` instance; morphs between `full` (home) and `mini` (all other pages) via GSAP Flip |
 | 30 | **Transition overlay** | Yes | Full-screen canvas for word stacking + black "tunnel" layer + light-bleed layer. `pointer-events: none` except while a transition runs |
-| 40 | **Gate** | Until dismissed | Landing page (§6) |
+
+The page background is white, painted by `body`. No layer has an opaque full-screen background except the transition overlay while it runs.
+
+**The gate is a state, not a layer.** The app holds `gatePhase: "showing" | "leaving" | "done"`:
+- Shared chrome renders, in DOM order within one stacking context: the name block, then the **gate options** (SOUND/Muted and the `>` cursor, mounted only while `gatePhase !== "done"`), then the **grey squares**. Because the squares come later in the DOM, the brush-mask paint really covers the options (§6.6). Nothing is faked with a fade.
+- While `gatePhase !== "done"`, the transit map is hidden and the page layer renders nothing. On a deep link, nothing behind the gate is visible. Everything outside the gate buttons is `inert`, so keyboard focus can't leave them.
+- The squares show on the gate (unpainted) and on home (painted). On a deep link they fade out with the placeholder fade to the requested page (§15 #1).
 
 The name block and transit map are **rendered once** and never unmounted, so they can stay perfectly still (or morph) while pages swap beneath them. This is what makes transitions feel continuous.
 
 ### 4.2 Singletons
 These must exist exactly once per page session:
-- `AudioContext` (via `audio/engine.ts`)
+- `AudioContext` (via `audio/engine.ts`; created inside the gate gesture, §6.4)
+- The `OfflineAudioContext` used for decoding (module level)
 - The transition overlay and its canvas
 - The router
 
@@ -167,10 +172,13 @@ These must exist exactly once per page session:
 
 ### 4.3 Router
 Minimal custom router in `lib/router.ts`:
-- State: `currentRoute`, `pendingRoute`, `isTransitioning`.
-- `navigate(to)`: if `to === currentRoute` or a transition is running, do nothing. Otherwise run the Palimpsest timeline; the timeline calls `commitRoute(to)` (which does `history.pushState` and swaps the page) at the moment the screen is fully black.
-- `popstate` (back/forward buttons) also runs Palimpsest, using `replace` semantics instead of push.
-- Expose a `useRoute()` hook.
+**Model: the URL changes when the user acts; the page catches up at black.** This matches how the Navigation API commits URLs, and it means history can never get out of sync with what the user did.
+- State: `currentRoute` (what's on screen), `isTransitioning`, `queued: string | null`.
+- `navigate(to)` (station, link or mini-map click): if `to === currentRoute` or input is locked, do nothing. Otherwise call `history.pushState` **immediately**, then run Palimpsest.
+- `commitRoute(to)`, called by the timeline when the screen is fully black, **never touches history**. It sets `currentRoute`, swaps the page, updates `document.title` and scrolls to top.
+- `popstate` (back/forward): the browser has already moved the URL. If idle, run Palimpsest to `location.pathname`. If a transition is running, set `queued = location.pathname`; the latest wins. When the transition completes, if `queued` differs from `currentRoute`, run again.
+- Set `history.scrollRestoration = "manual"` at startup; the router owns scrolling.
+- Expose a `useRoute()` hook. Keep one internal entry point, `go(path, { push })`, so the History API code could later be swapped for the Navigation API (`navigation.addEventListener("navigate", …)`, Baseline since Jan 2026) without touching callers. Don't do that now: Safari lacks `precommitHandler`, and iOS 18-and-older visitors would still need this fallback.
 
 ### 4.4 Routes
 
@@ -258,20 +266,23 @@ export async function waitForFonts(timeoutMs = 2000) {
 
    The gate fades in (short, ~300ms) once this resolves. The landing page is mostly white space, so the brief wait reads as intentional.
 5. **Locally installed fonts hide broken web fonts.** If the developer's machine has any of these fonts installed (Inter is common), the browser may use the local copy when the web font fails, so the site looks perfect locally and broken for everyone else. Verify in Chrome DevTools → Elements → select text → Computed → **"Rendered Fonts"** must say **"Network resource"**, not "Local file". Include this in the deploy checklist (§13).
-6. **Filename case sensitivity.** macOS treats `Mango.png` and `mango.png` as the same file; the Linux servers most hosts use do not. Keep **every** asset filename lowercase-with-hyphens, and match case exactly in imports. Fontsource handles its own files; this applies to everything in `assets-src/`.
+6. **Filename case sensitivity.** macOS **and Windows** (NTFS, and this repo has `core.ignorecase=true`) treat `Mango.png` and `mango.png` as the same file; the Linux servers most hosts use do not. On Windows, a case-only rename needs `git mv`. Keep **every** asset filename lowercase-with-hyphens, and match case exactly in imports. Fontsource handles its own files; this applies to everything in `assets-src/`. Two guards:
+   - **Import every asset; never reference one by a string URL.** The deploy build runs on Linux, where a wrong-case import fails the build instead of shipping a 404.
+   - `scripts/check-asset-names.mjs` runs as `prebuild` and fails on any `assets-src/` filename that doesn't match `^[a-z0-9.-]+$`.
+   - Don't set `core.ignorecase=false` on Windows; it causes phantom changes.
 
 ---
 
 ## 6. Landing page (the audio gate)
 
-Mockup: `design/mockups/01-landing.png` (confirm the actual filename).
+Mockup: `design/mockups/01-landing.png`.
 
 ### 6.1 Purpose
 Browsers block audio until the user interacts with the page. The gate's click is that interaction. Everything after it, including the "who?" spray hiss, can play sound.
 
 ### 6.2 Layout (at 1440 × 1024)
-- White background.
-- "Matthew Lam" in Newsreader, ~34px, at roughly (104, 490). Directly below it, the orange hand-drawn "(wip)" (asset in `assets-src/svg/`, check `ASSETS.md`). **This name block lives in the shared chrome layer (z 10)** because it stays in exactly the same position on the home page.
+- White background, painted by `body`. The gate is a state rendered inside shared chrome, not a separate layer (§4.1).
+- "Matthew Lam" in Newsreader, ~34px, at roughly (112, 490). Directly below it, the orange hand-drawn "(wip)" (`assets-src/svg/wip.svg`). **This name block lives in the shared chrome layer (z 10)** and stays in exactly the same position on the home page. The home mockup draws it ~29px further left (x≈83); that is a mockup slip (user-confirmed). Use the landing position on both.
 - Bottom-left, two options stacked:
   - "SOUND" in Monofett (~40px) at roughly (100, 820).
   - "Muted" in Megrim (~40px) directly below.
@@ -285,11 +296,13 @@ Browsers block audio until the user interacts with the page. The gate's click is
 - **No hover sounds on the gate.** They cannot play before a user gesture. The first sound the user hears is their own selection click, so make that sound satisfying.
 
 ### 6.4 Audio unlock — critical details
-The context is created and all sounds are fetched and decoded **before** the click, while the page idles on the gate. `decodeAudioData` works on a suspended context. Then:
+All sounds are fetched and decoded **before** the click, while the page idles on the gate, using a module-level `OfflineAudioContext`. An offline context is exempt from autoplay policy, and `AudioBuffer`s aren't tied to the context that decoded them. The real `AudioContext` is **created inside the gesture**. Creating it earlier makes Chrome log "The AudioContext was not allowed to start".
 
 ```ts
 function onSelect(choice: "sound" | "muted") {
   // MUST be the first thing in the handler, synchronous, before any await.
+  // unlock(): set navigator.audioSession.type = "ambient" if supported,
+  // new AudioContext({ latencyHint: "interactive" }), ctx.resume(), build buses.
   audio.unlock({ muted: choice === "muted" });
   localStorage.setItem("pref.sound", choice);
   audio.play("gate.select");
@@ -297,8 +310,8 @@ function onSelect(choice: "sound" | "muted") {
 }
 ```
 
-- **`ctx.resume()` must be called synchronously inside the click/keydown handler.** Safari only honours the unlock if it happens in the same synchronous call stack as the gesture. Any `await` before `resume()` can break it.
-- **Resume the context even when "Muted" is chosen**, and set master gain to 0. Otherwise unmuting later has no running context. (The mute toggle click is also a gesture, but don't rely on that.)
+- **Create the context and call `resume()` synchronously inside the click/keydown handler.** Safari only honours the unlock if it happens in the same synchronous call stack as the gesture. Any `await` before it can break it. Enter/Space keydown counts as a gesture.
+- **Create and resume the context even when "Muted" is chosen**, and set master gain to 0. Otherwise unmuting later has no running context. (The mute toggle click is also a gesture, but don't rely on that.)
 - The gate appears **on every fresh page load**, including deep links (e.g. someone opens `/projects/mango` directly). Browsers require a new gesture each load. After the gate, the user lands on the route they requested (see §15 open question on the deep-link animation).
 
 ### 6.5 Gate → Home animation
@@ -307,9 +320,9 @@ All values live in `timings.ts`. Times are seconds from the click.
 | Time | Event |
 |---|---|
 | 0.00 | Selection click sound |
-| 0.00 | Grey square A begins painting over the gate options |
+| 0.00 | Grey square A begins painting over the gate options. The squares sit after the options in the DOM (§4.1), so the paint really covers them |
 | 0.25 | Grey square B begins painting (overlaps A) |
-| 0.50 | Gate options fully covered → remove gate layer (`autoAlpha: 0` on gate content) |
+| 0.50 | Squares complete → unmount the gate options, `gatePhase = "done"` |
 | 0.60 | Transit route line fades in (0.6s, `power2.out`) |
 | 0.70 | Stations fade in, staggered **left to right** (About → Inspo), 0.08s apart, with a 6px upward settle |
 | 0.80 | Station labels fade in, same stagger |
@@ -325,7 +338,7 @@ export function gateToHome(choice: "sound" | "muted") {
   const tl = gsap.timeline();
   tl.add(paintSquare(squareA), 0)
     .add(paintSquare(squareB), T.GATE.SQUARE_B_OFFSET)
-    .set(gateOptions, { autoAlpha: 0 }, T.GATE.OPTIONS_HIDE)
+    .add(() => setGatePhase("done"), T.GATE.OPTIONS_UNMOUNT)
     .to(route, { autoAlpha: 1, duration: 0.6, ease: "power2.out" }, T.GATE.ROUTE_IN)
     .from(stationDots, { autoAlpha: 0, y: 6, stagger: 0.08, duration: 0.4 }, T.GATE.STATIONS_IN)
     .from(stationLabels, { autoAlpha: 0, stagger: 0.08, duration: 0.4 }, T.GATE.LABELS_IN)
@@ -336,7 +349,7 @@ export function gateToHome(choice: "sound" | "muted") {
 ```
 
 ### 6.6 Paint-over technique (grey squares)
-A fade or straight wipe will not read as paint. Each grey square (`#D9D9D9`, positions from the home mockup: two overlapping rectangles bottom-left, roughly (92, 738, 289×152) and (159, 800, 289×152)) is revealed through a **brush-stroke mask**:
+A fade or straight wipe will not read as paint. Each grey square (`#D9D9D9`, positions from the **home** mockup: two overlapping rectangles bottom-left, roughly (142, 715, 289×186) and (79, 789, 289×176). The transition mockups show a different arrangement, (92, 738) and (159, 800); see §15 #11) is revealed through a **brush-stroke mask**:
 
 1. For each square, define 3–4 thick (~60–80px) overlapping zigzag stroke paths that together fully cover it, like a roller going back and forth.
 2. Give the strokes rough, bristly edges with an SVG filter: `feTurbulence` (fractal noise, baseFrequency ~0.04, 2 octaves) → `feDisplacementMap` (scale ~8–12).
@@ -359,7 +372,7 @@ Mockup: `design/mockups/02-home.png`.
   - Blue route line (≈`#0A64E0`, ~8px stroke). Upper track at y≈205 from x=0 to Experience (x≈420); diagonal down to Projects (x≈686, y≈365); lower track continues to the right edge.
   - Station dots: white fill, blue ring, r≈11px. About (92, 205), Experience (420, 205), Projects (686, 365), ??? (1022, 365), Inspo (1323, 365).
   - Labels in Fragment Mono ~34px: "About" below its dot, "Experience" above its dot, "Projects", "???", "Inspo" below theirs.
-- Green hand-drawn smiley top-right (asset SVG, ≈`#45B052`).
+- Green hand-drawn smiley top-right (`smiley.svg`, `#41AE55`).
 - Name block (shared chrome) at the same position as on the gate.
 - The two grey squares bottom-left (left painted from the gate transition; on later visits to home they are simply present).
 - The orange "who?" spray, center-right (≈ x 490–1400, y 560–800).
@@ -369,20 +382,21 @@ Sample exact colors from the mockups; the values here are approximations. Put fi
 **Build the transit map in code (SVG), not from an exported image.** It animates and changes state.
 
 ### 7.2 "who?" spray engine
-The "who?" drawing ships as an SVG of **stroked paths in drawing order** (`assets-src/svg/who-spray.svg`, IDs per `ASSETS.md`). The paths are guides only; they are not displayed.
+The "who?" drawing ships as an SVG of **stroked paths in drawing order** (`assets-src/svg/who-spray.svg`: 5 `<path>`s, no IDs, **document order = draw order**: w, h, o, ?-hook, ?-dot). The paths are guides only; they are not displayed. They are stroked at **30px**, which sets the target line weight of the spray.
 
 Rendering, on a `<canvas>` sized to the spray area:
 1. **Handle device pixel ratio**: canvas backing size = CSS size × `devicePixelRatio`, then `ctx.scale(dpr, dpr)`. Otherwise it looks blurry on retina screens.
 2. Load the SVG paths into hidden `<path>` elements (or `Path2D` + a length table) and read `getTotalLength()` / `getPointAtLength()`.
 3. A GSAP timeline tweens a `progress` value per stroke (0 → length). Ease each stroke like a hand gesture (`power1.inOut`), with 80–150ms pauses between strokes (the can lifts off).
 4. Each frame, step from the previous point to the current point in small increments (≤2px) so fast moves don't leave gaps. At each step, stamp **30–80 dots** in a Gaussian scatter around the point:
-   - Core: dense, small radius (σ ≈ 4px), high alpha.
-   - Overspray: sparse, wide radius (σ ≈ 14px), low alpha.
+   - Core: dense, radius σ ≈ 7–8px (so ±2σ ≈ the 30px guide stroke width), high alpha.
+   - Overspray: sparse, wide radius (σ ≈ 16–20px), low alpha.
+   - Both σ values are tunable constants (in `timings.ts` / a spray config), not literals.
    - Occasional larger "spit" droplet (~1 in 40 stamps).
    - Density scales **inversely with speed**: slow = heavier paint.
-5. Stamp onto the canvas and **never clear it** during the spray; paint accumulates.
+5. Stamp onto the canvas and **never clear it** during the spray; paint accumulates. (Clear it once *before* a respray on return to home.)
 6. Optional polish: at stroke ends where the nozzle lingers, spawn 1–2 slow drips (thin vertical lines growing downward over ~1s).
-7. Color: the orange token (≈`#FF7A00`), with per-dot alpha variation.
+7. Color: the orange token (`#FF7700`), with per-dot alpha variation.
 
 Keep the particle math outside React. The engine is a plain class; React only mounts the canvas.
 
@@ -402,7 +416,7 @@ Keep the particle math outside React. The engine is a plain class; React only mo
 
 ## 8. Palimpsest (station-to-station transition)
 
-Mockups: `03-transition-1.png` → `04-transition-2.png` → `05-transition-3.png` (confirm names).
+Mockups: `03-transition-1.png` (first copies) → `04-transition-2.png` (dense stack) → `05-transition-3.png` (black screen, annotated "< Slide out animation (like exiting a tunnel)").
 
 ### 8.1 Phases
 All values in `timings.ts`; a full run should feel quick, roughly 2.5–3s including the tunnel.
@@ -412,7 +426,7 @@ All values in `timings.ts`; a full run should feel quick, roughly 2.5–3s inclu
 | 1. Dot | 0.00–0.38 | Clicked station dot fills white → yellow (≈`#F5B700`), scale 1 → 1.6 (`back.out(3)`, 0.18s) → 1 (0.2s) | `station.click` chime |
 | 2. Stack | ~0.30–1.20 | The station name in **Inter Variable weight 900**, huge, stacks up in repeated copies until the screen is nearly black | `palimpsest.thud` per copy, pre-scheduled |
 | 3. Seal | ~1.20–1.35 | Black layer fades to opacity 1 over the canvas, guaranteeing 100% black | — |
-| 4. Swap | at black | `commitRoute(next)`: push history, mount new page underneath, morph transit map layout if needed | Rumble begins, filtered low |
+| 4. Swap | at black | Clear the stack canvas; `commitRoute(next)` (history was already written at click time, §4.3): mount the new page underneath, morph the transit map layout if needed | Rumble begins, filtered low |
 | 5. Wait | 0 to 3s max | `await` next page's images (`img.decode()`) and fonts. Usually instant thanks to hover prefetch | Rumble continues |
 | 6. Tunnel exit | 1.1s | Black layer slides left (`xPercent: -100`, `expo.inOut`), revealing the new page | Lowpass sweep ~300 Hz → ~10 kHz as it slides |
 
@@ -421,12 +435,12 @@ Sketch:
 ```ts
 export function palimpsest(from: Route, to: Route, clickedDot: SVGElement) {
   lockInput();
-  const tl = gsap.timeline({ onComplete: unlockInput });
+  const tl = gsap.timeline({ onComplete: resetOverlay, onInterrupt: resetOverlay });
   tl.to(clickedDot, { fill: YELLOW, scale: 1.6, duration: 0.18, ease: "back.out(3)", transformOrigin: "50% 50%" })
     .to(clickedDot, { scale: 1, duration: 0.2 })
     .add(stackWords(to.label), "-=0.1")
     .to(blackLayer, { opacity: 1, duration: 0.15 })
-    .add(() => commitRoute(to))
+    .add(() => { clearStackCanvas(); commitRoute(to); })
     .add(waitFor(preloadRoute(to), 3000))  // pauses the timeline until resolved
     .to(tunnel, { xPercent: -100, duration: 1.1, ease: "expo.inOut" })
     .from(lightBleed, { opacity: 0.6, duration: 0.8 }, "<0.2")
@@ -438,7 +452,7 @@ export function palimpsest(from: Route, to: Route, clickedDot: SVGElement) {
 Implement `waitFor` by pausing the timeline and resuming when the promise resolves (or the timeout hits).
 
 ### 8.2 Word stacking (Phase 2) — performance-critical
-From the mockups: copies of the word appear one after another, each offset vertically (~150px apart at first), overlapping, then accelerate and fill in until the frame is almost solid black (the Transition 3 frame shows the dense state).
+From the mockups: copies of the word appear one after another, each offset vertically (~150px apart at first), overlapping, then accelerate and fill in until the frame is almost solid black (`04-transition-2.png` shows the dense state).
 
 **Do not create dozens of DOM nodes of 400px black text.** The browser rasterizes each huge text layer separately, which causes dropped frames. Instead:
 1. Render the word **once** to an offscreen canvas at the needed size (font-size chosen so the word spans the viewport width; Inter 900; black).
@@ -454,6 +468,14 @@ A hard-edged black panel sliding left looks like a wipe. Three details sell the 
 2. A **white light-bleed overlay** starts at ~0.6 opacity and fades to 0, like eyes adjusting to daylight. **Animate an overlay's opacity; do not animate CSS `filter: brightness()` on the page** (full-page filters are expensive).
 3. The new page settles from `scale: 1.04` to `1`.
 
+**Reset after every run: `resetOverlay()`.** `transition/palimpsest.ts` exports one idempotent function, safe to call twice. It:
+- clears the stack canvas;
+- sets the tunnel to `xPercent: 0, autoAlpha: 0` and the light-bleed to `opacity: 0`;
+- restores `pointer-events: none` on the overlay;
+- calls `unlockInput()`, then runs `queued` if set (§4.3).
+
+It is called from the timeline's `onComplete` and `onInterrupt` (any `kill()`) and from the >5s black-screen safety (§8.5). Separately, the stack canvas is cleared at Phase 4 while the screen is black; otherwise the words reappear as the tunnel slides away.
+
 ### 8.4 Transit map morph
 The home page shows the map `full`; every other page shows it `mini` in a grey card top-left (≈ `#D9D9D9` card, ~381×157px, with a darker ≈`#7A6E6E` border on the right and bottom, see project mockups). Current station's dot is yellow/orange.
 
@@ -461,8 +483,8 @@ Use **GSAP Flip**: capture state, toggle the layout class/props, `Flip.from(stat
 
 ### 8.5 Guards
 - Ignore all navigation input while a transition runs (`lockInput`).
-- Back/forward during a transition: queue the latest request and run it after.
-- If the tab is hidden mid-transition, let GSAP complete (it will catch up); don't leave the overlay stuck black. Add a safety: if the overlay is black for >5s, force-reveal.
+- Back/forward during a transition: the URL has already moved. Store it in `queued` (the latest wins), and run it from `resetOverlay()` (§4.3, §8.3). Clicks during a transition are simply ignored; they never write history.
+- If the tab is hidden mid-transition, let GSAP complete (it will catch up); don't leave the overlay stuck black. Add a safety: if the overlay is black for >5s, force the reveal and call `resetOverlay()`.
 
 ---
 
@@ -476,12 +498,12 @@ sources ─┬─> ui bus ─────────┐
          └─> ambient bus ────┘
 ```
 
-- `new AudioContext({ latencyHint: "interactive" })`, created lazily at module level (singleton, see StrictMode gotcha §4.2).
+- `new AudioContext({ latencyHint: "interactive" })`, a singleton held in `audio/engine.ts`, **created inside the gate gesture** by `audio.unlock()` (§6.4), guarded so it's created only once (StrictMode, §4.2). Before creating it, set `navigator.audioSession.type = "ambient"` where supported (Safari only). This is a deliberate choice: sounds mix with the user's music, and the iPhone silent switch mutes them.
 - Limiter settings: threshold −6 dB, ratio 20, attack 0.003, release 0.1. It keeps spam-clicking from clipping.
 - Master gain 0 when muted. Mute changes ramp over 50ms (`setTargetAtTime`) to avoid clicks.
 
 ### 9.2 Loading
-- On app start (while the gate is showing), fetch every file in the sound manifest and `decodeAudioData` into `AudioBuffer`s. This works while the context is suspended.
+- On app start (while the gate is showing), fetch every **discovered** sound file (§9.5) and decode it with a module-level `new OfflineAudioContext(1, 1, 48000)`. The resulting `AudioBuffer`s play in the real context later; a sample-rate mismatch is resampled automatically, which is fine for SFX. The procedural buffers (noise) can be built the same way.
 - Playback = new `AudioBufferSourceNode` per play; they are cheap and one-shot by design.
 
 ### 9.3 Playback features
@@ -489,17 +511,26 @@ sources ─┬─> ui bus ─────────┐
 - **Variation**: randomize playbackRate ±4–6% and gain ±10% per play, and round-robin through variants (`paint.stroke.1..4`). Prevents the repetitive "machine gun" effect.
 - **Voice limits**: per-sound cap (e.g. 4). When exceeded, fade out (10ms) and stop the oldest.
 - **Scheduling**: for anything rhythmic (Palimpsest thuds), compute all times from `ctx.currentTime` at timeline start and schedule them upfront with `source.start(when)`. GSAP callbacks fire on animation frames and can drift ~16ms, which is fine for one-off clicks but audible in a rhythm.
-- **Tab hidden**: `ctx.suspend()` on `visibilitychange` hidden, `resume()` on visible.
+- **Tab hidden**: `ctx.suspend()` on `visibilitychange` hidden. Try `resume()` on visible, but don't rely on it: iOS can leave the context `"interrupted"` (calls, app switches) and refuse a resume without a gesture. So also register one capture-phase `pointerdown`/`keydown` listener that calls `resume()` whenever `ctx.state !== "running"`.
 
 ### 9.4 Procedural sounds (`audio/procedural.ts`)
 - **Spray hiss**: a looping 2s white-noise `AudioBuffer` → highpass ~1.5 kHz → bandpass ~4.5 kHz (Q ≈ 0.8) → gain. The gain is set every frame from nozzle speed with `setTargetAtTime(value, now, 0.015)` so it follows smoothly without zipper noise.
 - **Tunnel rumble**: brown/pink noise (or a sample, if provided) → lowpass. Cutoff starts ~300 Hz during the black screen and sweeps exponentially to ~10 kHz over the tunnel-exit duration (`exponentialRampToValueAtTime`), while gain fades out at the end. The muffled-to-open sweep is the audio version of exiting a tunnel.
 
 ### 9.5 Placeholder sounds
-Real sound files may not exist yet. For every manifest entry whose file is missing, the engine must fall back to a **synthesized placeholder** (short oscillator blip or noise burst with a distinct pitch per ID) and log a single dev-only warning. This keeps timing audible during development. Swapping in real files later must require **no code changes**, only adding the file.
+Real sound files may not exist yet. **Discover them at build time; never probe at runtime.** Probing doesn't work: the Vite dev server and the SPA rewrite (§13) both answer a missing file with `index.html` and status 200. Probing also adds 404s.
+
+```ts
+// src/config/sounds.ts
+const files = import.meta.glob("/assets-src/sounds/*.m4a",
+  { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+// "/assets-src/sounds/gate.select.m4a" -> hashed URL
+```
+
+The engine resolves each ID, or `id.n` for variants (`paint.stroke.1` … `.4`), against this map. Found → fetch and decode. Not found, or decode rejects → the engine must fall back to a **synthesized placeholder** (short oscillator blip or noise burst with a distinct pitch per ID) and log a single dev-only warning. This keeps timing audible during development. Swapping in real files later requires **no code changes**: drop `<id>.m4a` into `assets-src/sounds/` and rebuild. Real files also get hashed, immutable-cacheable URLs.
 
 ### 9.6 Sound manifest (`src/config/sounds.ts`)
-Files go in `public/sounds/` as **`.m4a` (AAC)**, which plays in every major browser.
+Files go in `assets-src/sounds/`, named `<id>.m4a` (variants `<id>.<n>.m4a`), as **`.m4a` (AAC)**, which plays in every major browser. The manifest lists IDs, variant counts and bus; it never lists file paths.
 
 | ID | Trigger | Notes |
 |---|---|---|
@@ -519,21 +550,21 @@ Files go in `public/sounds/` as **`.m4a` (AAC)**, which plays in every major bro
 | `mute.toggle` | Toggling sound | Plays on unmute only |
 
 ### 9.7 Audio gotchas
-- `resume()` synchronously in the gesture handler (§6.4).
-- Resume even when muted (§6.4).
+- Create the context and `resume()` synchronously in the gesture handler (§6.4); decode beforehand with the `OfflineAudioContext`.
+- Create and resume even when muted (§6.4).
 - Never use `<audio>` for effects.
-- **iPhone silent switch mutes Web Audio.** Nothing to fix in code; mention it in the mute toggle's tooltip if a tooltip exists.
+- **iPhone silent switch mutes Web Audio.** This is deliberate (`audioSession.type = "ambient"`, §9.1). Don't switch to `"playback"`: it would pause the user's music. The mute toggle's tooltip says "iPhone silent switch mutes sound".
 - Don't create `AudioContext`s per component or per sound; one only.
 - Don't reuse an `AudioBufferSourceNode`; they are single-use.
 
 ### 9.8 Mute toggle
-A small persistent control in the shared chrome layer. Position isn't in the mockups (§15); use bottom-left in Fragment Mono ("sound on / off") as a placeholder. Persists to `pref.sound`. Keyboard shortcut `M`.
+A small persistent control in the shared chrome layer. Position isn't in the mockups (§15); use a small **top-right** corner control in Fragment Mono ("sound on / off") as a placeholder. Bottom-left collides with the gate options, the home grey squares and the Oyster News artifacts, and bottom-right collides with project links. Persists to `pref.sound`. Keyboard shortcut `M`.
 
 ---
 
 ## 10. Project pages
 
-Mockups: `06-projects-portfolio.png`, `07-projects-mango.png`, `08-projects-oyster-news.png` (confirm names).
+Mockups: `06-projects-oyster-news.png`, `07-projects-mango.png`, `08-projects-portfolio.png`.
 
 ### 10.1 Shared shell (`ProjectLayout.tsx`)
 At 1440 × 1024:
@@ -543,14 +574,14 @@ At 1440 × 1024:
   - Body paragraph, **Inter ~16px, line-height ~19px, justified**, in an `ObstacleText` component (§11).
   - "Date: Aug. 2026 - Sept. 2026" line below, left-aligned, ~60px under the body.
 - Right column (x ≈ 1120): project list in Inter ~36px: "Oyster News", "Mango", "Portfolio". The active project gets an **orange hand-drawn ellipse** around it (SVG asset; animate in with DrawSVG, ~0.5s, when the page appears or the selection changes). On the Portfolio page the mockup shows a squiggle underline instead; check `ASSETS.md`.
-- Bottom-right: external link in Inter semibold (e.g. `https://oysternews.xyz/`) with an orange hand-drawn underline stroke. Hover: underline redraws, `link.hover` sound.
+- Bottom-right: external link in Inter semibold (e.g. `https://oysternews.xyz/`) with a red-brown (≈`#C8452F`, sample from mockup) hand-drawn underline stroke (asset **missing**; use a placeholder path, see `ASSETS.md`). Hover: underline redraws, `link.hover` sound.
 
 Switching between projects via the right-hand list is **not** a station change, so it should **not** run full Palimpsest (§15 asks what it should be). Placeholder: the center column crossfades (0.35s out / 0.45s in, slight 8px vertical offset), the ellipse redraws on the new item, `project.select` sound.
 
 ### 10.2 Page specifics
 - **Oyster News**: two hero images (world news map, then Vancouver news map). Draggable **orange-red circle** (≈`#D9503A`, diameter ≈ 44px, check mockup) inside the body text; text wraps around it (§11). Floating **design artifacts** around the page edges (the tilted "VERY important headline" card, the large "News" wordmark, the Oyster logo top-right, etc.): animate only `transform`/`opacity`; add a subtle mouse parallax (max ~12px, different depth per artifact, smoothed with `gsap.quickTo`). More artifacts will be added later; build the positions from a data array so adding one is a one-line change. Placeholder slots per `ASSETS.md`.
-- **Mango**: hero image(s) per `ASSETS.md`. Draggable **mango** image (transparent PNG) inside the body text; text wraps around its **actual shape** (§11.4).
-- **Portfolio**: overlapping grey and orange circles as the hero (build in CSS/SVG). The mockup body text shows wrap gaps but no visible obstacle; see §15.
+- **Mango**: hero image(s) per `ASSETS.md`. Draggable **mango** (`svg/mango.svg`: two filled ellipses + stem) inside the body text; text wraps around its **actual shape** as an analytic ellipse union (§11.4). `images/mango.png` is the MineMotion screenshot hero, not the obstacle. The mockup's first hero (world map) and link (`oysternews.xyz`) are copy-paste leftovers from Oyster News; use placeholders until real content arrives.
+- **Portfolio**: overlapping grey and orange circles as the hero (build in CSS/SVG). The mockup body text shows wrap gaps but no visible obstacle. They sit at exactly the same position as the Oyster News circle, so they are probably a copy-paste artifact; see §15 #4. The mockup's mini map is also missing the About, ??? and Inspo dots, probably a slip. Render all five dots.
 
 ### 10.3 Images (`vite-imagetools`)
 - Import originals from `assets-src/images/...` with imagetools query params to generate **AVIF + WebP at 1×/2× sizes**, and render `<picture>` with `srcset`/`sizes`.
@@ -586,7 +617,8 @@ Per frame, only when the obstacle moved (throttled to `requestAnimationFrame`):
 ### 11.4 Obstacle shapes (`obstacles.ts`)
 Common interface: `blockedInterval(bandTop, bandBottom): [start, end] | null`.
 - **Circle** (Oyster News): for the band, find the y inside the band closest to the circle's center, `dy`; if `|dy| < r`, half-width = `√(r² − dy²)` → interval `[cx − hw, cx + hw]`.
-- **Alpha mask** (Mango): on load, draw the mango PNG to an offscreen canvas at its display size, read the pixels once, and build a per-row table of the leftmost and rightmost pixel with alpha > 32. For a band, take the min left / max right over the rows the band covers, offset by the mango's current position. Rebuild the table if the display size changes.
+- **Ellipse union** (Mango): the mango is two ellipses (see `mango.svg`: centers (22.5, 35.6) r(16.5, 30.5) and (19, 31.6) r(19, 26.5) in a 39×67 viewBox, scaled to display size). For each ellipse, find the y in the band closest to its center; if `|dy| < ry`, half-width = `rx·√(1 − dy²/ry²)`. Union the per-ellipse intervals (min start / max end; they always overlap). Ignore the thin stem, or pad the top band slightly. Exact, allocation-free, same math family as the circle.
+- (Fallback for future irregular obstacles: rasterize to an offscreen canvas and build a per-row alpha > 32 extent table.)
 
 ### 11.5 Dragging
 - GSAP `Draggable` (type `"x,y"`) with `inertia: true` (InertiaPlugin) so a flicked obstacle glides and settles while the text keeps reflowing.
@@ -631,54 +663,7 @@ Common interface: `blockedInterval(bandTop, bandBottom): [start, end] | null`.
 3. **Test on a phone** (no locally installed fonts, real Safari audio rules).
 4. Deep link directly to `/projects/mango` in a fresh tab: gate appears, then Mango loads. No 404.
 5. Choose SOUND on the gate in **Safari**: the select sound plays. Choose Muted, then unmute: sounds play without reloading.
-6. No console errors; no 404s in the Network tab (check filename case).
+6. No console errors or warnings, including no Chrome autoplay warning (the context is created in the gesture, §6.4). No 404s in the Network tab.
+7. Safari checks (items 3 and 5) run on the user's **real iPhone**. From the Windows dev machine, debug with inspect.dev (or `ios-webkit-debug-proxy`). During development, test over LAN with `vite --host`. Playwright WebKit does not reproduce Safari's audio unlock rules. Check with the silent switch **on** too: sound should be muted, by design (§9.7).
 
 ---
-
-## 14. Build order (milestones)
-
-Finish and verify each before starting the next. After each milestone, summarize what was built and what the user should check.
-
-1. **Scaffold**: Vite + React + TS, installs (§2), fonts (§5), tokens, `lib/gsap.ts`, folder structure, `timings.ts`. Verify all five fonts render (Rendered Fonts panel).
-2. **Sound engine + gate**: engine with buses, loading, placeholders, variation, voice limits; gate UI with keyboard support and synchronous unlock. Verify in Chrome **and** Safari.
-3. **Transit map + router**: `TransitMap` full layout on home, custom router, placeholder pages, mini layout.
-4. **Gate → Home**: paint-over masks, fades, stagger (spray stubbed as a log line at `WHO_DELAY`).
-5. **Spray engine**: particles + hiss coupling. Tune with GSDevTools.
-6. **Palimpsest**: all six phases, Flip map morph, input lock, back/forward, preload wait, reduced-motion variant.
-7. **Project shell + Oyster News**: layout, images pipeline, project list ellipse, link underline, parallax artifacts.
-8. **Obstacle text**: circle obstacle on Oyster News, then alpha-mask mango on Mango.
-9. **Portfolio page + placeholders polish**.
-10. **Performance + accessibility pass**, then deploy config and the §13 checklist.
-
----
-
-## 15. Open questions — ask the user, don't guess
-
-Build a clearly marked placeholder (comment `// TODO(open-question #n)`) and continue.
-
-1. **Deep links**: after the gate on a deep link (e.g. `/projects/mango`), should the user see the gate → home sequence and then Palimpsest to Mango, or go straight from the paint-over to Mango? Placeholder: paint-over, then a short fade to the requested page.
-2. **"who?" on return visits**: respray every time the user returns home, or only the first time? Placeholder: faster respray each return.
-3. **Switching projects** via the right-hand list: what transition? Placeholder: crossfade (§10.1).
-4. **Portfolio page obstacle**: the mockup shows wrap gaps in the text but no visible obstacle. Is there a draggable element on that page (e.g. the orange circle from the hero)?
-5. **Justified last lines**: confirm the stretched final lines in the mockups are Figma artifacts and last lines should be left-aligned.
-6. **Mute toggle**: where should it live and how should it look after the gate?
-7. **Mobile / narrow screens**: mockups are desktop only. Placeholder: fluid scaling with `clamp()` down to ~900px; below that, stack the columns and shrink the map. Ask before designing more.
-8. **About, Experience, ???, Inspo**: no mockups yet. Placeholders only.
-9. **Grey squares on home**: are they purely decorative, or placeholders for future content (images, a video)?
-10. **Real sound files**: the user will supply them; confirm the IDs in §9.6 match what they plan to record.
-
----
-
-## 16. Consolidated gotcha list
-
-Everything above that has bitten or will bite this project, in one place:
-
-- **Audio**: `resume()` synchronously in the gesture handler, before any `await` · resume even when muted · decode buffers before the gesture · never `<audio>` for effects · schedule rhythmic sounds on `ctx.currentTime`, not GSAP callbacks · one `AudioContext` only · source nodes are single-use · iPhone silent switch mutes Web Audio · no hover sounds possible before the first gesture.
-- **Fonts**: variable packages register `"Inter Variable"` / `"Newsreader Variable"` · Pretext font strings must exactly match rendered CSS · measure only after `document.fonts.load` · locally installed fonts can mask broken web fonts, check "Rendered Fonts" · font swap can land mid-animation, so the gate waits for fonts.
-- **Pretext**: confirm the actual API in `node_modules` before coding · re-prepare if fonts or `<html lang>` change.
-- **GSAP**: no Club token / private registry · register plugins once · use `useGSAP` for cleanup · kill Draggables on unmount.
-- **React**: StrictMode double-runs effects in dev → module-level singletons.
-- **SVG**: "who?" must be stroked paths in draw order, not outlined shapes · layer names exported as IDs.
-- **Rendering**: huge DOM text layers stutter → bitmap + canvas for Palimpsest · no full-page `filter` animation · handle `devicePixelRatio` on every canvas.
-- **Assets**: lowercase filenames; macOS ignores case, Linux hosts don't · don't pre-compress originals.
-- **Deploy**: SPA rewrite rule or deep links 404 · immutable cache on hashed assets only.
