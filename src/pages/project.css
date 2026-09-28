@@ -229,6 +229,14 @@
   background: var(--color-orange);
 }
 
+/* ---- Portfolio obstacle (Portfolio.tsx): portfolio-orange.png fills the box ---- */
+.portfolio-obstacle,
+.portfolio-obstacle img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 /* ---- Mango obstacle (Mango.tsx): mango.svg fills the obstacle box ---- */
 .mango-obstacle svg {
   width: 100%;
