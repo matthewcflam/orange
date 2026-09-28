@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
-import { gsap, useGSAP } from "../lib/gsap";
+import { gsap } from "../lib/gsap";
 import { STATIONS, routeFor } from "../config/routes";
 import { STATION, TEMP_NAV } from "../config/timings";
 import { STATION_HOVER_SEMITONES, semitonesToRate } from "../config/sounds";
@@ -25,13 +25,13 @@ function getCapRatio(): number {
  * The single transit map (spec §4.1, §7.1, §8.4). Rendered once and never
  * unmounted; "full" on home, "mini" (grey card, top-left) everywhere else.
  * Geometry is driven imperatively from stations.ts so a morph never re-renders.
+ * Hidden (CSS) until the gate → home timeline reveals it (gate/gateToHome.ts).
  */
 export default function TransitMap({ visible }: { visible: boolean }) {
   const route = useRoute();
   const currentStation = routeFor(route).station;
   const layoutName: LayoutName = route === "/" ? "full" : "mini";
 
-  const svgRef = useRef<SVGSVGElement>(null);
   const lineRef = useRef<SVGPathElement>(null);
   const clipRef = useRef<SVGRectElement>(null);
   const cardRef = useRef<SVGGElement>(null);
@@ -91,14 +91,6 @@ export default function TransitMap({ visible }: { visible: boolean }) {
     };
   }, [layoutName]);
 
-  // TODO(milestone 4): replaced by the gate → home route draw-in (§6.5).
-  useGSAP(
-    () => {
-      gsap.to(svgRef.current, { autoAlpha: visible ? 1 : 0, duration: visible ? TEMP_NAV.MAP_IN : 0 });
-    },
-    { dependencies: [visible] },
-  );
-
   const hover = (i: number, on: boolean) => {
     gsap.to(dotRefs.current[i], {
       scale: on ? STATION.HOVER_SCALE : 1,
@@ -114,7 +106,7 @@ export default function TransitMap({ visible }: { visible: boolean }) {
 
   return (
     <nav aria-label="Stations">
-      <svg ref={svgRef} className="transit-map" viewBox="0 0 1440 1024" aria-hidden={!visible}>
+      <svg className="transit-map" viewBox="0 0 1440 1024" aria-hidden={!visible}>
         <defs>
           <clipPath id="transit-clip">
             <rect ref={clipRef} x="0" y="0" />

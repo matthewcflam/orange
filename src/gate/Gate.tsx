@@ -13,18 +13,16 @@ const OPTIONS: { pref: SoundPref; label: string; aria: string }[] = [
 ];
 
 interface Props {
-  phase: GatePhase;
   onSelect: (choice: SoundPref) => void;
-  /** Temporary exit until milestone 4's paint-over. */
-  onLeft: () => void;
 }
 
 /**
  * The audio gate's options (spec §6). Rendered inside shared chrome, before
  * the grey squares, while gatePhase !== "done" (§4.1). Real <button>s;
- * hover or ↑/↓ moves the `>` cursor, click / Enter / Space selects.
+ * hover or ↑/↓ moves the `>` cursor, click / Enter / Space selects. The exit
+ * is the grey squares painting over it (gate/gateToHome.ts).
  */
-export default function Gate({ phase, onSelect, onLeft }: Props) {
+export default function Gate({ onSelect }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -59,15 +57,6 @@ export default function Gate({ phase, onSelect, onLeft }: Props) {
       });
     },
     { dependencies: [active], scope: rootRef },
-  );
-
-  // TODO(milestone 4): replace this fade with the grey-square paint-over.
-  useGSAP(
-    () => {
-      if (phase !== "leaving") return;
-      gsap.to(rootRef.current, { autoAlpha: 0, duration: GATE_UI.TEMP_LEAVE, onComplete: onLeft });
-    },
-    { dependencies: [phase], scope: rootRef },
   );
 
   const moveTo = (index: number) => {

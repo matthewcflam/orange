@@ -3,11 +3,14 @@ import { gsap, useGSAP } from "./lib/gsap";
 import { waitForFonts } from "./lib/fonts";
 import { GATE_UI } from "./config/timings";
 import Gate, { type GatePhase } from "./gate/Gate";
+import { gateToHome } from "./gate/gateToHome";
 import NameBlock from "./chrome/NameBlock";
+import GreySquares from "./chrome/GreySquares";
 import MuteToggle from "./chrome/MuteToggle";
 import TransitMap from "./transit/TransitMap";
 import Outlet from "./pages/Outlet";
 import { useRoute } from "./lib/router";
+import { prefersReducedMotion } from "./lib/motion";
 
 /**
  * Layer stack (spec §4.1), bottom to top:
@@ -16,8 +19,10 @@ import { useRoute } from "./lib/router";
  *   z20 transit map       — one TransitMap, full ↔ mini
  *   z30 transition overlay — Palimpsest canvas + tunnel + light bleed
  *
- * The gate is a state, not a layer: while gatePhase !== "done" the page layer
- * renders nothing and everything outside the gate buttons is inert.
+ * The gate is a state, not a layer: while gatePhase !== "done" everything
+ * outside the gate buttons is inert. The page mounts when the choice is made
+ * ("leaving") so the gate → home timeline can reveal it; before that it
+ * renders nothing, so nothing behind the gate is visible.
  */
 export default function App() {
   const [fontsReady, setFontsReady] = useState(false);
@@ -42,26 +47,36 @@ export default function App() {
     { dependencies: [fontsReady], scope: rootRef },
   );
 
+  // Gate → home (§6.5). Runs once; later phase changes don't revert it.
+  useGSAP(
+    () => {
+      if (gatePhase !== "leaving") return;
+      const tl = gateToHome({
+        root: rootRef.current!,
+        home: route === "/",
+        reduced: prefersReducedMotion(),
+        onOptionsGone: () => setGatePhase("done"),
+      });
+      if (import.meta.env.DEV) Object.assign(window, { __gateToHome: tl });
+    },
+    { dependencies: [gatePhase], scope: rootRef },
+  );
+
   // Nothing renders until fonts are ready, so no swap can land mid-animation (§5.4).
   return (
     <div ref={rootRef} style={{ opacity: 0 }}>
       {fontsReady && (
         <>
           <main className="layer--page" inert={gated}>
-            {!gated && <Outlet />}
+            {gatePhase !== "showing" && <Outlet />}
           </main>
 
           <div className="layer layer--chrome">
             {/* Name block: gate and home only (§4.1). */}
             <NameBlock visible={gated || route === "/"} />
-            {gated && (
-              <Gate
-                phase={gatePhase}
-                onSelect={() => setGatePhase("leaving")}
-                onLeft={() => setGatePhase("done")}
-              />
-            )}
-            {/* TODO(milestone 4): grey squares, after the gate options in DOM order. */}
+            {gated && <Gate onSelect={() => setGatePhase("leaving")} />}
+            {/* After the gate options in DOM order, so the paint covers them (§4.1). */}
+            <GreySquares visible={gated || route === "/"} />
             {/* Hidden on the gate: SOUND / Muted is the choice there. */}
             {!gated && <MuteToggle enabled />}
           </div>

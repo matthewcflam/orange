@@ -4,7 +4,7 @@ import "./home.css";
 /**
  * Home (spec §7). The full transit map and the name block are shared chrome;
  * this page holds the smiley and, later, the "who?" spray.
- * TODO(milestone 4): smiley enters with the gate → home timeline.
+ * After the gate, the smiley enters with the gate → home timeline.
  * TODO(milestone 5): "who?" spray canvas.
  */
 export default function Home() {

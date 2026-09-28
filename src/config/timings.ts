@@ -17,14 +17,15 @@ export const GATE_UI = {
   /** `>` cursor slide between options. */
   CURSOR_SLIDE: 0.12,
   CURSOR_EASE: "power2.out",
-  /** TODO(milestone 4): temporary gate exit fade, replaced by the paint-over. */
-  TEMP_LEAVE: 0.3,
 } as const;
 
 /** Gate → Home timeline (§6.5). Positions are seconds from the click. */
 export const GATE = {
+  /** The `>` cursor sits partly outside square A, so it fades as the paint starts. */
+  CURSOR_OUT: 0.15,
   SQUARE_A_START: 0,
   SQUARE_B_OFFSET: 0.25,
+  /** Square A (which alone covers the options) finishes at SQUARE_DURATION. */
   OPTIONS_UNMOUNT: 0.5,
   ROUTE_IN: 0.6,
   ROUTE_IN_DURATION: 0.6,
@@ -34,11 +35,16 @@ export const GATE = {
   STATION_STAGGER: 0.08,
   STATION_FADE_DURATION: 0.4,
   STATION_SETTLE_PX: 6,
+  STATION_EASE: "power2.out",
   SMILEY_IN: 1.0,
   SMILEY_IN_DURATION: 0.8,
   /** Measured from the click (user-confirmed). If it becomes "2s after the
    *  stations finish", the timeline position becomes ">+2". */
   WHO_DELAY: 2.0,
+  /** TODO(open-question #1): deep link — after the paint-over, the map and the
+   *  requested page fade in (the squares and name block fade out) instead of
+   *  the home sequence. */
+  DEEP_LINK_FADE: 0.4,
 } as const;
 
 /** Brush-mask paint-over of the grey squares (§6.6). */
@@ -50,6 +56,13 @@ export const PAINT = {
   STROKE_OVERLAP: 0.35,
   STROKE_EASE: "power1.inOut",
   STROKE_WIDTH_PX: 70,
+  /** Passes run past the square's edges by this (plus BRISTLE_SCALE). */
+  STROKE_OVERSHOOT_PX: 6,
+  /** Each pass rises this much end to end, and bows this much in the middle. */
+  STROKE_TILT_PX: 10,
+  STROKE_BOW_PX: 6,
+  /** paint.stroke pitch is randomized ± this many semitones per stroke. */
+  STROKE_PITCH_SEMITONES: 2,
   /** feTurbulence / feDisplacementMap for bristly edges. */
   BRISTLE_FREQUENCY: 0.04,
   BRISTLE_OCTAVES: 2,
@@ -98,8 +111,6 @@ export const TEMP_NAV = {
   /** Visible here so the morph can be checked; Palimpsest does it at black. */
   MAP_MORPH: 0.6,
   MAP_MORPH_EASE: "power3.inOut",
-  /** TODO(milestone 4): map fade-in after the gate, replaced by the route draw-in. */
-  MAP_IN: 0.4,
 } as const;
 
 /** Station hover/click on either map layout (§7.3). */

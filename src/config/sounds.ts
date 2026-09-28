@@ -30,7 +30,8 @@ export interface SoundDef {
 export const SOUNDS = {
   "gate.select":       { bus: "ui", gain: 0.8, placeholder: { type: "tone", wave: "triangle", freq: 660, dur: 0.35 } },
   "gate.cursor":       { bus: "ui", gain: 0.15, placeholder: { type: "tone", wave: "sine", freq: 1200, dur: 0.04 } },
-  "paint.stroke":      { bus: "transition", variants: 4, gain: 0.5, placeholder: { type: "noise", cutoff: 2500, dur: 0.22 } },
+  // User: the paint-over was "extremely loud" at 0.5 (8 overlapping noise bursts stack up). Keep it quiet.
+  "paint.stroke":      { bus: "transition", variants: 4, gain: 0.08, placeholder: { type: "noise", cutoff: 2500, dur: 0.22 } },
   "spray.rattle":      { bus: "ambient", gain: 0.5, placeholder: { type: "noise", cutoff: 6000, dur: 0.18 } },
   "station.hover":     { bus: "ui", gain: 0.25, placeholder: { type: "tone", wave: "sine", freq: 880, dur: 0.06 } },
   "station.click":     { bus: "ui", gain: 0.6, placeholder: { type: "tone", wave: "triangle", freq: 1320, dur: 0.4 } },
