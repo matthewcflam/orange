@@ -45,7 +45,7 @@ Finish and verify each milestone before starting the next. After each one, summa
 | 2 | Done. User confirmed sound works. | `147c368` |
 | 3 | Done. User verified; home map widened for wide screens. | `7f5f75e` |
 | 4 | Done. User signed off. | `e3e879c` |
-| 5 | Built. **Still to confirm with the user:** the spray look (density, grain, drips), stroke speed, and hiss/rattle volume. | (this commit) |
+| 5 | Built. **Still to confirm with the user:** the spray look (density, grain, drips), stroke speed, and hiss/rattle volume. | `10db1d0` |
 | 6 | **Next**, once the user signs off M5. Replace `tempTransition`; call the respray after the tunnel exit (`whenIdle()` in `spray/who.ts` already waits for the runner to resolve). | |
 
 **Decisions made while building (these override the spec's approximations):**
