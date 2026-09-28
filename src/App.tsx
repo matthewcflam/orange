@@ -9,6 +9,7 @@ import GreySquares from "./chrome/GreySquares";
 import MuteToggle from "./chrome/MuteToggle";
 import TransitMap from "./transit/TransitMap";
 import Outlet from "./pages/Outlet";
+import TransitionOverlay from "./transition/TransitionOverlay";
 import { useRoute } from "./lib/router";
 import { prefersReducedMotion } from "./lib/motion";
 
@@ -84,7 +85,7 @@ export default function App() {
           <div className="layer layer--map" inert={gated}>
             <TransitMap visible={!gated} />
           </div>
-          <div className="layer layer--overlay" />
+          <TransitionOverlay />
         </>
       )}
     </div>

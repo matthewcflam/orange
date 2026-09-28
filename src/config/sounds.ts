@@ -36,8 +36,11 @@ export const SOUNDS = {
   "spray.rattle":      { bus: "ambient", gain: 0.1, placeholder: { type: "noise", cutoff: 6000, dur: 0.18 } },
   "station.hover":     { bus: "ui", gain: 0.25, placeholder: { type: "tone", wave: "sine", freq: 880, dur: 0.06 } },
   "station.click":     { bus: "ui", gain: 0.6, placeholder: { type: "tone", wave: "triangle", freq: 1320, dur: 0.4 } },
-  "palimpsest.thud":   { bus: "transition", variants: 3, voices: 6, gain: 0.7, placeholder: { type: "tone", wave: "sine", freq: 70, dur: 0.25 } },
-  "palimpsest.rumble": { bus: "transition", voices: 1, gain: 0.6, placeholder: { type: "brown", dur: 3 } },
+  // Every copy's thud is scheduled up front (§9.3), so the voice limit must cover them all:
+  // stealing a voice that hasn't started yet would silence it. Rapid-fire, so started quiet.
+  "palimpsest.thud":   { bus: "transition", variants: 3, voices: 16, gain: 0.35, placeholder: { type: "tone", wave: "sine", freq: 70, dur: 0.25 } },
+  // Noise: started quiet (see paint.stroke). Played through the lowpass in audio/tunnelRumble.ts.
+  "palimpsest.rumble": { bus: "transition", voices: 1, gain: 0.1, placeholder: { type: "brown", dur: 3 } },
   "drag.grain":        { bus: "ambient", voices: 1, gain: 0.4, placeholder: { type: "brown", dur: 2 } },
   "text.tick":         { bus: "ui", voices: 2, gain: 0.12, placeholder: { type: "tone", wave: "square", freq: 2400, dur: 0.015 } },
   "project.select":    { bus: "ui", gain: 0.5, placeholder: { type: "tone", wave: "triangle", freq: 990, dur: 0.18 } },

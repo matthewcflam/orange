@@ -212,6 +212,9 @@ export interface PlayOptions {
   loop?: boolean;
   /** Random ±rate/gain variation. Default: on, except for loops. */
   vary?: boolean;
+  /** Route through this node (e.g. a filter the caller connects to a bus)
+   *  instead of straight into the sound's bus. */
+  destination?: AudioNode;
 }
 
 export interface Voice {
@@ -272,7 +275,7 @@ export function play(id: SoundId, opts: PlayOptions = {}): Voice | null {
     tail = new StereoPannerNode(context, { pan: opts.pan });
     gain.connect(tail);
   }
-  tail.connect(buses[def.bus]);
+  tail.connect(opts.destination ?? buses[def.bus]);
 
   // Voice limit: fade out the oldest before adding a new one.
   const list = voices.get(id) ?? [];

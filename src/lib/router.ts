@@ -50,7 +50,7 @@ export function useRoute(): string {
   return useSyncExternalStore(subscribe, getRoute);
 }
 
-/** Palimpsest (milestone 6) registers itself here. */
+/** Palimpsest registers itself here (main.tsx). */
 export function setTransitionRunner(fn: TransitionRunner): void {
   runner = fn;
 }

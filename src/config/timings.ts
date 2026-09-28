@@ -129,18 +129,6 @@ export const CHROME = {
   NAME_FADE: 0.3,
 } as const;
 
-/**
- * TEMPORARY (milestone 3): stand-in page swap until Palimpsest (milestone 6).
- * Page fades out, map morphs visibly, page fades in.
- */
-export const TEMP_NAV = {
-  OUT: 0.2,
-  IN: 0.3,
-  /** Visible here so the morph can be checked; Palimpsest does it at black. */
-  MAP_MORPH: 0.6,
-  MAP_MORPH_EASE: "power3.inOut",
-} as const;
-
 /** Station hover/click on either map layout (§7.3). */
 export const STATION = {
   HOVER_SCALE: 1.25,
@@ -148,13 +136,15 @@ export const STATION = {
   HOVER_EASE: "back.out",
 } as const;
 
-/** Palimpsest station-to-station transition (§8). */
+/** Palimpsest station-to-station transition (§8). Distances are mockup px
+ *  (1440×1024 frame), scaled like --px. */
 export const PALIMPSEST = {
   // Phase 1: dot
   DOT_GROW_SCALE: 1.6,
   DOT_GROW: 0.18,
   DOT_GROW_EASE: "back.out(3)",
   DOT_SETTLE: 0.2,
+  DOT_SETTLE_EASE: "power2.out",
   /** Stack starts this long before the dot settles. */
   STACK_OVERLAP: 0.1,
   // Phase 2: stack
@@ -162,9 +152,22 @@ export const PALIMPSEST = {
   /** Interval between copies shrinks from START to END (accelerates). */
   STACK_INTERVAL_START: 0.09,
   STACK_INTERVAL_END: 0.03,
+  /** Row spacing of the first copies (03-transition-1.png); later copies
+   *  bisect the gaps, so the stack fills in. */
   STACK_FIRST_OFFSET_PX: 150,
+  /** Ink top of the first copy (03-transition-1.png). */
+  STACK_FIRST_TOP_PX: 160,
   STACK_FONT_WEIGHT: 900,
+  /** The word's ink spans this much of the viewport width (the mockup crops the last letter a little). */
+  STACK_WIDTH_FIT: 1.03,
+  /** …but its ink is never taller than this share of the viewport (short words like "???"). */
+  STACK_MAX_HEIGHT: 0.62,
+  /** Copies after the first STACK_ALIGNED sit up to ± this far off the left edge. */
+  STACK_JITTER_PX: 18,
+  STACK_ALIGNED: 3,
   // Phase 3: seal
+  /** Gap after the last copy before the seal starts. */
+  SEAL_DELAY: 0.03,
   SEAL: 0.15,
   // Phase 5: wait
   PRELOAD_TIMEOUT: 3,
@@ -176,13 +179,15 @@ export const PALIMPSEST = {
   LIGHT_BLEED_FROM: 0.6,
   LIGHT_BLEED: 0.8,
   LIGHT_BLEED_OFFSET: 0.2,
+  /** The new scene (page, chrome, map) settles from this scale as the tunnel opens. */
   PAGE_SCALE_FROM: 1.04,
   PAGE_SETTLE_EASE: "expo.out",
+  /** The rumble (§9.4) fades out starting this far into the tunnel exit, over RUMBLE_FADE. */
+  RUMBLE_FADE_AT: 0.5,
+  RUMBLE_FADE: 0.6,
   // Guards
   /** Force the reveal if the overlay has been black this long (§8.5). */
   BLACK_SAFETY: 5,
-  /** Map morph while black (§8.4). */
-  MAP_MORPH: 0.01,
 } as const;
 
 /** Project pages (§10). */

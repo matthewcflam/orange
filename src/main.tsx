@@ -13,7 +13,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { preloadSounds } from "./audio/engine";
 import { setTransitionRunner } from "./lib/router";
-import { tempTransition } from "./transition/tempTransition";
+import { palimpsest } from "./transition/palimpsest";
 
 // The router owns scrolling (spec §4.3).
 history.scrollRestoration = "manual";
@@ -21,8 +21,8 @@ history.scrollRestoration = "manual";
 // Fetch + decode every sound while the gate idles (spec §9.2). No AudioContext yet.
 void preloadSounds();
 
-// TODO(milestone 6): register Palimpsest instead.
-setTransitionRunner(tempTransition);
+// Every station-to-station navigation runs Palimpsest (spec §8).
+setTransitionRunner(palimpsest);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
