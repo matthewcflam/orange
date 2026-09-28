@@ -1,6 +1,7 @@
-import ComingSoon from "../placeholders/ComingSoon";
+import { projectBySlug } from "../../content/projects";
+import ProjectArticle from "../ProjectArticle";
 
-// TODO(milestone 7): real page on the ProjectLayout shell (spec §10).
+/** Mango (§10.2). TODO(milestone 8): the draggable mango obstacle. */
 export default function Mango() {
-  return <ComingSoon title="Mango" />;
+  return <ProjectArticle project={projectBySlug("mango")} />;
 }

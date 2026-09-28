@@ -1,0 +1,90 @@
+/*
+ * Oyster News design artifacts (OysterNews.tsx). CSS stand-ins for missing
+ * art, matched to 06-projects-oyster-news.png. Mockup px throughout; each is
+ * placed by its .artifact wrapper.
+ */
+
+.oy-triangles {
+  width: calc(127 * var(--px));
+  height: calc(178 * var(--px));
+}
+
+/* Rounded card, top corner at the wrapper origin, long edge running down-right. */
+.oy-headline {
+  width: calc(228 * var(--px));
+  height: calc(126 * var(--px));
+  padding: calc(14 * var(--px)) calc(18 * var(--px));
+  border-radius: calc(10 * var(--px));
+  background: var(--color-oyster-card);
+  color: #fff;
+  font-family: var(--font-name);
+  font-size: calc(29 * var(--px));
+  line-height: 0.95;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+  transform-origin: 0 0;
+  rotate: 56.2deg;
+}
+
+/* Newspaper clipping, bottom-left, running off the page. */
+.oy-clipping {
+  width: calc(332 * var(--px));
+  height: calc(110 * var(--px));
+  padding: calc(40 * var(--px)) 0 0 0;
+  border: calc(2 * var(--px)) solid var(--color-oyster-clip-border);
+  background: var(--color-oyster-clip-bg);
+  color: var(--color-oyster-grey);
+  font-size: calc(33 * var(--px));
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.07em;
+  white-space: nowrap;
+}
+
+/* "…er News": right-aligned so "News" ends at mockup x 297. */
+.oy-wordmark {
+  width: calc(800 * var(--px));
+  text-align: right;
+  color: var(--color-oyster-grey);
+  font-size: calc(96 * var(--px));
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.075em;
+  white-space: nowrap;
+}
+
+.oy-wordmark__oyster {
+  color: var(--color-oyster-lavender);
+}
+
+/* Serif "Oyster" climbing off the top-right, with a pearl in the O. */
+.oy-logo {
+  position: relative;
+  color: var(--color-oyster-grey);
+  font-family: var(--font-name);
+  font-size: calc(100 * var(--px));
+  line-height: 1;
+  white-space: nowrap;
+  transform-origin: 0 100%;
+  rotate: -27deg;
+}
+
+.oy-logo__pearl {
+  position: absolute;
+  left: 0.24em;
+  top: 0.36em;
+  width: 0.29em;
+  height: 0.29em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 45% 30%, var(--color-oyster-pearl-hi), var(--color-oyster-pearl) 75%);
+}
+
+.oy-logo-card {
+  width: calc(90 * var(--px));
+  height: calc(45 * var(--px));
+  border: 1px solid var(--color-oyster-logo-card-edge);
+  border-radius: calc(5 * var(--px));
+  background: linear-gradient(160deg, var(--color-oyster-logo-card), var(--color-oyster-logo-card-edge));
+  transform-origin: 0 0;
+  rotate: -37deg;
+}

@@ -10,6 +10,7 @@ import { GATE, PAINT, REDUCED } from "../config/timings";
 // import { semitonesToRate } from "../config/sounds";
 import { getContext /*, play */ } from "../audio/engine";
 import { introSpray, skipIntroSpray } from "../spray/who";
+import { markPageShown } from "../lib/pageReveal";
 
 interface Options {
   /** App root; everything is selected inside it. */
@@ -38,6 +39,8 @@ export function gateToHome({ root, home, reduced, onOptionsGone }: Options): gsa
     tl.add(reduced ? fadeSquare(square) : paintSquare(square, start, at), start);
   });
   tl.call(onOptionsGone, undefined, GATE.OPTIONS_UNMOUNT);
+  // The page starts to appear here (deep link fade, or home's stagger).
+  tl.call(markPageShown, undefined, GATE.OPTIONS_UNMOUNT);
 
   if (!home) {
     // TODO(open-question #1): placeholder deep-link reveal. The squares and

@@ -135,6 +135,8 @@ export const TEMP_NAV = {
   IN: 0.3,
   MAP_MORPH: 0.6,
   MAP_MORPH_EASE: "power3.inOut",
+  /** The page swap waits up to this long for the next page's images (§10.3). */
+  PRELOAD_MAX_MS: 800,
 } as const;
 
 /** Station hover/click on either map layout (§7.3). */
@@ -146,16 +148,26 @@ export const STATION = {
 
 /** Project pages (§10). */
 export const PROJECT = {
+  /** Orange scribble around the active project draws in (DrawSVG). */
   SCRIBBLE_DRAW: 0.5,
   SCRIBBLE_EASE: "power2.inOut",
-  /** Placeholder project switch crossfade (§15 #3). */
+  /** The previous project's scribble fades out. */
+  SCRIBBLE_OUT: 0.2,
+  /** Placeholder project switch crossfade (§15 #3): the center column, link
+   *  and artifacts fade out drifting up, then fade in rising from below. */
   SWITCH_OUT: 0.35,
   SWITCH_IN: 0.45,
   SWITCH_OFFSET_PX: 8,
+  SWITCH_EASE_OUT: "power2.in",
+  SWITCH_EASE_IN: "power2.out",
+  /** Link underline redraws on hover. */
   LINK_UNDERLINE_DRAW: 0.4,
-  /** Mouse parallax on design artifacts. */
+  LINK_UNDERLINE_EASE: "power2.out",
+  /** Mouse parallax on design artifacts: an artifact at depth 1 moves up to
+   *  PARALLAX_MAX_PX (mockup px) against the pointer. */
   PARALLAX_MAX_PX: 12,
   PARALLAX_SMOOTHING: 0.6,
+  PARALLAX_EASE: "power3",
 } as const;
 
 /** Obstacle text (§11). */

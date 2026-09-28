@@ -36,4 +36,18 @@
   --color-mango:       #FFA62A;     /* from mango.svg */
   --color-mango-stem:  #76C933;     /* from mango.svg */
   --color-portfolio-grey: #77736F;  /* Portfolio hero back circle, sampled */
+  --color-hero-placeholder: #172131; /* missing world-map hero: its ocean, sampled */
+
+  /* ---- Oyster News artifacts (CSS stand-ins for missing art), sampled from 06 ---- */
+  --color-oyster-card:        #E08475; /* "VERY important headline" card */
+  --color-oyster-tri-light:   #FFCCBF;
+  --color-oyster-tri-dark:    #ECB7A9;
+  --color-oyster-grey:        #7F7F7F; /* "News", "Oyster" logo, clipping text */
+  --color-oyster-lavender:    #A6A5C6; /* the "…er" of the wordmark */
+  --color-oyster-clip-bg:     #F3F2F2;
+  --color-oyster-clip-border: #4E4D8F;
+  --color-oyster-pearl:       #D48AE6;
+  --color-oyster-pearl-hi:    #EBC8D6;
+  --color-oyster-logo-card:      #E8AA9E;
+  --color-oyster-logo-card-edge: #D39A93;
 }

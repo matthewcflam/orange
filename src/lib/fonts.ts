@@ -13,10 +13,11 @@ export const FAMILY = {
   muted: "Megrim",
 } as const;
 
-/** Project body text (spec §10.1). Integer px: Firefox rounds canvas sizes. */
+/** Project body text (spec §10.1; 15px measured from the mockups, see
+ *  pages/project.css). Integer px: Firefox rounds canvas sizes. */
 export const BODY_TEXT = {
   weight: 400,
-  sizePx: 16,
+  sizePx: 15,
   lineHeightPx: 19,
 } as const;
 
