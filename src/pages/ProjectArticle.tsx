@@ -5,6 +5,7 @@ import { HERO_SIZES, type Picture } from "../lib/assets";
 import { prefersReducedMotion } from "../lib/motion";
 import { PROJECT } from "../config/timings";
 import type { Hero, Project } from "../content/projects";
+import ObstacleText, { type ObstacleDef } from "../textflow/ObstacleText";
 
 function ResponsivePicture({ picture, alt, eager }: { picture: Picture; alt: string; eager: boolean }) {
   return (
@@ -71,9 +72,9 @@ function ProjectLink({ href, label }: { href: string; label: string }) {
 /**
  * A project's content inside the shell: the center column (heroes, body,
  * date) and the external link. `hero` replaces the image stack (Portfolio
- * draws its own).
+ * draws its own). With an `obstacle`, the body flows around it (§11).
  */
-export default function ProjectArticle({ project, hero }: { project: Project; hero?: ReactNode }) {
+export default function ProjectArticle({ project, hero, obstacle }: { project: Project; hero?: ReactNode; obstacle?: ObstacleDef }) {
   const firstImage = project.heroes.findIndex((h) => h.kind === "image");
   return (
     <>
@@ -86,12 +87,15 @@ export default function ProjectArticle({ project, hero }: { project: Project; he
             ))}
           </div>
         )}
-        {/* TODO(milestone 8): ObstacleText with the draggable obstacle (§11). */}
-        <div className="project__body">
-          {project.body.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
+        {obstacle ? (
+          <ObstacleText className="project__body" paragraphs={project.body} obstacle={obstacle} />
+        ) : (
+          <div className="project__body">
+            {project.body.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+        )}
         <p className="project__date">{project.date}</p>
       </article>
       {project.link && <ProjectLink {...project.link} />}

@@ -170,14 +170,28 @@ export const PROJECT = {
   PARALLAX_EASE: "power3",
 } as const;
 
-/** Obstacle text (§11). */
+/** Obstacle text (§11). Distances are mockup px (scaled with the column). */
 export const OBSTACLE = {
+  /** Gap left between the obstacle and the text on each side. */
   PADDING_PX: 10,
+  /** A slot narrower than this is skipped (too narrow for a word). */
   MIN_SLOT_PX: 40,
+  /** The obstacle only splits a line if it reaches this far into the line
+   *  box (glyphs don't fill its top and bottom), so a shape that grazes a
+   *  line doesn't cut it. */
+  BAND_INSET_PX: 2,
   /** Don't justify a fragment whose gaps would exceed this × a normal space. */
   MAX_JUSTIFY_RATIO: 3,
+  /** Arrow keys move the focused obstacle (Shift = the larger step). */
   NUDGE_PX: 10,
   NUDGE_SHIFT_PX: 40,
+  NUDGE_DURATION: 0.15,
+  NUDGE_EASE: "power2.out",
+  /** drag.grain loop: full level at this obstacle speed (mockup px/s),
+   *  smoothed with this time constant, faded out over GRAIN_FADE. */
+  GRAIN_FULL_SPEED_PX: 1500,
+  GRAIN_TIME_CONSTANT: 0.05,
+  GRAIN_FADE: 0.15,
 } as const;
 
 /** Sound engine (§9). */

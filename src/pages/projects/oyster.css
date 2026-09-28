@@ -88,3 +88,9 @@
   transform-origin: 0 0;
   rotate: -37deg;
 }
+
+/* The draggable circle in the body text (textflow/ObstacleText). */
+.oy-circle {
+  border-radius: 50%;
+  background: var(--color-obstacle-oyster);
+}

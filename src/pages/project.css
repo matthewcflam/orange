@@ -61,7 +61,7 @@
 
 /* Body: Inter 15/19 (the mockup ink measures 15px, not the spec's ~16:
    the line breaks match 06 at 15), justified; each paragraph's last line
-   stays left. Integer px (Pretext needs them in milestone 8), with a fallback. */
+   stays left. Integer px (Pretext needs them; TextFlow also rounds), with a fallback. */
 .project__body,
 .project__date {
   font-size: calc(15 * var(--px));
@@ -219,4 +219,11 @@
   width: calc(380 * var(--px));
   height: calc(380 * var(--px));
   background: var(--color-orange);
+}
+
+/* ---- Mango obstacle (Mango.tsx): mango.svg fills the obstacle box ---- */
+.mango-obstacle svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }

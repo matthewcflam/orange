@@ -1,6 +1,8 @@
 import { projectBySlug } from "../../content/projects";
 import ProjectArticle from "../ProjectArticle";
 import Artifacts, { type ArtifactDef } from "../Artifacts";
+import type { ObstacleDef } from "../../textflow/ObstacleText";
+import { circle } from "../../textflow/obstacles";
 import "./oyster.css";
 
 /**
@@ -66,12 +68,22 @@ const ARTIFACTS: readonly ArtifactDef[] = [
   { id: "logo-card", x: 1403, y: 85, edge: "right", depth: 0.9, node: <div className="oy-logo-card" /> },
 ];
 
+/** The draggable circle in the body text (§10.2, §11), where 06 puts it:
+ *  over lines 5–6. Mockup px relative to the body's top-left (422, 614). */
+const CIRCLE: ObstacleDef = {
+  shape: circle(41),
+  x: 269,
+  y: 75,
+  label: "A red circle",
+  node: <div className="oy-circle" />,
+};
+
 /** Oyster News (§10.2). */
 export default function OysterNews() {
   return (
     <>
       <Artifacts items={ARTIFACTS} />
-      <ProjectArticle project={projectBySlug("oyster-news")} />
+      <ProjectArticle project={projectBySlug("oyster-news")} obstacle={CIRCLE} />
     </>
   );
 }

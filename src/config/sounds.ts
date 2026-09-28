@@ -54,6 +54,10 @@ export const MASTER_GAIN = 0.5;
 export const STATION_HOVER_SEMITONES = [0, 2, 4, 7, 9] as const;
 export const semitonesToRate = (st: number) => 2 ** (st / 12);
 
+/** drag.grain (§11.5): multiplies its manifest gain at full drag speed. Its
+ *  first use, so it starts quiet like every noise sound here. */
+export const DRAG_GRAIN_GAIN = 0.25;
+
 /** Procedural sounds are synthesized live, never loaded (spec §9.4). */
 export const PROCEDURAL_IDS = ["spray.hiss"] as const;
 

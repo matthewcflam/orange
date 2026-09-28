@@ -1,0 +1,32 @@
+/* Obstacle text (spec §11). The box's height is set by TextFlow. */
+.textflow {
+  position: relative;
+}
+
+/* Font size and line height are set inline, in whole px, by TextFlow. */
+.textflow__lines span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: pre;
+}
+
+.textflow__obstacle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.textflow__obstacle > * {
+  width: 100%;
+  height: 100%;
+}
+
+.textflow__obstacle:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
