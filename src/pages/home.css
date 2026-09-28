@@ -17,3 +17,15 @@
   height: auto;
   overflow: visible;
 }
+
+/* "who?" spray (§7.2). The 910×302 guide box sits at mockup (512, 537), so its
+   ink matches 02-home.png; the canvas extends --who-pad past it on every side
+   for overspray and drips. Centred at x 967 on the stretched axis. */
+.home__who {
+  position: absolute;
+  left: calc(967 * var(--vx) - (var(--who-w) / 2 + var(--who-pad)) * var(--px));
+  top: calc((537 - var(--who-pad)) * var(--px));
+  width: calc((var(--who-w) + 2 * var(--who-pad)) * var(--px));
+  height: calc((var(--who-h) + 2 * var(--who-pad)) * var(--px));
+  pointer-events: none;
+}

@@ -9,6 +9,7 @@ import { GATE, PAINT, REDUCED } from "../config/timings";
 // TODO(paint sound): restore these imports with the play() call in paintSquare.
 // import { semitonesToRate } from "../config/sounds";
 import { getContext /*, play */ } from "../audio/engine";
+import { introSpray, skipIntroSpray } from "../spray/who";
 
 interface Options {
   /** App root; everything is selected inside it. */
@@ -41,6 +42,7 @@ export function gateToHome({ root, home, reduced, onOptionsGone }: Options): gsa
   if (!home) {
     // TODO(open-question #1): placeholder deep-link reveal. The squares and
     // name block fade out on their own once the route isn't home.
+    skipIntroSpray();
     const page = q(".layer--page");
     gsap.set(page, { autoAlpha: 0 });
     tl.to([map, page], { autoAlpha: 1, duration: GATE.DEEP_LINK_FADE }, GATE.OPTIONS_UNMOUNT);
@@ -69,8 +71,7 @@ export function gateToHome({ root, home, reduced, onOptionsGone }: Options): gsa
     )
     .to(labels, { autoAlpha: 1, duration: GATE.STATION_FADE_DURATION, stagger: GATE.STATION_STAGGER }, GATE.LABELS_IN)
     .to(smiley, { autoAlpha: 1, duration: GATE.SMILEY_IN_DURATION }, GATE.SMILEY_IN)
-    // TODO(milestone 5): start the "who?" spray here.
-    .call(() => console.info("[gate→home] who? spray starts"), undefined, GATE.WHO_DELAY);
+    .call(introSpray, undefined, GATE.WHO_DELAY);
   return tl;
 }
 

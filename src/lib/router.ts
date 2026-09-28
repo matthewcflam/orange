@@ -21,6 +21,7 @@ let transitioning = false;
 let queued: string | null = null;
 let runner: TransitionRunner = async (_to, commit) => commit();
 const listeners = new Set<() => void>();
+let idleWaiters: (() => void)[] = [];
 
 // Canonicalize the entry URL (/projects → /projects/oyster-news, unknown → /).
 if (current !== location.pathname) history.replaceState(null, "", current);
@@ -37,6 +38,12 @@ function subscribe(listener: () => void): () => void {
 
 export const getRoute = () => current;
 export const isInputLocked = () => transitioning;
+
+/** Resolves once no transition (or queued one) is running; immediately if idle.
+ *  A page that mounts at commit uses it to start its entrance afterwards. */
+export function whenIdle(): Promise<void> {
+  return transitioning ? new Promise((resolve) => idleWaiters.push(resolve)) : Promise.resolve();
+}
 
 /** Current canonical path; re-renders on commit. */
 export function useRoute(): string {
@@ -68,6 +75,11 @@ async function run(to: string) {
     const next = queued;
     queued = null;
     if (next && next !== current) void run(next);
+    if (!transitioning) {
+      const waiters = idleWaiters;
+      idleWaiters = [];
+      for (const w of waiters) w();
+    }
   }
 }
 

@@ -69,30 +69,58 @@ export const PAINT = {
   BRISTLE_SCALE: 10,
 } as const;
 
-/** "who?" spray engine (§7.2). */
+/** "who?" spray engine (§7.2). Distances are mockup px (1440×1024 frame),
+ *  which are also the units of who-spray.svg. */
 export const SPRAY = {
   STROKE_EASE: "power1.inOut",
   /** Pause between strokes (the can lifts off). */
   LIFT_MIN: 0.08,
   LIFT_MAX: 0.15,
-  /** Nozzle speed along a stroke, px/s, before easing. */
+  /** Average nozzle speed along a stroke, px/s. power1.inOut peaks at 2× this. */
   NOZZLE_SPEED_PX: 900,
+  /** Shortest stroke. The ?-dot is a near-zero-length path, so the nozzle
+   *  dwells in place this long and builds up a blob. */
+  MIN_STROKE: 0.16,
   /** Max distance between stamps so fast moves don't leave gaps. */
   STEP_PX: 2,
+  /** Paint the can emits, in dots per second of stroke. Flow is constant, so
+   *  slow parts of a stroke get heavier paint per px (density ∝ 1/speed). */
+  FLOW_DOTS_PER_S: 18000,
+  /** Dots per stamp are clamped to this range. */
   DOTS_MIN: 30,
   DOTS_MAX: 80,
   /** Core σ ≈ 7–8px so ±2σ ≈ the 30px guide stroke. */
   CORE_SIGMA_PX: 7.5,
+  CORE_DOT_RADIUS_PX: [0.7, 1.8],
+  CORE_ALPHA: [0.45, 0.9],
   OVERSPRAY_SIGMA_PX: 18,
+  /** Share of each stamp's dots that are overspray. */
+  OVERSPRAY_SHARE: 0.2,
+  OVERSPRAY_DOT_RADIUS_PX: [0.5, 1.2],
+  OVERSPRAY_ALPHA: [0.08, 0.3],
   /** 1 in N stamps spits a larger droplet. */
   SPIT_CHANCE: 1 / 40,
+  SPIT_SIGMA_PX: 12,
+  SPIT_RADIUS_PX: [2, 3.8],
   /** Rattle sample plays this long before the first stroke. */
   RATTLE_LEAD: 0.25,
-  /** Respray on later returns home is this fraction of the full duration. */
+  /** TODO(open-question #2): respray on later returns home runs at this
+   *  fraction of the full duration. */
   RESPRAY_SPEED: 0.6,
+  /** Chance that a stroke end grows a drip (the nozzle lingers there). */
+  DRIP_CHANCE: 0.35,
+  /** At most this many drips per spray. */
+  DRIP_MAX: 2,
   DRIP_DURATION: 1.0,
+  DRIP_EASE: "power2.out",
+  DRIP_LENGTH_PX: [14, 40],
+  DRIP_WIDTH_PX: [1.8, 3],
+  /** Canvas margin around the 910×302 guide box, for overspray and drips. */
+  CANVAS_PAD_PX: 60,
   /** Hiss gain smoothing (setTargetAtTime time constant). */
   HISS_TIME_CONSTANT: 0.015,
+  /** Hiss level (0–1 of its max) at zero nozzle speed; full at peak speed. */
+  HISS_FLOOR: 0.4,
 } as const;
 
 /** Shared chrome visibility (§4.1). */

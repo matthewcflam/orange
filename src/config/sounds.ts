@@ -32,7 +32,8 @@ export const SOUNDS = {
   "gate.cursor":       { bus: "ui", gain: 0.15, placeholder: { type: "tone", wave: "sine", freq: 1200, dur: 0.04 } },
   // User: the paint-over was "extremely loud" at 0.5 (8 overlapping noise bursts stack up). Keep it quiet.
   "paint.stroke":      { bus: "transition", variants: 4, gain: 0.08, placeholder: { type: "noise", cutoff: 2500, dur: 0.22 } },
-  "spray.rattle":      { bus: "ambient", gain: 0.5, placeholder: { type: "noise", cutoff: 6000, dur: 0.18 } },
+  // New noise sounds start quiet (see the paint.stroke note); raise to taste.
+  "spray.rattle":      { bus: "ambient", gain: 0.1, placeholder: { type: "noise", cutoff: 6000, dur: 0.18 } },
   "station.hover":     { bus: "ui", gain: 0.25, placeholder: { type: "tone", wave: "sine", freq: 880, dur: 0.06 } },
   "station.click":     { bus: "ui", gain: 0.6, placeholder: { type: "tone", wave: "triangle", freq: 1320, dur: 0.4 } },
   "palimpsest.thud":   { bus: "transition", variants: 3, voices: 6, gain: 0.7, placeholder: { type: "tone", wave: "sine", freq: 70, dur: 0.25 } },
@@ -53,6 +54,18 @@ export const semitonesToRate = (st: number) => 2 ** (st / 12);
 
 /** Procedural sounds are synthesized live, never loaded (spec §9.4). */
 export const PROCEDURAL_IDS = ["spray.hiss"] as const;
+
+/** spray.hiss (§9.4): looping white noise → highpass → bandpass → gain. The
+ *  gain follows nozzle speed every frame (audio/sprayHiss.ts). Started quiet,
+ *  like every noise sound here. */
+export const SPRAY_HISS = {
+  bus: "ambient",
+  /** Gain at full nozzle speed. */
+  gain: 0.08,
+  highpassHz: 1500,
+  bandpassHz: 4500,
+  bandpassQ: 0.8,
+} as const satisfies { bus: Bus; gain: number; highpassHz: number; bandpassHz: number; bandpassQ: number };
 
 /** Build-time discovery: "/assets-src/sounds/gate.select.m4a" → hashed URL. */
 const files = import.meta.glob("/assets-src/sounds/*.m4a", {
