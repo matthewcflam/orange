@@ -72,7 +72,7 @@ Finish and verify each milestone before starting the next. After each one, summa
 7. **Mobile / narrow screens**: the mockups are desktop only. Placeholder: fluid scaling with `clamp()` down to ~900px; below that, stack the columns and shrink the map. Ask before designing more.
 8. **About, Experience, ???, Inspo**: no mockups yet. Placeholders only.
 9. **Grey squares on home**: purely decorative, or placeholders for future content (images, a video)?
-10. **Real sound files**: the user will supply them; confirm the IDs in spec §9.6 match what they plan to record.
+10. ~~**Real sound files**~~ **Resolved:** the IDs in spec §9.6 are correct. The user likes the synthesized placeholder sounds (`src/audio/procedural.ts`, voiced in `config/sounds.ts`), so **keep them as the actual sounds**. Don't retune them, replace them or add files unless the user asks. They may still drop in real `.m4a` files later.
 11. **Grey square positions**: the home mockup and the transition mockups disagree. Placeholder: use the home mockup positions (spec §6.6).
 12. **Mango page content**: the mockup's first hero (world map) and link (`oysternews.xyz`) are copied from Oyster News. What are the real Mango hero, link and date?
 13. **Missing art**: world-map hero, Oyster News design artifacts, link underline stroke (see `ASSETS.md`). Placeholders until supplied.

@@ -26,7 +26,7 @@ None of these SVGs has element IDs. Reference paths by document order.
 
 ## Sounds (`assets-src/sounds/`)
 
-Empty for now. Files are discovered at build time (spec §9.5), so adding one needs no code change. Name each `<id>.m4a` (AAC), with variants as `<id>.<n>.m4a`, e.g. `gate.select.m4a`, `paint.stroke.1.m4a` … `paint.stroke.4.m4a`, `palimpsest.thud.1.m4a` … `.3`. IDs are in spec §9.6. Any ID without a file plays a synthesized placeholder.
+Empty for now. Files are discovered at build time (spec §9.5), so adding one needs no code change. Name each `<id>.m4a` (AAC), with variants as `<id>.<n>.m4a`, e.g. `gate.select.m4a`, `paint.stroke.1.m4a` … `paint.stroke.4.m4a`, `palimpsest.thud.1.m4a` … `.3`. IDs are in spec §9.6. Any ID without a file plays a synthesized placeholder. The user likes the synthesized sounds and wants to keep them, so no files are required. Add files only if the user supplies them.
 
 ## Missing (use labeled placeholders until supplied)
 
@@ -39,4 +39,3 @@ Empty for now. Files are discovered at build time (spec §9.5), so adding one ne
 | Oyster logo / "Oyster" wordmark | Oyster News | `06` top-right |
 | Link underline stroke (red-brown, ≈`#C8452F`) | all project pages | `06`–`07` bottom-right |
 | Real Mango hero #1, link and date | Mango | open question #12 |
-| Sound files (`.m4a`) | all | spec §9.6; placeholders are synthesized |
