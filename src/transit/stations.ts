@@ -81,7 +81,10 @@ function viewportInMockupPx() {
 export function layoutFor(name: LayoutName): Layout {
   if (name === "mini") return MINI;
   const vp = viewportInMockupPx();
-  return { ...FULL, endX: vp.w + 20, clipW: vp.w, clipH: vp.h };
+  // On viewports wider than the mockup, spread stations across the full
+  // width (same rule as --vx in global.css); sizes keep the uniform scale.
+  const sx = vp.w / 1440;
+  return { ...FULL, x: FULL.x.map((x) => x * sx), endX: vp.w + 20, clipW: vp.w, clipH: vp.h };
 }
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

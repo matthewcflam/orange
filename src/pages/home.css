@@ -6,7 +6,8 @@
 
 .home__smiley {
   position: absolute;
-  left: calc(1023 * var(--px));
+  /* Centre at mockup x 1171 on the stretched axis, so it stays over Inspo. */
+  left: calc(1171 * var(--vx) - 148.5 * var(--px));
   top: calc(42 * var(--px));
   width: calc(297 * var(--px));
 }

@@ -11,6 +11,11 @@
  */
 :root {
   --px: min(100vw / 1440, 100vh / 1024);
+  /* Horizontal position unit for home content that spans the width (map
+     stations, smiley, "who?"): stretches with the viewport, so a 16:9 screen
+     spreads the composition instead of leaving the right side empty. Use it
+     for x positions only; sizes stay in --px. */
+  --vx: calc(100vw / 1440);
 }
 
 html,

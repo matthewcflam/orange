@@ -43,13 +43,13 @@ Finish and verify each milestone before starting the next. After each one, summa
 |---|---|---|
 | 1 | Done. User confirmed all five fonts render. | `0ec6beb` |
 | 2 | Done. User confirmed sound works. | `147c368` |
-| 3 | Done, awaiting user check. | (this commit) |
+| 3 | Done. User verified; home map widened for wide screens. | `7f5f75e` |
 | 4 | **Next.** | |
 
 **Decisions made while building (these override the spec's approximations):**
 - **Colors**: sampled from the mockups into `tokens.css` (route `#0664DF`, mini-map border `#7C6C6C`, link underline `#BE4525`, Oyster circle `#D24F39`). `--color-station-active: #FFA62A` is used for both the mini-map current dot and the Palimpsest Phase 1 dot fill (the spec's `#F5B700` was unified into it).
 - **Sizes measured against mockup ink**: name 39px (spec said ~34), SOUND 60px, Muted 45px (spec said ~40). Gate and name block match `01-landing.png` within ~2px.
-- **Layout unit**: `--px: min(100vw / 1440, 100vh / 1024)` in `src/global.css`. Write mockup coordinates as `calc(N * var(--px))`. Mobile layout is still open question #7.
+- **Layout unit**: `--px: min(100vw / 1440, 100vh / 1024)` in `src/global.css`. Write mockup coordinates as `calc(N * var(--px))`. **Wide screens** (user-requested): home content that spans the width (map stations, smiley, later "who?") takes its *x positions* from `--vx: 100vw / 1440` (in the map: `layoutFor("full")` stretches station x the same way), so a 16:9 screen spreads out instead of leaving the right side empty. Sizes and y stay in `--px`; left-anchored chrome (name block, gate) stays in `--px`. Mobile layout is still open question #7.
 - **Mute toggle** mounts only after the gate (on the gate, SOUND/Muted is the choice).
 - **Files not listed in spec §3**: `src/global.css` (reset + layer classes), `src/chrome/` (`NameBlock.tsx` with `wip.svg` inlined via `?raw`, `MuteToggle.tsx`, `chrome.css`), `src/lib/prefs.ts` (`pref.sound`, storage wrapped in try/catch), `src/lib/tokens.ts` (`readToken()` to read CSS tokens from canvas/GSAP code). Pages add a `.css` beside the component (e.g. `gate/gate.css`).
 - **Transit map** (`src/transit/`): one SVG with a 1440×1024 viewBox; geometry for both layouts is in `stations.ts` (measured from `02` and `06`, labels within ~2px). The mini map is **not** a uniform scale of the full one and the route stays 10px thick in both, so the morph tweens that geometry (`lerpLayout`) instead of using Flip on the SVG. Labels are placed by cap-top, using Fragment Mono's cap ratio measured on a canvas. Station hrefs are real links (Projects → `/projects/oyster-news`).
