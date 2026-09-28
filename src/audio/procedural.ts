@@ -1,8 +1,8 @@
 /**
  * Procedural audio (spec §9.4, §9.5). Buffers are written sample by sample
  * with the AudioBuffer constructor, which needs no AudioContext, so all of this
- * is safe before the gate gesture. Live-synthesized sounds (spray hiss, tunnel
- * sweep) build their node graphs in later milestones on top of these buffers.
+ * is safe before the gate gesture. Live-synthesized sounds (the spray hiss)
+ * build their node graphs on top of these buffers.
  */
 import type { Placeholder } from "../config/sounds";
 
@@ -35,7 +35,7 @@ export function whiteNoise(seconds = 2): AudioBuffer {
 }
 
 /**
- * Seamlessly looping brown noise (tunnel rumble, drag grain). The tail is
+ * Seamlessly looping brown noise (drag grain). The tail is
  * crossfaded into the head so the loop point is continuous.
  */
 export function brownNoise(seconds = 3): AudioBuffer {

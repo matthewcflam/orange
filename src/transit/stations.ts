@@ -87,4 +87,16 @@ export function layoutFor(name: LayoutName): Layout {
   return { ...FULL, x: FULL.x.map((x) => x * sx), endX: vp.w + 20, clipW: vp.w, clipH: vp.h };
 }
 
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+export function lerpLayout(a: Layout, b: Layout, t: number): Layout {
+  const out = {} as Record<string, number | number[]>;
+  for (const key of Object.keys(a) as (keyof Layout)[]) {
+    const va = a[key];
+    const vb = b[key];
+    out[key] = Array.isArray(va) ? va.map((v, i) => lerp(v, (vb as number[])[i], t)) : lerp(va, vb as number, t);
+  }
+  return out as unknown as Layout;
+}
+
 export const stationY = (l: Layout, i: number) => (STATIONS[i].track === "upper" ? l.upperY : l.lowerY);

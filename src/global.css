@@ -89,10 +89,6 @@ canvas {
   pointer-events: none;
 }
 
-.layer--overlay {
-  z-index: 30;
-  pointer-events: none;
-}
 
 /* Interactive elements inside pass-through layers opt back in individually. */
 .interactive {

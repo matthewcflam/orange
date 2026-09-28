@@ -43,7 +43,6 @@ export async function waitForFonts(timeoutMs = FONTS.TIMEOUT_MS): Promise<void> 
       document.fonts.load(`1em "${FAMILY.name}"`),
       document.fonts.load(`1em "${FAMILY.station}"`),
       document.fonts.load(fontString(400, 16, FAMILY.body)),
-      document.fonts.load(fontString(900, 16, FAMILY.body)), // Palimpsest heavy weight
     ]),
     new Promise((resolve) => setTimeout(resolve, timeoutMs)),
   ]);

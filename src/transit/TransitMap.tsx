@@ -1,12 +1,12 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "../lib/gsap";
 import { STATIONS, routeFor } from "../config/routes";
-import { STATION } from "../config/timings";
+import { STATION, TEMP_NAV } from "../config/timings";
 import { STATION_HOVER_SEMITONES, semitonesToRate } from "../config/sounds";
 import { play } from "../audio/engine";
-import { isInputLocked, onNavClick, useRoute } from "../lib/router";
+import { onNavClick, useRoute } from "../lib/router";
 import { prefetchRoute } from "../lib/assets";
-import { CARD, LABEL_BASE_SIZE, type Layout, type LayoutName, layoutFor, stationY } from "./stations";
+import { CARD, LABEL_BASE_SIZE, type Layout, type LayoutName, layoutFor, lerpLayout, stationY } from "./stations";
 import "./transit.css";
 
 /** Fragment Mono cap height / font size, so labels can be placed by their
@@ -24,9 +24,7 @@ function getCapRatio(): number {
 /**
  * The single transit map (spec §4.1, §7.1, §8.4). Rendered once and never
  * unmounted; "full" on home, "mini" (grey card, top-left) everywhere else.
- * Geometry is driven imperatively from stations.ts. The layout swaps when the
- * route commits, which Palimpsest does while the screen is black (§8.4), so the
- * change is instant: nobody sees it, and the tunnel opens on the new layout.
+ * Geometry is driven imperatively from stations.ts so a morph never re-renders.
  * Hidden (CSS) until the gate → home timeline reveals it (gate/gateToHome.ts).
  */
 export default function TransitMap({ visible }: { visible: boolean }) {
@@ -42,8 +40,11 @@ export default function TransitMap({ visible }: { visible: boolean }) {
   const hitRefs = useRef<(SVGCircleElement | null)[]>([]);
   const focusRefs = useRef<(SVGCircleElement | null)[]>([]);
   const labelRefs = useRef<(SVGTextElement | null)[]>([]);
+  const shown = useRef<Layout | null>(null);
+  const morph = useRef<gsap.core.Tween | null>(null);
 
   const apply = (l: Layout) => {
+    shown.current = l;
     const line = lineRef.current!;
     line.setAttribute("d", `M${l.startX} ${l.upperY}H${l.x[1]}L${l.x[2]} ${l.lowerY}H${l.endX}`);
     line.setAttribute("stroke-width", String(l.lineWidth));
@@ -63,17 +64,34 @@ export default function TransitMap({ visible }: { visible: boolean }) {
     });
   };
 
-  // Layout: set on commit (at black), re-fit the full layout on resize.
+  // Layout: set on mount, morph on route change, re-fit the full layout on resize.
   useLayoutEffect(() => {
-    apply(layoutFor(layoutName));
-    const onResize = () => apply(layoutFor(layoutName));
+    const target = layoutFor(layoutName);
+    morph.current?.kill();
+    if (!shown.current) {
+      apply(target);
+    } else {
+      const from = shown.current;
+      const p = { t: 0 };
+      morph.current = gsap.to(p, {
+        t: 1,
+        duration: TEMP_NAV.MAP_MORPH,
+        ease: TEMP_NAV.MAP_MORPH_EASE,
+        onUpdate: () => apply(lerpLayout(from, target, p.t)),
+      });
+    }
+    const onResize = () => {
+      if (morph.current?.isActive()) return;
+      apply(layoutFor(layoutName));
+    };
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return () => {
+      morph.current?.kill();
+      window.removeEventListener("resize", onResize);
+    };
   }, [layoutName]);
 
   const hover = (i: number, on: boolean) => {
-    // Palimpsest owns the dots while it runs, and resets them afterwards.
-    if (isInputLocked()) return;
     gsap.to(dotRefs.current[i], {
       scale: on ? STATION.HOVER_SCALE : 1,
       duration: STATION.HOVER_DURATION,
@@ -107,7 +125,6 @@ export default function TransitMap({ visible }: { visible: boolean }) {
             return (
               <a
                 key={s.id}
-                data-station={s.id}
                 href={s.path}
                 className={`station interactive${isCurrent ? " station--current" : ""}`}
                 aria-current={isCurrent ? "page" : undefined}

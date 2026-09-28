@@ -2,7 +2,7 @@ import "./placeholders.css";
 
 /**
  * Placeholder page (spec §4.4): the mini map sits top-left (it's global), with
- * a centered "Coming soon" label, so Palimpsest can be tested on every station.
+ * a centered "Coming soon" label, so every station has a page to go to.
  */
 export default function ComingSoon({ title }: { title: string }) {
   return (

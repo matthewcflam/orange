@@ -9,7 +9,6 @@ import GreySquares from "./chrome/GreySquares";
 import MuteToggle from "./chrome/MuteToggle";
 import TransitMap from "./transit/TransitMap";
 import Outlet from "./pages/Outlet";
-import TransitionOverlay from "./transition/TransitionOverlay";
 import { useRoute } from "./lib/router";
 import { prefersReducedMotion } from "./lib/motion";
 
@@ -18,7 +17,6 @@ import { prefersReducedMotion } from "./lib/motion";
  *   z0  page layer        — swaps per route
  *   z10 shared chrome     — name block, gate options, grey squares, mute toggle
  *   z20 transit map       — one TransitMap, full ↔ mini
- *   z30 transition overlay — Palimpsest canvas + tunnel + light bleed
  *
  * The gate is a state, not a layer: while gatePhase !== "done" everything
  * outside the gate buttons is inert. The page mounts when the choice is made
@@ -85,7 +83,6 @@ export default function App() {
           <div className="layer layer--map" inert={gated}>
             <TransitMap visible={!gated} />
           </div>
-          <TransitionOverlay />
         </>
       )}
     </div>

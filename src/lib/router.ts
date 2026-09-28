@@ -50,7 +50,7 @@ export function useRoute(): string {
   return useSyncExternalStore(subscribe, getRoute);
 }
 
-/** Palimpsest registers itself here (main.tsx). */
+/** The page transition (transition/tempTransition.ts) registers itself here. */
 export function setTransitionRunner(fn: TransitionRunner): void {
   runner = fn;
 }

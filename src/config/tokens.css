@@ -23,16 +23,12 @@
   /* ---- Transit map ---- */
   --color-route:          #0664DF;  /* spec said ≈#0A64E0; sampled */
   --color-station-fill:   #FFFFFF;
-  --color-station-active: #FFA62A;  /* mini-map current dot, sampled. Spec's Palimpsest ≈#F5B700 unified to this */
+  --color-station-active: #FFA62A;  /* mini-map current dot, sampled */
   --color-minimap-card:   #D9D9D9;
   --color-minimap-border: #7C6C6C;  /* spec said ≈#7A6E6E; sampled */
 
   /* ---- Home ---- */
   --color-square: #D9D9D9;          /* grey paint-over squares */
-
-  /* ---- Palimpsest ---- */
-  --color-tunnel:      #000000;
-  --color-light-bleed: #FFFFFF;
 
   /* ---- Project pages ---- */
   --color-link-underline: #BE4525;  /* spec said ≈#C8452F; sampled. Asset missing */

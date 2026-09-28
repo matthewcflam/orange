@@ -5,7 +5,7 @@
  *   introSpray() at GATE.WHO_DELAY.
  * - Later arrivals: once the page transition finishes, respray faster.
  *   TODO(open-question #2): placeholder is a faster respray on every return.
- *   whenIdle() resolves after Palimpsest's tunnel exit.
+ *   whenIdle() resolves once the page transition has finished.
  * - Reduced motion: the finished picture, instantly and silently.
  */
 import { SPRAY } from "../config/timings";
