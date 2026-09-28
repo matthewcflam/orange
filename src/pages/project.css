@@ -46,6 +46,14 @@
   object-fit: cover;
 }
 
+/* --crop-top hides the top of the source (mango.png's window title bar):
+   the image grows by that fraction and slides up by it. */
+.project-hero picture {
+  display: block;
+  height: calc(100% / (1 - var(--crop-top)));
+  translate: 0 calc(-100% * var(--crop-top));
+}
+
 .project-hero--placeholder {
   display: flex;
   align-items: center;

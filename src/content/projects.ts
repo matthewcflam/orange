@@ -10,7 +10,14 @@ import mangoMineMotion from "../../assets-src/images/mango.png?hero";
 export type ProjectSlug = "oyster-news" | "mango" | "portfolio";
 
 export type Hero =
-  | { kind: "image"; picture: Picture; alt: string; height: number }
+  | {
+      kind: "image";
+      picture: Picture;
+      alt: string;
+      height: number;
+      /** Fraction of the source's height to hide at the top (window chrome). */
+      cropTop?: number;
+    }
   /** Art that hasn't been supplied yet (design/ASSETS.md "Missing"). */
   | { kind: "placeholder"; label: string; height: number };
 
@@ -55,7 +62,7 @@ export const PROJECTS: readonly Project[] = [
     heroes: [
       // TODO(open-question #12): the mockup's first hero is Oyster News's world map.
       { kind: "placeholder", label: "Mango hero (art missing)", height: 150 },
-      { kind: "image", picture: mangoMineMotion, alt: "MineMotion: webcam body tracking beside the Minecraft game it controls", height: 372 },
+      { kind: "image", picture: mangoMineMotion, alt: "MineMotion: webcam body tracking beside the Minecraft game it controls", height: 372, cropTop: 31 / 1028 },
     ],
     // TODO(open-question #12): real Mango copy, date and link.
     body: OYSTER_BODY,
@@ -67,7 +74,7 @@ export const PROJECTS: readonly Project[] = [
     title: "Portfolio",
     path: "/projects/portfolio",
     heroes: [],
-    // TODO(milestone 9): real Portfolio copy.
+    // TODO(open-question #14): real Portfolio copy, date and link.
     body: OYSTER_BODY,
     date: "Date: Aug. 2026 - Sept. 2026",
     link: null,

@@ -28,7 +28,7 @@ function ResponsivePicture({ picture, alt, eager }: { picture: Picture; alt: str
 
 function HeroBlock({ hero, eager }: { hero: Hero; eager: boolean }) {
   return (
-    <div className={`project-hero project-hero--${hero.kind}`} style={{ "--h": hero.height } as React.CSSProperties}>
+    <div className={`project-hero project-hero--${hero.kind}`} style={{ "--h": hero.height, "--crop-top": hero.kind === "image" ? (hero.cropTop ?? 0) : 0 } as React.CSSProperties}>
       {hero.kind === "image" ? (
         <ResponsivePicture picture={hero.picture} alt={hero.alt} eager={eager} />
       ) : (
