@@ -1,0 +1,127 @@
+/*
+ * Station pages (About, Experience, Projects), measured from
+ * design/mockups-v2 at 1767×1024. Text is placed by its cap top as in the
+ * mockups: with line-height 1, Inter's cap top sits 0.136em below the box top.
+ * Body copy is Inter 22.5/29 (cap top 6.3px below its line box's top).
+ */
+.station-page {
+  position: relative;
+  min-height: 100vh;
+}
+
+.station-page__title {
+  position: absolute;
+  left: calc(64 * var(--px));
+  top: calc((64 - 0.136 * 62) * var(--px));
+  margin: 0;
+  font-size: calc(62 * var(--px));
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* The title goes home. */
+.station-page__home {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.station-page__home:hover {
+  opacity: 0.7;
+}
+
+.station-page__home:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 4px;
+}
+
+/* The vertical line; trainDrop() grows it from its top. */
+.train-line {
+  position: absolute;
+  width: max(1px, calc(2 * var(--px)));
+  background: var(--color-divider);
+  will-change: transform;
+}
+
+/* Browser Inter sets ~4% wider than the mockup's; the tracking matches its
+   line breaks. */
+.station-copy {
+  font-size: calc(22.5 * var(--px));
+  line-height: calc(29 * var(--px));
+  letter-spacing: -0.02em;
+}
+
+.station-copy p {
+  margin: 0;
+}
+
+.station-copy p + p {
+  margin-top: calc(29 * var(--px));
+}
+
+/* ---- About ---- */
+.about__copy {
+  position: absolute;
+  left: calc(64 * var(--px));
+  top: calc((217 - 6.3) * var(--px));
+  width: calc(660 * var(--px));
+}
+
+.about__line {
+  left: calc(849 * var(--px));
+  top: calc(212 * var(--px));
+  bottom: 0;
+}
+
+/* ---- Experience (scrolls: the page is taller than the window) ---- */
+.experience {
+  min-height: max(100vh, calc(1532 * var(--px)));
+}
+
+.experience__line {
+  left: calc(339 * var(--px));
+  top: calc(192 * var(--px));
+  height: calc((1511 - 192) * var(--px));
+}
+
+.experience__row {
+  position: absolute;
+  left: 0;
+  top: calc((var(--y) - 0.136 * 22.5) * var(--px));
+  width: 100%;
+  font-size: calc(22.5 * var(--px));
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Dates end at x 265, right-aligned. */
+.experience__date {
+  position: absolute;
+  right: calc(100% - 265 * var(--px));
+  white-space: nowrap;
+}
+
+.experience__company {
+  position: absolute;
+  left: calc(var(--x) * var(--px));
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.experience__company:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 4px;
+}
+
+.experience__extras {
+  position: absolute;
+  left: calc(393 * var(--px));
+  top: calc((1279 - 0.136 * 30) * var(--px));
+  margin: 0;
+  font-size: calc(30 * var(--px));
+  font-weight: 700;
+  line-height: 1;
+}
