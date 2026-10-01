@@ -1,0 +1,103 @@
+/*
+ * The keychain (Keychain.tsx): the top-right 467×640 of
+ * design/mockups-v2/Menu Open (3).png, anchored to the viewport's top-right.
+ * Coordinates are mockup px in that box. It's a still picture; JS only
+ * moves the whole box (the drop) and blinks a bubble.
+ */
+.keychain {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(467 * var(--px));
+  height: calc(640 * var(--px));
+  will-change: transform;
+}
+
+/* The station key card, rotated -30° about its top-left corner. */
+.keychain__card {
+  position: absolute;
+  left: calc(68.1 * var(--px));
+  top: calc(141.7 * var(--px));
+  width: calc(560 * var(--px));
+  height: calc(287 * var(--px));
+  border-radius: calc(34 * var(--px));
+  overflow: hidden;
+  transform: rotate(-30deg);
+  transform-origin: 0 0;
+  pointer-events: auto;
+  color: var(--color-key-card-text);
+  /* Watercolour-paper grain: a static SVG noise tile, rasterized once. */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.43 0 0 0 0 0.38 0 0 0 0.11 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--color-key-card);
+  box-shadow: 0 calc(6 * var(--px)) calc(24 * var(--px)) rgb(0 0 0 / 0.35);
+}
+
+.keychain__route {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.keychain__route polyline {
+  fill: none;
+  stroke: var(--color-route);
+  stroke-width: 9;
+  stroke-linejoin: round;
+}
+
+.keychain__bubble {
+  fill: var(--color-key-bubble);
+  stroke: var(--color-route);
+  stroke-width: 3.5;
+}
+
+.keychain__bubble[data-here] {
+  fill: var(--color-key-here);
+}
+
+/* left is the label's right ink edge, top its baseline (Keychain.tsx STOPS). */
+.keychain__station {
+  position: absolute;
+  translate: -100% -0.864em;
+  font-size: calc(32 * var(--px));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* The bubble's hit area (home map hitR 28 around a 12 dot), centred on it. */
+.keychain__hit {
+  position: absolute;
+  width: calc(56 * var(--px));
+  height: calc(56 * var(--px));
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+
+.keychain__station[aria-current] {
+  cursor: default;
+}
+
+.keychain__station:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 4px;
+}
+
+.keychain__charm {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.keychain__charm img {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
