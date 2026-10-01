@@ -1,38 +1,112 @@
 /*
- * Project pages (spec §10). Mockup px at 1440×1024. Like home, x positions
- * that span the width use --vx (the column stays centred, the list and link
- * stay right), while sizes and y use --px.
+ * Projects station (design/mockups-v2: Portfolio, Oyster News, Mango).
+ * Left: the project list, right-aligned at x 280, and the line at x 348.
+ * Right: the active project's article in its own pane. The article was
+ * designed in the old 1440×1024 frame, so it uses --apx: one old mockup px,
+ * drawn at ARTICLE_SCALE (lib/frame.ts) × --px.
  */
 .project {
-  position: relative;
-  min-height: 100vh;
+  --apx: calc(1.1 * var(--px)); /* ARTICLE_SCALE */
 }
 
-/* Everything per project; the project switch crossfades this. Artifacts bleed
-   off the edges, so it clips (without becoming a scroll container). */
+/* ---- Left rail: the title, the list, its scribbles and the line stay on
+   screen; only the right pane scrolls. ---- */
+.project .station-page__title {
+  position: fixed;
+  z-index: 1; /* above the rail, which covers it */
+}
+
+.project__rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: calc(352 * var(--px));
+}
+
+/* ---- Project list ---- */
+.project-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Name and year, 22.5/29, right edge at x 280; --y is the name's cap top. */
+.project-list li {
+  position: absolute;
+  right: calc(100% - 280 * var(--px));
+  top: calc((var(--y) - 6.3) * var(--px));
+  text-align: right;
+}
+
+.project-list__link {
+  display: block;
+  font-size: calc(22.5 * var(--px));
+  line-height: calc(29 * var(--px));
+  letter-spacing: -0.02em;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.project-list__link:not([aria-current]):hover {
+  opacity: 0.7;
+}
+
+.project-list__link:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 4px;
+}
+
+/* The hand-drawn mark around the active project, at its mockup top-left. */
+.project-list__scribble {
+  position: absolute;
+  left: calc(var(--x) * var(--px));
+  top: calc(var(--y) * var(--px));
+  width: calc(var(--w) * var(--px));
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.project-list__scribble svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.project__line {
+  left: calc(348 * var(--px));
+  top: calc(187 * var(--px));
+  bottom: 0;
+}
+
+/* ---- Right pane: everything per project; the project switch crossfades
+   this. It clips at the line (without becoming a scroll container). ---- */
 .project__swap {
   position: relative;
+  margin-left: calc(352 * var(--px));
   min-height: 100vh;
   overflow: clip;
 }
 
-/* ---- Center column (§10.1): x 422–1022 (centre 722) ---- */
+/* ---- Article column: 600 article px, 422 from the pane's left edge (as
+   it was from the viewport's in the old frame), top level with the line ---- */
 .project__column {
   position: relative;
-  width: calc(600 * var(--px));
-  margin-left: calc(722 * var(--vx) - 300 * var(--px));
-  padding: calc(60 * var(--px)) 0 calc(80 * var(--px));
+  width: calc(600 * var(--apx));
+  margin-left: calc(422 * var(--apx));
+  padding: calc(187 * var(--px)) 0 calc(120 * var(--px));
 }
 
 .project__heroes {
   display: flex;
   flex-direction: column;
-  gap: calc(3 * var(--px));
+  gap: calc(3 * var(--apx));
 }
 
 .project-hero {
-  height: calc(var(--h) * var(--px));
-  border-radius: calc(30 * var(--px));
+  height: calc(var(--h) * var(--apx));
+  border-radius: calc(30 * var(--apx));
   overflow: hidden;
 }
 
@@ -63,7 +137,7 @@
 
 .project-hero__label {
   font-family: var(--font-station);
-  font-size: calc(14 * var(--px));
+  font-size: calc(14 * var(--apx));
   color: rgb(255 255 255 / 0.5);
 }
 
@@ -72,14 +146,14 @@
    stays left. Integer px (Pretext needs them; TextFlow also rounds), with a fallback. */
 .project__body,
 .project__date {
-  font-size: calc(15 * var(--px));
-  font-size: round(calc(15 * var(--px)), 1px);
-  line-height: calc(19 * var(--px));
-  line-height: round(calc(19 * var(--px)), 1px);
+  font-size: calc(15 * var(--apx));
+  font-size: round(calc(15 * var(--apx)), 1px);
+  line-height: calc(19 * var(--apx));
+  line-height: round(calc(19 * var(--apx)), 1px);
 }
 
 .project__body {
-  margin-top: calc(24 * var(--px));
+  margin-top: calc(24 * var(--apx));
   text-align: justify;
 }
 
@@ -89,68 +163,16 @@
 }
 
 .project__date {
-  margin-top: calc(61 * var(--px));
+  margin-top: calc(61 * var(--apx));
 }
 
-/* ---- Project list (right column) ---- */
-.project-list {
-  /* Inter size and line pitch in mockup px; --list-cap is the cap-top offset
-     inside a line box (Inter: ascent 0.969, descent 0.241, cap 0.727), so the
-     first cap top lands on the mockup's y 492. Browser Inter sets ~4% wider
-     than the mockup's, so size comes from cap height, width from tracking. */
-  --list-size: 34;
-  --list-line: 44;
-  --list-cap: calc((var(--list-line) - 1.21 * var(--list-size)) / 2 + 0.2415 * var(--list-size));
-  position: absolute;
-  left: calc(1122 * var(--vx));
-  top: calc((492 - var(--list-cap)) * var(--px));
-}
-
-.project-list ul {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.project-list__link {
-  display: inline-block;
-  font-size: calc(var(--list-size) * var(--px));
-  line-height: calc(var(--list-line) * var(--px));
-  letter-spacing: -0.015em;
-  color: inherit;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.project-list__link:focus-visible {
-  outline: 2px solid var(--color-route);
-  outline-offset: 2px;
-}
-
-/* Positioned against the <ul> in mockup px (the <li> isn't positioned). */
-.project-list__scribble {
-  position: absolute;
-  left: calc((var(--x) - 1122) * var(--px));
-  top: calc((var(--y) - 492 + var(--list-cap)) * var(--px));
-  width: calc(var(--w) * var(--px));
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.project-list__scribble svg {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-/* ---- External link, bottom-right ---- */
+/* ---- External link, under the date ---- */
 .project-link {
   --link-size: 22.5;
-  position: absolute;
-  right: calc(84 * var(--vx));
-  top: calc(933 * var(--px));
-  font-size: calc(var(--link-size) * var(--px));
+  position: relative;
+  display: inline-block;
+  margin-top: calc(40 * var(--apx));
+  font-size: calc(var(--link-size) * var(--apx));
   font-weight: 600;
   line-height: 1.2;
   color: inherit;
@@ -163,13 +185,13 @@
   outline-offset: 4px;
 }
 
-/* Ink spans mockup x 1057–1397, y 968–982: 37px left of the text. */
+/* The underline starts 37px left of the text, as in the old mockup. */
 .project-link__underline {
   position: absolute;
-  left: calc(-37.5 * var(--px));
-  top: calc(35 * var(--px));
-  width: calc(344 * var(--px));
-  height: calc(18 * var(--px));
+  left: calc(-37.5 * var(--apx));
+  top: calc(35 * var(--apx));
+  width: calc(344 * var(--apx));
+  height: calc(18 * var(--apx));
   overflow: visible;
   pointer-events: none;
 }
@@ -181,30 +203,10 @@
   stroke-linecap: round;
 }
 
-/* ---- Design artifacts (Artifacts.tsx) ---- */
-.artifacts {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.artifact {
-  position: absolute;
-  top: calc(var(--y) * var(--px));
-}
-
-.artifact--left {
-  left: calc(var(--x) * var(--px));
-}
-
-.artifact--right {
-  left: calc(100% - (1440 - var(--x)) * var(--px));
-}
-
 /* ---- Portfolio hero: two circles (08-projects-portfolio.png) ---- */
 .portfolio-hero {
   position: relative;
-  height: calc(466 * var(--px));
+  height: calc(466 * var(--apx));
 }
 
 .portfolio-hero span {
@@ -214,18 +216,18 @@
 }
 
 .portfolio-hero__back {
-  left: calc(205.5 * var(--px));
-  top: calc(253.5 * var(--px));
-  width: calc(343 * var(--px));
-  height: calc(343 * var(--px));
+  left: calc(205.5 * var(--apx));
+  top: calc(253.5 * var(--apx));
+  width: calc(343 * var(--apx));
+  height: calc(343 * var(--apx));
   background: var(--color-portfolio-grey);
 }
 
 .portfolio-hero__front {
-  left: calc(298 * var(--px));
-  top: calc(253.5 * var(--px));
-  width: calc(380 * var(--px));
-  height: calc(380 * var(--px));
+  left: calc(298 * var(--apx));
+  top: calc(253.5 * var(--apx));
+  width: calc(380 * var(--apx));
+  height: calc(380 * var(--apx));
   background: var(--color-orange);
 }
 

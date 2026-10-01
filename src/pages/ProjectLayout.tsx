@@ -1,42 +1,46 @@
-import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { gsap } from "../lib/gsap";
 import { onNavClick } from "../lib/router";
 import { prefetchRoute } from "../lib/assets";
 import { whenPageShown } from "../lib/pageReveal";
 import { prefersReducedMotion } from "../lib/motion";
+import { play } from "../audio/engine";
 import { PROJECT } from "../config/timings";
 import { PROJECTS, type ProjectSlug } from "../content/projects";
-import oysterScribble from "../../assets-src/svg/oyster-scribble.svg?raw";
-import mangoScribble from "../../assets-src/svg/mango-scribble.svg?raw";
-import portfolioScribble from "../../assets-src/svg/portfolio-scribble.svg?raw";
+import StationLayout from "./StationLayout";
+import TrainLine from "./TrainLine";
+import portfolioScribble from "../../assets-src/svg/new-portfolio.svg?raw";
+import oysterScribble from "../../assets-src/svg/new-oyster.svg?raw";
+import mangoScribble from "../../assets-src/svg/new-mango.svg?raw";
 import "./project.css";
 
-/** Hand-drawn mark on the active project (design/ASSETS.md): an ellipse
- *  around Oyster News and Mango, a squiggle under Portfolio. x/y are the SVG's
- *  top-left in mockup px (06–08), drawn 1:1. */
-const SCRIBBLES: Record<ProjectSlug, { svg: string; x: number; y: number; w: number }> = {
-  "oyster-news": { svg: oysterScribble, x: 1076, y: 482, w: 282 },
-  mango: { svg: mangoScribble, x: 1090, y: 513, w: 173 },
-  portfolio: { svg: portfolioScribble, x: 1124, y: 613, w: 119 },
+/** The project list (design/mockups-v2 Portfolio/Oyster News/Mango): each
+ *  item's name cap top in mockup px, and the hand-drawn mark around it when
+ *  active (x/y: the SVG's top-left, drawn 1:1). */
+const ITEMS: Record<ProjectSlug, { y: number; scribble: { svg: string; x: number; y: number; w: number } }> = {
+  portfolio: { y: 249, scribble: { svg: portfolioScribble, x: 93, y: 196, w: 212 } },
+  "oyster-news": { y: 562, scribble: { svg: oysterScribble, x: 93, y: 531, w: 224 } },
+  mango: { y: 874, scribble: { svg: mangoScribble, x: 139, y: 844, w: 180 } },
 };
 
 /**
- * Shared shell for the project pages (spec §10.1). The mini map is global
- * chrome. The project list stays mounted while projects switch; everything
- * per project (column, link, artifacts) sits in `.project__swap`, which the
- * transition crossfades (transition/tempTransition.ts).
+ * Shell of the Projects station: the title, the project list left of the
+ * line, and the active project's media right of it. The shell stays mounted
+ * while projects switch; everything per project sits in `.project__swap`,
+ * which the transition crossfades (transition/pageTransition.ts). The line
+ * drops in once, when the page opens.
  */
 export default function ProjectLayout({ active, children }: { active: ProjectSlug; children: ReactNode }) {
-  const listRef = useRef<HTMLUListElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const shown = useRef<ProjectSlug | null>(null);
 
   // Scribble: the previous one fades, the active one draws in once the page
   // is on screen (immediately on a project switch).
   useLayoutEffect(() => {
-    const q = gsap.utils.selector(listRef);
-    const current = q(`[data-slug="${active}"]`)[0];
+    const q = gsap.utils.selector(rootRef);
+    const current = q(`.project-list__scribble[data-slug="${active}"]`)[0];
     const path = current.querySelector("path");
-    const prev = shown.current && shown.current !== active ? q(`[data-slug="${shown.current}"]`)[0] : null;
+    const prev = shown.current && shown.current !== active ? q(`.project-list__scribble[data-slug="${shown.current}"]`)[0] : null;
     shown.current = active;
 
     const tweens: gsap.core.Tween[] = [];
@@ -62,37 +66,49 @@ export default function ProjectLayout({ active, children }: { active: ProjectSlu
   }, [active]);
 
   return (
-    <div className="project">
-      <div className="project__swap">{children}</div>
-
-      <nav className="project-list" aria-label="Projects">
-        <ul ref={listRef}>
+    <StationLayout title="Projects" className="project">
+      <div ref={rootRef} className="project__rail">
+        <nav className="project-list" aria-label="Projects">
+          <ul>
+            {PROJECTS.map((p) => {
+              const isActive = p.slug === active;
+              return (
+                <li key={p.slug} style={{ "--y": ITEMS[p.slug].y } as CSSProperties}>
+                  <a
+                    href={p.path}
+                    className="project-list__link"
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={(e) => (isActive ? e.preventDefault() : onNavClick(e, p.path))}
+                    onPointerEnter={(e) => {
+                      prefetchRoute(p.path);
+                      if (!isActive && e.pointerType !== "touch") play("link.hover");
+                    }}
+                  >
+                    {p.listTitle}
+                    <br />
+                    {p.year}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
           {PROJECTS.map((p) => {
-            const isActive = p.slug === active;
-            const s = SCRIBBLES[p.slug];
+            const s = ITEMS[p.slug].scribble;
             return (
-              <li key={p.slug}>
-                <a
-                  href={p.path}
-                  className="project-list__link"
-                  aria-current={isActive ? "page" : undefined}
-                  onClick={(e) => (isActive ? e.preventDefault() : onNavClick(e, p.path))}
-                  onPointerEnter={() => prefetchRoute(p.path)}
-                >
-                  {p.title}
-                </a>
-                <span
-                  className="project-list__scribble"
-                  data-slug={p.slug}
-                  aria-hidden="true"
-                  style={{ "--x": s.x, "--y": s.y, "--w": s.w } as React.CSSProperties}
-                  dangerouslySetInnerHTML={{ __html: s.svg }}
-                />
-              </li>
+              <span
+                key={p.slug}
+                className="project-list__scribble"
+                data-slug={p.slug}
+                aria-hidden="true"
+                style={{ "--x": s.x, "--y": s.y, "--w": s.w } as CSSProperties}
+                dangerouslySetInnerHTML={{ __html: s.svg }}
+              />
             );
           })}
-        </ul>
-      </nav>
-    </div>
+        </nav>
+        <TrainLine className="project__line" />
+      </div>
+      <div className="project__swap">{children}</div>
+    </StationLayout>
   );
 }

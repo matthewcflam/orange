@@ -1,6 +1,8 @@
 /**
- * Per-project copy and media (spec §10). Sizes are mockup px (1440×1024).
- * Page-specific extras (design artifacts, obstacles, the Portfolio circles)
+ * Per-project copy and media (spec §10). Sizes are article px: the article
+ * was designed in the old 1440×1024 frame and is drawn at ARTICLE_SCALE
+ * (lib/frame.ts) in the right pane of the Projects page.
+ * Page-specific extras (obstacles, the Portfolio circles)
  * live with each page in pages/projects/.
  */
 import type { Picture } from "../lib/assets";
@@ -24,6 +26,9 @@ export type Hero =
 export interface Project {
   slug: ProjectSlug;
   title: string;
+  /** Name in the Projects list (design/mockups-v2). */
+  listTitle: string;
+  year: string;
   path: string;
   /** Stacked in the center column, 600 wide. Empty = the page draws its own. */
   heroes: Hero[];
@@ -41,10 +46,25 @@ const OYSTER_BODY = [
   "I read the news. It got to the point I would wonder what else was going on in the world.",
 ];
 
+/** List order (design/mockups-v2): Portfolio, Oyster News, Mango. */
 export const PROJECTS: readonly Project[] = [
+  {
+    slug: "portfolio",
+    title: "Portfolio",
+    listTitle: "This Portfolio",
+    year: "2026",
+    path: "/projects/portfolio",
+    heroes: [],
+    // TODO(open-question #14): real Portfolio copy, date and link.
+    body: OYSTER_BODY,
+    date: "Date: Aug. 2026 - Sept. 2026",
+    link: null,
+  },
   {
     slug: "oyster-news",
     title: "Oyster News",
+    listTitle: "Oyster News",
+    year: "2026",
     path: "/projects/oyster-news",
     heroes: [
       // TODO(open-question #13): world news map hero is missing.
@@ -58,6 +78,8 @@ export const PROJECTS: readonly Project[] = [
   {
     slug: "mango",
     title: "Mango",
+    listTitle: "Mango",
+    year: "2026",
     path: "/projects/mango",
     heroes: [
       // TODO(open-question #12): the mockup's first hero is Oyster News's world map.
@@ -65,16 +87,6 @@ export const PROJECTS: readonly Project[] = [
       { kind: "image", picture: mangoMineMotion, alt: "MineMotion: webcam body tracking beside the Minecraft game it controls", height: 372, cropTop: 31 / 1028 },
     ],
     // TODO(open-question #12): real Mango copy, date and link.
-    body: OYSTER_BODY,
-    date: "Date: Aug. 2026 - Sept. 2026",
-    link: null,
-  },
-  {
-    slug: "portfolio",
-    title: "Portfolio",
-    path: "/projects/portfolio",
-    heroes: [],
-    // TODO(open-question #14): real Portfolio copy, date and link.
     body: OYSTER_BODY,
     date: "Date: Aug. 2026 - Sept. 2026",
     link: null,

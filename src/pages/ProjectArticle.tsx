@@ -38,7 +38,7 @@ function HeroBlock({ hero, eager }: { hero: Hero; eager: boolean }) {
   );
 }
 
-/** External link, bottom-right, with a hand-drawn underline that redraws on
+/** External link, under the date, with a hand-drawn underline that redraws on
  *  hover (§10.1). TODO(open-question #13): the underline stroke art is
  *  missing; this path is a placeholder shaped like the mockup's. */
 function ProjectLink({ href, label }: { href: string; label: string }) {
@@ -70,8 +70,8 @@ function ProjectLink({ href, label }: { href: string; label: string }) {
 }
 
 /**
- * A project's content inside the shell: the center column (heroes, body,
- * date) and the external link. `hero` replaces the image stack (Portfolio
+ * A project's content in the right pane: the column (heroes, body, date,
+ * external link). `hero` replaces the image stack (Portfolio
  * draws its own). With an `obstacle`, the body flows around it (§11).
  */
 export default function ProjectArticle({ project, hero, obstacle }: { project: Project; hero?: ReactNode; obstacle?: ObstacleDef }) {
@@ -79,7 +79,7 @@ export default function ProjectArticle({ project, hero, obstacle }: { project: P
   return (
     <>
       <article className="project__column">
-        <h1 className="visually-hidden">{project.title}</h1>
+        <h2 className="visually-hidden">{project.title}</h2>
         {hero ?? (
           <div className="project__heroes">
             {project.heroes.map((h, i) => (
@@ -97,8 +97,8 @@ export default function ProjectArticle({ project, hero, obstacle }: { project: P
           </div>
         )}
         <p className="project__date">{project.date}</p>
+        {project.link && <ProjectLink {...project.link} />}
       </article>
-      {project.link && <ProjectLink {...project.link} />}
     </>
   );
 }

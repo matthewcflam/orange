@@ -1,5 +1,5 @@
 /**
- * Page image preload/decode (spec §10.3). Station and project-list hover call
+ * Page code and image preload/decode (spec §10.3). Station and project-list hover call
  * prefetchRoute(); the page transition awaits preloadRoute() before it swaps
  * the page in, so heroes are decoded by the time they're shown.
  */
@@ -12,8 +12,8 @@ export interface Picture {
   img: { src: string; w: number; h: number };
 }
 
-/** Rendered width of a 600-mockup-px hero: 600 × --px (global.css). */
-export const HERO_SIZES = "(min-aspect-ratio: 1440/1024) 58.6vh, 41.7vw";
+/** Rendered width of a hero: 600 article px = 660 × --px (project.css, global.css). */
+export const HERO_SIZES = "(min-aspect-ratio: 1767/1024) 64.5vh, 37.4vw";
 
 /** Above-the-fold images per route. */
 function routeImages(path: string): Picture[] {
@@ -47,9 +47,13 @@ function load(pic: Picture): Promise<void> {
   return p;
 }
 
-/** Fetch and decode a route's images. Never rejects. */
+/** The Projects page chunk (pages/Outlet.tsx lazy-loads it). */
+export const loadProjects = () => import("../pages/projects/Projects");
+
+/** Fetch a route's code and decode its images. Never rejects. */
 export function preloadRoute(path: string): Promise<void> {
-  return Promise.all(routeImages(path).map(load)).then(() => undefined);
+  const code = projectByPath(path) ? loadProjects().then(() => undefined, () => undefined) : null;
+  return Promise.all([...routeImages(path).map(load), code]).then(() => undefined);
 }
 
 /** Start fetching a route's images. Cheap to call repeatedly (hover). */

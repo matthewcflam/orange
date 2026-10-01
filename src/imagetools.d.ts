@@ -7,3 +7,7 @@ declare module "*?obstacle" {
   const picture: import("./lib/assets").Picture;
   export default picture;
 }
+declare module "*?charm" {
+  const picture: import("./lib/assets").Picture;
+  export default picture;
+}
