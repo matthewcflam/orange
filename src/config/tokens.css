@@ -1,6 +1,7 @@
 /*
  * Design tokens: every color and font stack lives here.
- * Colors were sampled from design/mockups/ at 1440×1024 unless noted.
+ * Colors were sampled from design/mockups-v2/ (1767×1024) unless noted;
+ * older ones from design/mockups-v1/.
  * TS code that needs a color at runtime (canvas, GSAP) reads it with
  * readToken() from src/lib/tokens.ts, so there is one source of truth.
  */
@@ -8,28 +9,48 @@
   /* ---- Fonts (spec §5). Family names must match Fontsource exactly. ---- */
   --font-body:    "Inter Variable", system-ui, sans-serif;
   --font-name:    "Inter Variable", system-ui, sans-serif;
-  --font-serif:   "Newsreader Variable", Georgia, serif; /* Oyster News artifacts */
   --font-station: "Fragment Mono", ui-monospace, monospace;
   --font-sound:   "Inter Variable", system-ui, sans-serif;
   --font-muted:   "Inter Variable", system-ui, sans-serif;
 
-  /* ---- Base ---- */
-  --color-bg:   #FFFFFF;
-  --color-text: #000000;
+  /* ---- Base: --color-bg / --color-text follow data-theme (global.css) ---- */
+  --color-home-bg:      #FFFFF8;  /* home and the gate */
+  --color-home-text:    #000000;
+  --color-station-bg:   #212121;  /* About, Experience, Projects */
+  --color-station-text: #FFFFFF;
+  --color-divider:      #909090;  /* the station pages' vertical line */
 
   /* ---- Brand ---- */
-  --color-orange: #FF7700;          /* wip, "who?", scribbles, Portfolio hero */
-  --color-green:  #41AE55;          /* smiley */
+  --color-orange: #FF7700;          /* "who?", scribbles, Portfolio hero */
 
   /* ---- Transit map ---- */
   --color-route:          #0664DF;  /* spec said ≈#0A64E0; sampled */
   --color-station-fill:   #FFFFFF;
   --color-station-active: #FFA62A;  /* mini-map current dot, sampled */
-  --color-minimap-card:   #D9D9D9;
-  --color-minimap-border: #7C6C6C;  /* spec said ≈#7A6E6E; sampled */
+
+  /* ---- Page transition (2xa.studio dither cover) ----
+     The cover is the opposite of the page being left: dark leaving home,
+     light leaving a station page. Each matches the page it reveals or covers. */
+  --color-cover-dark:        var(--color-station-bg);
+  --color-cover-light:       var(--color-home-bg);
+  --color-transition-accent: var(--color-route); /* 2xa uses its blue */
+  --font-transition: "Inter Variable", system-ui, sans-serif;
+
+  /* ---- Station chrome ---- */
+  --color-map-pill:      #D9D9D9;
+  --color-map-pill-text: #000000;
+  --color-map-open:      #000000;  /* the pill while the keychain is open */
+  --color-map-open-text: #FFFFFF;
+  --color-bubble:        #FF7700;  /* speech bubble, from speech.svg */
+  --color-bubble-text:   #FFFFFF;
+
+  /* ---- Keychain (keychain/) ---- */
+  --color-key-card:        #F8F7F2;  /* the station key card, sampled */
+  --color-key-card-text:   #000000;
+  --color-key-bubble:      #FFFFFF;  /* station bubbles, measured */
+  --color-key-here:        #FF61F4;  /* the current station's bubble (user's pink) */
 
   /* ---- Home ---- */
-  /* Screen door (LCD close-up), after the user's reference photo */
 
   /* ---- Project pages ---- */
   --color-link-underline: #BE4525;  /* spec said ≈#C8452F; sampled. Asset missing */
@@ -39,16 +60,4 @@
   --color-portfolio-grey: #77736F;  /* Portfolio hero back circle, sampled */
   --color-hero-placeholder: #172131; /* missing world-map hero: its ocean, sampled */
 
-  /* ---- Oyster News artifacts (CSS stand-ins for missing art), sampled from 06 ---- */
-  --color-oyster-card:        #E08475; /* "VERY important headline" card */
-  --color-oyster-tri-light:   #FFCCBF;
-  --color-oyster-tri-dark:    #ECB7A9;
-  --color-oyster-grey:        #7F7F7F; /* "News", "Oyster" logo, clipping text */
-  --color-oyster-lavender:    #A6A5C6; /* the "…er" of the wordmark */
-  --color-oyster-clip-bg:     #F3F2F2;
-  --color-oyster-clip-border: #4E4D8F;
-  --color-oyster-pearl:       #D48AE6;
-  --color-oyster-pearl-hi:    #EBC8D6;
-  --color-oyster-logo-card:      #E8AA9E;
-  --color-oyster-logo-card-edge: #D39A93;
 }

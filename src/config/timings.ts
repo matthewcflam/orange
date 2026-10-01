@@ -34,8 +34,6 @@ export const GATE = {
   STATION_FADE_DURATION: 0.4,
   STATION_SETTLE_PX: 6,
   STATION_EASE: "power2.out",
-  SMILEY_IN: 1.0,
-  SMILEY_IN_DURATION: 0.8,
   /** Measured from the click (user-confirmed). If it becomes "2s after the
    *  stations finish", the timeline position becomes ">+2". */
   WHO_DELAY: 2.0,
@@ -44,7 +42,7 @@ export const GATE = {
   DEEP_LINK_FADE: 0.4,
 } as const;
 
-/** "who?" spray engine (§7.2). Distances are mockup px (1440×1024 frame),
+/** "who?" spray engine (§7.2). Distances are mockup px (the 1767×1024 frame),
  *  which are also the units of who-spray.svg. */
 export const SPRAY = {
   /** The whole spray, lead to last drip, lasts this long. The timings below
@@ -98,6 +96,18 @@ export const SPRAY = {
   HISS_FLOOR: 0.4,
 } as const;
 
+/** Home: the "email copied to clipboard!" toast by the icons. */
+export const HOME = {
+  TOAST_IN: 0.25,
+  TOAST_EASE: "power2.out",
+  TOAST_RISE_PX: 6,
+  TOAST_HOLD: 1.6,
+  TOAST_OUT: 0.4,
+  /** The bio and icons fade in after the gate, with the map's labels. */
+  BIO_IN: 0.8,
+  BIO_IN_DURATION: 0.6,
+} as const;
+
 /** Shared chrome visibility (§4.1). */
 export const CHROME = {
   /** Name block fades out off home and back in on home. */
@@ -105,19 +115,122 @@ export const CHROME = {
 } as const;
 
 /**
- * TEMPORARY (milestone 3): page swap between stations. Page fades out, map
- * morphs visibly, page fades in.
+ * Page transition between pages (transition/pageTransition.ts), copied from
+ * 2xa.studio: a cover dithers in over everything, "Now arriving at: <name>"
+ * scramble-types on it, the page swaps underneath, then the cover dithers away
+ * bottom to top. The cover is dark leaving home, light leaving a station page.
+ * Defaults are 2xa's own values.
  */
-export const TEMP_NAV = {
-  OUT: 0.2,
-  IN: 0.3,
-  MAP_MORPH: 0.6,
-  MAP_MORPH_EASE: "power3.inOut",
+export const TRANSITION = {
+  /** Cover fills in (progress 0 → 1). expo.out: ~90% covered by 0.35s. */
+  SHOW: 1,
+  SHOW_EASE: "expo.out",
+  /** Cover stays solid after the page swap, before clearing. */
+  HOLD: 1,
+  /** Cover clears (progress 1 → 0). expo.out: mostly gone by ~0.8s. */
+  HIDE: 3,
+  HIDE_EASE: "expo.out",
+  /** Input unlocks once the clearing cover's progress drops below this. */
+  UNLOCK_PROGRESS: 0.05,
+
+  // ---- Dither shader (2xa's uniforms) ----
+  /** Simplex noise frequency of the wipe edge (aspect-corrected). */
+  NOISE_FREQ: 0.5,
+  /** How far the noise pushes the edge, in screen heights. */
+  NOISE_STRENGTH: 0.8,
+  /** Half-width of the dithered band, in screen heights. Wider = more dots. */
+  EDGE_SMOOTH: 1.0,
+  /** Bayer dither cell, device px. */
+  DITHER_PX: 3,
+  /** Optional chunky pixelation of the whole field, CSS px (0 = off). */
+  PIXEL_SIZE: 0,
+  MAX_DPR: 2,
+
+  // ---- Title scramble (2xa's typer) ----
+  TITLE_FPS: 20,
+  /** Scramble variants each character passes through on its way in/out. */
+  TITLE_CYCLES: 3,
+  /** Fraction of the type-in spent scrambling (the rest is staggered starts). */
+  TITLE_CYCLE_LENGTH: 0.5,
+
+  /** Reduced motion: the cover just fades in and out. */
+  REDUCED_FADE: 0.2,
+
+  // ---- Under the cover ----
   /** The page swap waits up to this long for the next page's images (§10.3). */
   PRELOAD_MAX_MS: 800,
 } as const;
 
-/** Station hover/click on either map layout (§7.3). */
+/**
+ * The vertical lines on station pages drop in like a train leaving a station
+ * (lib/trainLine.ts): they accelerate, cruise at top speed, then brake.
+ * Distances are mockup px, so the feel doesn't change with the window size;
+ * a longer line (Experience) cruises for longer.
+ */
+export const LINE = {
+  /** Acceleration and braking, mockup px/s². */
+  ACCEL_PX_S2: 1500,
+  /** Top speed, mockup px/s. */
+  TOP_SPEED_PX_S: 900,
+  /** After the page starts to appear, before the line sets off. */
+  DELAY: 0.15,
+} as const;
+
+/** Station-page chrome: the Map pill (top-right). */
+export const MAP_BUTTON = {
+  /** portfolio-scribble.svg draws under "Map" on hover, undraws on leave. */
+  SCRIBBLE_DRAW: 0.4,
+  SCRIBBLE_UNDRAW: 0.25,
+  SCRIBBLE_EASE: "power2.out",
+  /** Pill colour change between Map and Close. */
+  COLOR: 0.2,
+} as const;
+
+/**
+ * The orange speech bubble from "Matthew Lam" (chrome/SpeechBubble.tsx),
+ * animated like the iPhone's Dynamic Island: it springs out of a small pill
+ * at the tail, resizes to each new line, and shrinks back to the pill.
+ */
+export const SPEECH = {
+  /** It always closes this long after the latest line. */
+  HOLD: 5,
+  /** The collapsed pill it grows from and shrinks to, mockup px. */
+  PILL_W_PX: 44,
+  PILL_H_PX: 18,
+  OPEN: 0.55,
+  OPEN_EASE: "back.out(1.7)",
+  /** Resizing to a new line while open. */
+  RESIZE: 0.45,
+  RESIZE_EASE: "back.out(1.4)",
+  CLOSE: 0.35,
+  CLOSE_EASE: "power3.in",
+  /** Text fades in this far into the open/resize, and out before a resize. */
+  TEXT_IN_DELAY: 0.12,
+  TEXT_IN: 0.25,
+  TEXT_OUT: 0.12,
+  /** The tail pops after the body starts growing. */
+  TAIL_DELAY: 0.08,
+  TAIL: 0.35,
+  /** After the first station visit's cover starts clearing, before
+   *  "Click the title to go home!". */
+  FIRST_VISIT_DELAY: 0.8,
+} as const;
+
+/**
+ * The keychain the Map pill opens (keychain/): a static picture
+ * (design/mockups-v2/Menu Open (3).png) that drops in from above as one piece.
+ */
+export const KEYCHAIN = {
+  /** Open: the keychain slides in diagonally from the top-right corner,
+   *  SLIDE_PX (mockup px) along each axis; close: it slides back out. */
+  SLIDE_PX: 500,
+  OPEN: 0.8,
+  OPEN_EASE: "power3.out",
+  CLOSE: 0.45,
+  CLOSE_EASE: "power2.in",
+} as const;
+
+/** Station hover/click on the home map (§7.3). */
 export const STATION = {
   HOVER_SCALE: 1.25,
   HOVER_DURATION: 0.25,
@@ -131,8 +244,8 @@ export const PROJECT = {
   SCRIBBLE_EASE: "power2.inOut",
   /** The previous project's scribble fades out. */
   SCRIBBLE_OUT: 0.2,
-  /** Placeholder project switch crossfade (§15 #3): the center column, link
-   *  and artifacts fade out drifting up, then fade in rising from below. */
+  /** Placeholder project switch crossfade (§15 #3): the center column and
+   *  link fade out drifting up, then fade in rising from below. */
   SWITCH_OUT: 0.35,
   SWITCH_IN: 0.45,
   SWITCH_OFFSET_PX: 8,
@@ -141,11 +254,6 @@ export const PROJECT = {
   /** Link underline redraws on hover. */
   LINK_UNDERLINE_DRAW: 0.4,
   LINK_UNDERLINE_EASE: "power2.out",
-  /** Mouse parallax on design artifacts: an artifact at depth 1 moves up to
-   *  PARALLAX_MAX_PX (mockup px) against the pointer. */
-  PARALLAX_MAX_PX: 12,
-  PARALLAX_SMOOTHING: 0.6,
-  PARALLAX_EASE: "power3",
 } as const;
 
 /** Obstacle text (§11). Distances are mockup px (scaled with the column). */
@@ -170,77 +278,6 @@ export const OBSTACLE = {
   GRAIN_FULL_SPEED_PX: 1500,
   GRAIN_TIME_CONSTANT: 0.05,
   GRAIN_FADE: 0.15,
-} as const;
-
-/** Screen door: the page as a close-up LCD panel, over home and the minimap
- *  (fx/screenDoorEngine.ts). Strengths are 0–1; distances are mockup px. */
-export const SCREEN_DOOR = {
-  /** Pixel pitch in CSS px: one R, G and B column each, plus a gap row. */
-  PITCH_PX: 3,
-  /** Subpixel grid strength. */
-  STRENGTH: 0.08,
-  /** Darkening of the gap row between pixels. */
-  GAP: 0.04,
-  /** Per-frame grain (darkening, 0–1). */
-  GRAIN: 0.01,
-  /** Pointer: the grid shows more strongly within this Gaussian radius. */
-  CURSOR_RADIUS_PX: 180,
-  CURSOR_STRENGTH: 0.12,
-  /** The patch trails the pointer by roughly this long. */
-  CURSOR_LAG: 0.6,
-  /** Patch fades in/out when the pointer enters/leaves the window. */
-  CURSOR_FADE: 0.4,
-  /** Fades in with the route after the gate (and with a deep-linked page). */
-  FADE_IN: 0.8,
-
-  // ---- Shimmer (a retro panel that never sits still) ----
-  /** A soft refresh bar rolling top → bottom: seconds per pass, height, and
-   *  how much it darkens / strengthens the grid. */
-  SHIMMER_BAR_PERIOD: 7,
-  SHIMMER_BAR_HEIGHT_PX: 160,
-  SHIMMER_BAR_STRENGTH: 0.05,
-  /** Each pixel row's darkening jitters every frame by up to this much. */
-  SHIMMER_FLICKER: 0.012,
-  /** Fraction of pixels glinting at any moment, and how long a glint lasts. */
-  SHIMMER_SPARKLE: 0.001,
-  SHIMMER_SPARKLE_S: 0.12,
-  /** How dark a glinting pixel's subpixels get. */
-  SHIMMER_SPARKLE_STRENGTH: 0.07,
-
-  // ---- "who?" spray breaking the panel ----
-  // The panel is a grid of driver zones. A hit kills the zone under the
-  // nozzle (and sometimes a neighbour): it goes black, holds, stutters a few
-  // times, then snaps back with a burst of saturated subpixels. Every zone
-  // draws its own timings, so they return unevenly.
-  /** The spray reports a hit at most this often (seconds). */
-  IMPACT_EVERY_S: 0.05,
-  /** Strength of a hit from a fast nozzle; a dwelling nozzle hits at 1. */
-  IMPACT_STRENGTH_MIN: 0.5,
-  /** Zone size in mockup px (rounded to whole pixel pitches). */
-  ZONE_W: 96,
-  ZONE_H: 72,
-  /** Chance (× hit strength) that each of the 8 neighbours dies too. */
-  ZONE_SPREAD: 0.12,
-  /** Black hold after a zone's last hit: log-normal, so most zones return
-   *  quickly and a few linger. Median and spread (sigma of ln) in seconds. */
-  HOLD_MEDIAN: 0.6,
-  HOLD_SPREAD: 0.8,
-  HOLD_MAX: 4,
-  /** Before returning, a zone blinks back on 0–STUTTER_MAX times: on for
-   *  STUTTER_ON_S, then black again for OFF_MIN–OFF_MAX. */
-  STUTTER_MAX: 3,
-  STUTTER_ON_S: 0.03,
-  STUTTER_OFF_MIN: 0.04,
-  STUTTER_OFF_MAX: 0.15,
-  /** The final snap back takes RETURN_MIN–RETURN_MAX seconds. */
-  RETURN_MIN: 0.06,
-  RETURN_MAX: 0.25,
-  /** Subpixel saturation at the peak of a return (0 = none, 1 = pure R/G/B). */
-  FRINGE_GRID: 0.6,
-  /** Returning zones slip pixel rows by one subpixel; the dice re-roll
-   *  GLITCH_HZ times a second. SLIP_CHANCE: per row, at full fringe. */
-  GLITCH_HZ: 15,
-  SLIP_CHANCE: 0.3,
 } as const;
 
 /** Sound engine (§9). */

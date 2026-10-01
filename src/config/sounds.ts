@@ -47,9 +47,9 @@ export type SoundId = keyof typeof SOUNDS;
  *  bus passes through it). 0.5 = the user asked for everything 50% quieter. */
 export const MASTER_GAIN = 0.5;
 
-/** station.hover pitch per station index (Home → Inspo), in semitones: a
+/** station.hover pitch per station index (About → Projects), in semitones: a
  *  pentatonic run, so moving along the line sounds like a scale (§7.3). */
-export const STATION_HOVER_SEMITONES = [0, 2, 4, 7, 9] as const;
+export const STATION_HOVER_SEMITONES = [2, 4, 7] as const;
 export const semitonesToRate = (st: number) => 2 ** (st / 12);
 
 /** drag.grain (§11.5): multiplies its manifest gain at full drag speed. Its

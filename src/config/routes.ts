@@ -3,7 +3,7 @@
  * pages/Outlet.tsx so this file stays free of React.
  */
 
-export type StationId = "home" | "about" | "experience" | "projects" | "inspo";
+export type StationId = "about" | "experience" | "projects";
 
 export interface Station {
   id: StationId;
@@ -14,35 +14,34 @@ export interface Station {
   track: "upper" | "lower";
 }
 
-/** Line order, left to right: Home → About → Experience → Projects → Inspo. */
+/** Line order, left to right: About → Experience → Projects. */
 export const STATIONS: readonly Station[] = [
-  { id: "home", label: "Home", path: "/", track: "upper" },
   { id: "about", label: "About", path: "/about", track: "upper" },
   { id: "experience", label: "Experience", path: "/experience", track: "lower" },
-  { id: "projects", label: "Projects", path: "/projects/oyster-news", track: "lower" },
-  { id: "inspo", label: "Inspo", path: "/inspo", track: "lower" },
+  { id: "projects", label: "Projects", path: "/projects/portfolio", track: "lower" },
 ];
 
 export interface RouteDef {
   path: string;
-  /** Page name for document.title and "Coming soon" placeholders. */
+  /** Page name for document.title. */
   title: string;
-  /** The station shown as current on the map. */
-  station: StationId;
+  /** The station this page belongs to (null: home). */
+  station: StationId | null;
+  /** Page colours (global.css): light on home, dark on station pages. */
+  theme: "light" | "dark";
 }
 
 export const ROUTES: readonly RouteDef[] = [
-  { path: "/", title: "Matthew Lam", station: "home" },
-  { path: "/about", title: "About", station: "about" },
-  { path: "/experience", title: "Experience", station: "experience" },
-  { path: "/projects/oyster-news", title: "Oyster News", station: "projects" },
-  { path: "/projects/mango", title: "Mango", station: "projects" },
-  { path: "/projects/portfolio", title: "Portfolio", station: "projects" },
-  { path: "/inspo", title: "Inspo", station: "inspo" },
+  { path: "/", title: "Matthew Lam", station: null, theme: "light" },
+  { path: "/about", title: "About", station: "about", theme: "dark" },
+  { path: "/experience", title: "Experience", station: "experience", theme: "dark" },
+  { path: "/projects/portfolio", title: "Portfolio", station: "projects", theme: "dark" },
+  { path: "/projects/oyster-news", title: "Oyster News", station: "projects", theme: "dark" },
+  { path: "/projects/mango", title: "Mango", station: "projects", theme: "dark" },
 ];
 
 const REDIRECTS: Record<string, string> = {
-  "/projects": "/projects/oyster-news",
+  "/projects": "/projects/portfolio",
 };
 
 const byPath = new Map(ROUTES.map((r) => [r.path, r]));

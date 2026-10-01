@@ -5,17 +5,32 @@
 }
 
 /*
- * Design unit: 1px of the 1440×1024 reference frame, scaled to fit the
- * viewport. Mockup coordinates are written as calc(N * var(--px)).
+ * Design unit: 1px of the 1767×1024 reference frame (design/mockups-v2),
+ * scaled to fit the viewport. Mockup coordinates are written as
+ * calc(N * var(--px)). lib/frame.ts is the TS side.
  * TODO(open-question #7): narrow screens (< ~900px) need their own layout.
  */
 :root {
-  --px: min(100vw / 1440, 100vh / 1024);
+  --px: min(100vw / 1767, 100vh / 1024);
   /* Horizontal position unit for home content that spans the width (map
-     stations, smiley, "who?"): stretches with the viewport, so a 16:9 screen
-     spreads the composition instead of leaving the right side empty. Use it
-     for x positions only; sizes stay in --px. */
-  --vx: calc(100vw / 1440);
+     stations, "who?"): stretches with the viewport, so a wide screen spreads
+     the composition instead of leaving the right side empty. Use it for x
+     positions only; sizes stay in --px. */
+  --vx: calc(100vw / 1767);
+}
+
+/* Page theme: light on home and the gate, dark on station pages. App sets
+   data-theme while the transition cover hides the page (--theme-fade is set
+   from timings.ts in main.tsx; it only shows on a deep link's gate exit). */
+:root,
+:root[data-theme="light"] {
+  --color-bg: var(--color-home-bg);
+  --color-text: var(--color-home-text);
+}
+
+:root[data-theme="dark"] {
+  --color-bg: var(--color-station-bg);
+  --color-text: var(--color-station-text);
 }
 
 html,
@@ -29,9 +44,10 @@ html {
   text-size-adjust: 100%;
 }
 
-/* White comes from body; no layer paints an opaque full-screen background (spec §4.1). */
+/* The page colour comes from body; no layer paints an opaque full-screen background (spec §4.1). */
 body {
   background: var(--color-bg);
+  transition: background-color var(--theme-fade, 0s), color var(--theme-fade, 0s);
   color: var(--color-text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -89,17 +105,7 @@ canvas {
   pointer-events: none;
 }
 
-/* Screen door: multiplies over everything below, never takes input. The
-   blend mode is on the layer, not the canvas: the layer is a stacking
-   context, so a canvas blend would only see the empty layer. */
-.layer--fx {
-  z-index: 30;
-  pointer-events: none;
-  overflow: hidden;
-  mix-blend-mode: multiply;
-}
-
-/* Glass: what's painted on the screen (the "who?" spray), above the fx. */
+/* Glass: what's painted on the screen (the "who?" spray), above the map. */
 .layer--glass {
   z-index: 40;
   pointer-events: none;
