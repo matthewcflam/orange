@@ -1,20 +1,22 @@
-import type { ComponentType } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import { useRoute } from "../lib/router";
+import { loadProjects } from "../lib/assets";
 import Home from "./Home";
-import About from "./placeholders/About";
-import Experience from "./placeholders/Experience";
-import Inspo from "./placeholders/Inspo";
-import Projects from "./projects/Projects";
+import About from "./About";
+import Experience from "./Experience";
+
+// Its own chunk (Pretext, obstacle text, project content). The transition
+// preloads it with the heroes before committing (lib/assets.ts).
+const Projects = lazy(loadProjects);
 
 /** Canonical path → page (paths from config/routes.ts). */
 const PAGES: Record<string, ComponentType> = {
   "/": Home,
   "/about": About,
   "/experience": Experience,
+  "/projects/portfolio": Projects,
   "/projects/oyster-news": Projects,
   "/projects/mango": Projects,
-  "/projects/portfolio": Projects,
-  "/inspo": Inspo,
 };
 
 /** Renders the committed route's page, keyed so pages remount fresh. The
@@ -23,5 +25,9 @@ const PAGES: Record<string, ComponentType> = {
 export default function Outlet() {
   const route = useRoute();
   const Page = PAGES[route];
-  return <Page key={Page === Projects ? "projects" : route} />;
+  return (
+    <Suspense fallback={null}>
+      <Page key={Page === Projects ? "projects" : route} />
+    </Suspense>
+  );
 }

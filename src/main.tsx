@@ -1,5 +1,4 @@
 // Fonts first, before anything renders (spec §5.2).
-import "@fontsource-variable/newsreader";
 import "@fontsource/fragment-mono";
 import "@fontsource-variable/inter";
 
@@ -11,7 +10,12 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { preloadSounds } from "./audio/engine";
 import { setTransitionRunner } from "./lib/router";
-import { tempTransition } from "./transition/tempTransition";
+import { pageTransition } from "./transition/pageTransition";
+import { GATE } from "./config/timings";
+
+// Page theme changes fade (only visible on a deep link's gate exit; elsewhere
+// they happen under the transition cover).
+document.documentElement.style.setProperty("--theme-fade", `${GATE.DEEP_LINK_FADE}s`);
 
 // The router owns scrolling (spec §4.3).
 history.scrollRestoration = "manual";
@@ -19,7 +23,7 @@ history.scrollRestoration = "manual";
 // Fetch + decode every sound while the gate idles (spec §9.2). No AudioContext yet.
 void preloadSounds();
 
-setTransitionRunner(tempTransition);
+setTransitionRunner(pageTransition);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
