@@ -1,6 +1,6 @@
 # Asset manifest
 
-Source of truth for `assets-src/`. Mockups in `design/mockups/` are reference only and are never imported. All filenames are lowercase-with-hyphens.
+Source of truth for `assets-src/`. Mockups in `design/mockups-v2/` (current, 1767×1024) and `design/mockups-v1/` (the old design, still the reference for the project article) are reference only and are never imported. All filenames are lowercase-with-hyphens.
 
 ## SVG (`assets-src/svg/`)
 
@@ -8,12 +8,14 @@ None of these SVGs has element IDs. Reference paths by document order.
 
 | File | Page | Role | Notes |
 |---|---|---|---|
-| `wip.svg` | gate + home (shared chrome) | hand-drawn "(wip)" under "Matthew Lam" | 113×54, 6 stroked paths, `#FF7700`, 5px stroke. Can be drawn on with DrawSVG. |
-| `smiley.svg` | home | green hand-drawn smiley, top-right | 297×139, 3 stroked paths (2 eyes, mouth), `#41AE55`, 20px stroke |
 | `who-spray.svg` | home | **guide paths** for the "who?" spray engine; not displayed | 910×302, 5 stroked paths, `#FF7700`, 30px stroke. Draw order = document order: 0 `w`, 1 `h`, 2 `o`, 3 `?` hook, 4 `?` dot |
-| `oyster-scribble.svg` | project list | orange ellipse around "Oyster News" (active) | 282×50, 1 path, `#FF7700`; DrawSVG in |
-| `mango-scribble.svg` | project list | orange ellipse around "Mango" (active) | 173×68, 1 path, `#FF7700`; DrawSVG in |
-| `portfolio-scribble.svg` | project list | orange squiggle **under** "Portfolio" (active) | 119×49, 1 path, `#FF7700`; DrawSVG in |
+| `portfolio-scribble.svg` | station pages (Map pill) | squiggle drawn under "Map" on hover | 119×49, 1 path, `#FF7700`; stretched to the mockup's 78×85 box (non-scaling stroke) |
+| `new-portfolio.svg` | Projects list | orange loop around "This Portfolio" (active) | 212×139, 1 path; DrawSVG in |
+| `new-oyster.svg` | Projects list | orange speech-box outline around "Oyster News" (active) | 224×124, 1 path; DrawSVG in |
+| `new-mango.svg` | Projects list | orange loop around "Mango" (active) | 180×131, 1 path; DrawSVG in |
+| `speech.svg` | station pages | the orange speech bubble from "Matthew Lam" | 173×137: a 162×80 rect (r 6) + tail. Rebuilt in HTML/SVG by `chrome/SpeechBubble.tsx` (the rect has to resize to its text) |
+| `doug-keychain.svg` | keychain | Doug, the dog charm, with his chain and split ring | 304×252, placed 1:1 at keychain box (102, −160) as in `Menu Open (3).png`. `?charm` → AVIF/WebP 300/600w |
+| `compass-keychain.svg` | keychain | the Compass Card charm, with its ring | 387×354, placed 1:1 at keychain box (302, 120). `?charm` like Doug |
 | `mango.svg` | Mango | **draggable obstacle** in the body text | 39×67. Two filled ellipses (`#FFA62A`) plus a green stem stroke (`#76C933`). The text wraps around the ellipse union (spec §11.4). |
 
 ## Images (`assets-src/images/`)
