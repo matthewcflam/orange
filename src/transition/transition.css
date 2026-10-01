@@ -1,0 +1,148 @@
+/*
+ * Page transition layer: the dither cover and its title, over everything.
+ * Title styles ported from 2xa.studio's typer (.page-transition [data-typer]).
+ * data-tone (set per transition): dark = dark cover, light text; light = the
+ * reverse.
+ */
+.layer--transition {
+  z-index: 50;
+  pointer-events: none;
+  --fg: var(--color-station-text);
+  --bg: var(--color-cover-dark);
+  --accent: var(--color-transition-accent);
+}
+
+.layer--transition[data-tone="light"] {
+  --fg: var(--color-home-text);
+  --bg: var(--color-cover-light);
+}
+
+.transition__canvas,
+.transition__fade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.transition__fade {
+  background: var(--bg);
+  opacity: 0;
+}
+
+/* "Now arriving at:" and the name, placed as in Transition (Dark).png:
+   cap-centred on the screen's middle, the lead starting 495 mockup px left of
+   the centre line and the name 186 right of it, so the lead stays put and
+   names of any length start at the same x. */
+.transition__title {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  font-family: var(--font-transition);
+  font-size: calc(62 * var(--px));
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--fg);
+}
+
+.transition__group {
+  position: absolute;
+  top: 50%;
+  /* line-height 1: the em box's centre sits ~0.04em below the cap centre */
+  transform: translateY(-46%);
+  white-space: pre;
+}
+
+.transition__group--0 {
+  left: calc(50% - 495 * var(--px));
+}
+
+.transition__group--1 {
+  left: calc(50% + 186 * var(--px));
+}
+
+.transition__title[data-state="initial"] {
+  opacity: 0;
+}
+
+.transition__title .word {
+  white-space: pre;
+}
+
+.transition__title .char {
+  box-sizing: content-box;
+  display: inline-block;
+  color: var(--fg);
+  background: transparent;
+}
+
+.transition__title .char.charInit {
+  color: transparent;
+}
+
+.transition__title .char.charFill {
+  color: var(--bg);
+  background: var(--fg);
+  border-radius: 5px;
+}
+.transition__title .char.charFill:has(+ .charFill) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.transition__title .char.charFill + .charFill {
+  border-radius: 0;
+}
+.transition__title .char.charFill + .charFill:last-child,
+.transition__title .char.charFill + .charFill:has(+ :not(.charFill)) {
+  border-radius: 0 5px 5px 0;
+}
+
+.transition__title .char.charInverse {
+  color: var(--bg);
+  background: var(--fg);
+}
+
+.transition__title .char.charAccent {
+  color: var(--fg);
+  background: var(--accent);
+}
+
+.transition__title .char.charAccentInverse {
+  color: var(--bg);
+  background: var(--accent);
+}
+
+.transition__title .char.charAccentFill {
+  color: var(--accent);
+  background: var(--accent);
+}
+
+.transition__title .char.charBorder {
+  position: relative;
+  color: var(--fg);
+}
+.transition__title .char.charBorder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--fg);
+  border-radius: 5px;
+}
+.transition__title .char.charBorder:has(+ .charBorder)::after {
+  border-right-color: transparent;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.transition__title .char.charBorder + .charBorder::after {
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 0;
+}
+.transition__title .char.charBorder + .charBorder:last-child::after,
+.transition__title .char.charBorder + .charBorder:has(+ :not(.charBorder))::after {
+  border-left-color: transparent;
+  border-right-color: var(--fg);
+  border-radius: 0 5px 5px 0;
+}

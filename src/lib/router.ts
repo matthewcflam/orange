@@ -23,7 +23,7 @@ let runner: TransitionRunner = async (_to, commit) => commit();
 const listeners = new Set<() => void>();
 let idleWaiters: (() => void)[] = [];
 
-// Canonicalize the entry URL (/projects → /projects/oyster-news, unknown → /).
+// Canonicalize the entry URL (/projects → /projects/portfolio, unknown → /).
 if (current !== location.pathname) history.replaceState(null, "", current);
 document.title = documentTitle(routeFor(current));
 
@@ -50,7 +50,7 @@ export function useRoute(): string {
   return useSyncExternalStore(subscribe, getRoute);
 }
 
-/** The page transition (transition/tempTransition.ts) registers itself here. */
+/** The page transition (transition/pageTransition.ts) registers itself here. */
 export function setTransitionRunner(fn: TransitionRunner): void {
   runner = fn;
 }
