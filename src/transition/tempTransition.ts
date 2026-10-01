@@ -25,7 +25,8 @@ export const tempTransition: TransitionRunner = async (to, commit) => {
   const ready = imagesReady(to);
   if (isProject(getRoute()) && isProject(to)) return projectSwitch(ready, commit);
 
-  const page = document.querySelector(".layer--page");
+  // "who?" lives on the glass layer but belongs to the page.
+  const page = document.querySelectorAll(".layer--page, .layer--glass");
   play("station.click");
   await gsap.to(page, { autoAlpha: 0, duration: TEMP_NAV.OUT });
   await ready;

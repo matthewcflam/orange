@@ -21,12 +21,10 @@ export const GATE_UI = {
 
 /** Gate → Home timeline (§6.5). Positions are seconds from the click. */
 export const GATE = {
-  /** The `>` cursor sits partly outside square A, so it fades as the paint starts. */
-  CURSOR_OUT: 0.15,
-  SQUARE_A_START: 0,
-  SQUARE_B_OFFSET: 0.25,
-  /** Square A (which alone covers the options) finishes at SQUARE_DURATION. */
-  OPTIONS_UNMOUNT: 0.5,
+  /** The options vanish at the click and unmount here. */
+  OPTIONS_UNMOUNT: 0,
+  /** The map starts here. Pull it (and the steps after) earlier if the blank
+   *  pause after the options vanish feels long. */
   ROUTE_IN: 0.6,
   ROUTE_IN_DURATION: 0.6,
   ROUTE_IN_EASE: "power2.out",
@@ -41,37 +39,17 @@ export const GATE = {
   /** Measured from the click (user-confirmed). If it becomes "2s after the
    *  stations finish", the timeline position becomes ">+2". */
   WHO_DELAY: 2.0,
-  /** TODO(open-question #1): deep link — after the paint-over, the map and the
-   *  requested page fade in (the squares and name block fade out) instead of
-   *  the home sequence. */
+  /** TODO(open-question #1): deep link — the map and the requested page fade
+   *  in (the name block fades out) instead of the home sequence. */
   DEEP_LINK_FADE: 0.4,
-} as const;
-
-/** Brush-mask paint-over of the grey squares (§6.6). */
-export const PAINT = {
-  /** Total time to paint one square. */
-  SQUARE_DURATION: 0.45,
-  STROKES_PER_SQUARE: 4,
-  /** How much consecutive strokes overlap in time (0–1 of a stroke). */
-  STROKE_OVERLAP: 0.35,
-  STROKE_EASE: "power1.inOut",
-  STROKE_WIDTH_PX: 70,
-  /** Passes run past the square's edges by this (plus BRISTLE_SCALE). */
-  STROKE_OVERSHOOT_PX: 6,
-  /** Each pass rises this much end to end, and bows this much in the middle. */
-  STROKE_TILT_PX: 10,
-  STROKE_BOW_PX: 6,
-  /** paint.stroke pitch is randomized ± this many semitones per stroke. */
-  STROKE_PITCH_SEMITONES: 2,
-  /** feTurbulence / feDisplacementMap for bristly edges. */
-  BRISTLE_FREQUENCY: 0.04,
-  BRISTLE_OCTAVES: 2,
-  BRISTLE_SCALE: 10,
 } as const;
 
 /** "who?" spray engine (§7.2). Distances are mockup px (1440×1024 frame),
  *  which are also the units of who-spray.svg. */
 export const SPRAY = {
+  /** The whole spray, lead to last drip, lasts this long. The timings below
+   *  set the proportions; they're all scaled by the same factor to fit. */
+  TOTAL_S: 1.5,
   STROKE_EASE: "power1.inOut",
   /** Pause between strokes (the can lifts off). */
   LIFT_MIN: 0.08,
@@ -194,6 +172,77 @@ export const OBSTACLE = {
   GRAIN_FADE: 0.15,
 } as const;
 
+/** Screen door: the page as a close-up LCD panel, over home and the minimap
+ *  (fx/screenDoorEngine.ts). Strengths are 0–1; distances are mockup px. */
+export const SCREEN_DOOR = {
+  /** Pixel pitch in CSS px: one R, G and B column each, plus a gap row. */
+  PITCH_PX: 3,
+  /** Subpixel grid strength. */
+  STRENGTH: 0.08,
+  /** Darkening of the gap row between pixels. */
+  GAP: 0.04,
+  /** Per-frame grain (darkening, 0–1). */
+  GRAIN: 0.01,
+  /** Pointer: the grid shows more strongly within this Gaussian radius. */
+  CURSOR_RADIUS_PX: 180,
+  CURSOR_STRENGTH: 0.12,
+  /** The patch trails the pointer by roughly this long. */
+  CURSOR_LAG: 0.6,
+  /** Patch fades in/out when the pointer enters/leaves the window. */
+  CURSOR_FADE: 0.4,
+  /** Fades in with the route after the gate (and with a deep-linked page). */
+  FADE_IN: 0.8,
+
+  // ---- Shimmer (a retro panel that never sits still) ----
+  /** A soft refresh bar rolling top → bottom: seconds per pass, height, and
+   *  how much it darkens / strengthens the grid. */
+  SHIMMER_BAR_PERIOD: 7,
+  SHIMMER_BAR_HEIGHT_PX: 160,
+  SHIMMER_BAR_STRENGTH: 0.05,
+  /** Each pixel row's darkening jitters every frame by up to this much. */
+  SHIMMER_FLICKER: 0.012,
+  /** Fraction of pixels glinting at any moment, and how long a glint lasts. */
+  SHIMMER_SPARKLE: 0.001,
+  SHIMMER_SPARKLE_S: 0.12,
+  /** How dark a glinting pixel's subpixels get. */
+  SHIMMER_SPARKLE_STRENGTH: 0.07,
+
+  // ---- "who?" spray breaking the panel ----
+  // The panel is a grid of driver zones. A hit kills the zone under the
+  // nozzle (and sometimes a neighbour): it goes black, holds, stutters a few
+  // times, then snaps back with a burst of saturated subpixels. Every zone
+  // draws its own timings, so they return unevenly.
+  /** The spray reports a hit at most this often (seconds). */
+  IMPACT_EVERY_S: 0.05,
+  /** Strength of a hit from a fast nozzle; a dwelling nozzle hits at 1. */
+  IMPACT_STRENGTH_MIN: 0.5,
+  /** Zone size in mockup px (rounded to whole pixel pitches). */
+  ZONE_W: 96,
+  ZONE_H: 72,
+  /** Chance (× hit strength) that each of the 8 neighbours dies too. */
+  ZONE_SPREAD: 0.12,
+  /** Black hold after a zone's last hit: log-normal, so most zones return
+   *  quickly and a few linger. Median and spread (sigma of ln) in seconds. */
+  HOLD_MEDIAN: 0.6,
+  HOLD_SPREAD: 0.8,
+  HOLD_MAX: 4,
+  /** Before returning, a zone blinks back on 0–STUTTER_MAX times: on for
+   *  STUTTER_ON_S, then black again for OFF_MIN–OFF_MAX. */
+  STUTTER_MAX: 3,
+  STUTTER_ON_S: 0.03,
+  STUTTER_OFF_MIN: 0.04,
+  STUTTER_OFF_MAX: 0.15,
+  /** The final snap back takes RETURN_MIN–RETURN_MAX seconds. */
+  RETURN_MIN: 0.06,
+  RETURN_MAX: 0.25,
+  /** Subpixel saturation at the peak of a return (0 = none, 1 = pure R/G/B). */
+  FRINGE_GRID: 0.6,
+  /** Returning zones slip pixel rows by one subpixel; the dice re-roll
+   *  GLITCH_HZ times a second. SLIP_CHANCE: per row, at full fringe. */
+  GLITCH_HZ: 15,
+  SLIP_CHANCE: 0.3,
+} as const;
+
 /** Sound engine (§9). */
 export const AUDIO = {
   /** ± playbackRate variation per play. */
@@ -204,9 +253,4 @@ export const AUDIO = {
   VOICE_STEAL_FADE: 0.01,
   MUTE_RAMP: 0.05,
   LIMITER: { threshold: -6, ratio: 20, attack: 0.003, release: 0.1 },
-} as const;
-
-/** prefers-reduced-motion variants (§12). */
-export const REDUCED = {
-  PAINT_FADE: 0.2,
 } as const;

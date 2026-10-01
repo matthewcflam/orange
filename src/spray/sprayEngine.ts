@@ -8,6 +8,10 @@
  * speed. The can's flow is constant per second, so slow stretches (stroke
  * ends, the ?-dot) get heavier paint.
  *
+ * The whole spray (lead, strokes, lifts, drips) is laid out at natural speed,
+ * then scaled by one factor so it lasts exactly SPRAY.TOTAL_S. Flow and the
+ * hiss are per timeline second, so the picture is the same at any speed.
+ *
  * The canvas is never cleared during a spray. Every stamp is recorded and the
  * dots come from a seeded PRNG, so a resize (or a devicePixelRatio change)
  * replays the exact same picture at the new size.
@@ -15,7 +19,7 @@
 import whoSvg from "../../assets-src/svg/who-spray.svg?raw";
 import { gsap } from "../lib/gsap";
 import { readToken } from "../lib/tokens";
-import { SPRAY } from "../config/timings";
+import { SPRAY, SCREEN_DOOR } from "../config/timings";
 // TODO(spray rattle): restore with the play() call in spray().
 // import { play } from "../audio/engine";
 import { startHiss, type Hiss } from "../audio/sprayHiss";
@@ -120,13 +124,14 @@ export interface SprayPicture {
 }
 
 export interface SprayOptions {
-  /** Duration multiplier: 1 = full, lower is faster. */
-  speed?: number;
   /** Reduced motion: render the finished picture in one frame, silently. */
   instant?: boolean;
 }
 
 export class SprayEngine {
+  /** Called while spraying (never on replays or instant sprays) with the
+   *  nozzle's client position and how much it dwelt there (0–1). */
+  onImpact: ((x: number, y: number, dwell: number) => void) | null = null;
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly color = readToken("--color-orange");
@@ -149,6 +154,12 @@ export class SprayEngine {
   private sized = false;
   /** From show(): drawn instead of a replay if the canvas size matches. */
   private cached: HTMLCanvasElement | null = null;
+  /** Timeline time of the last onImpact, for throttling. */
+  private lastImpact = -Infinity;
+  /** The running spray's time scale (see spray()). */
+  private speed = 1;
+  /** An instant spray (reduced motion) presses on nothing. */
+  private instant = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -158,10 +169,12 @@ export class SprayEngine {
   }
 
   /** Start a fresh spray. Returns its timeline (null when instant). */
-  spray({ speed = 1, instant = false }: SprayOptions = {}): gsap.core.Timeline | null {
+  spray({ instant = false }: SprayOptions = {}): gsap.core.Timeline | null {
     this.clear();
     const tl = gsap.timeline({ onComplete: () => this.stopHiss() });
     this.timeline = tl;
+    this.instant = instant;
+    this.lastImpact = -Infinity;
 
     if (!instant) {
       // The hiss starts silent. TODO(spray rattle): the rattle that led the
@@ -173,19 +186,28 @@ export class SprayEngine {
       }, undefined, 0);
     }
 
+    // Lay out at natural speed, then scale everything to last TOTAL_S.
+    const guides = loadGuides();
     let t = instant ? 0 : SPRAY.RATTLE_LEAD;
-    let lastEnd = t;
+    let end = t;
     let drips = 0;
-    for (const guide of loadGuides()) {
-      const duration = Math.max(SPRAY.MIN_STROKE, guide.length / SPRAY.NOZZLE_SPEED_PX) * speed;
-      tl.add(this.strokeTween(guide, duration, speed), t);
-      lastEnd = t + duration;
+    const plan = guides.map((guide) => {
+      const start = t;
+      const duration = Math.max(SPRAY.MIN_STROKE, guide.length / SPRAY.NOZZLE_SPEED_PX);
+      const drip = drips < SPRAY.DRIP_MAX && Math.random() < SPRAY.DRIP_CHANCE;
+      if (drip) drips++;
+      end = Math.max(end, start + duration + (drip ? SPRAY.DRIP_DURATION : 0));
+      t = start + duration + gsap.utils.random(SPRAY.LIFT_MIN, SPRAY.LIFT_MAX);
+      return { guide, start, duration, drip };
+    });
+    const speed = instant ? 1 : SPRAY.TOTAL_S / end;
+    this.speed = speed;
 
-      if (drips < SPRAY.DRIP_MAX && Math.random() < SPRAY.DRIP_CHANCE) {
-        drips++;
-        tl.add(this.dripTween(guide), lastEnd);
-      }
-      t = lastEnd + gsap.utils.random(SPRAY.LIFT_MIN, SPRAY.LIFT_MAX) * speed;
+    let lastEnd = 0;
+    for (const { guide, start, duration, drip } of plan) {
+      tl.add(this.strokeTween(guide, duration * speed, speed), start * speed);
+      lastEnd = (start + duration) * speed;
+      if (drip) tl.add(this.dripTween(guide, SPRAY.DRIP_DURATION * speed), lastEnd);
     }
     // Drips keep growing silently after the last stroke.
     tl.call(() => this.stopHiss(), undefined, lastEnd);
@@ -286,6 +308,7 @@ export class SprayEngine {
           this.paint(guide, lastAlong, dist, flow * dt);
           const level = Math.min(dist / dt / peakSpeed, 1);
           this.hiss?.set(SPRAY.HISS_FLOOR + (1 - SPRAY.HISS_FLOOR) * level);
+          this.impact(guide, nozzle.along, 1 - level);
         }
         lastTime = time;
         lastAlong = nozzle.along;
@@ -296,8 +319,24 @@ export class SprayEngine {
     return tween;
   }
 
+  /** Report the nozzle hitting the screen, at most every IMPACT_EVERY_S. */
+  private impact(guide: Guide, along: number, dwell: number) {
+    if (!this.onImpact || this.fastForward || this.instant) return;
+    const now = this.timeline?.time() ?? 0;
+    // IMPACT_EVERY_S is at natural speed, so hits land as densely along the path.
+    if (now - this.lastImpact < SCREEN_DOOR.IMPACT_EVERY_S * this.speed && now >= this.lastImpact) return;
+    this.lastImpact = now;
+    const [x, y] = pointAt(guide, along);
+    const rect = this.canvas.getBoundingClientRect();
+    this.onImpact(
+      rect.left + (x + SPRAY.CANVAS_PAD_PX) * this.scale,
+      rect.top + (y + SPRAY.CANVAS_PAD_PX) * this.scale,
+      dwell,
+    );
+  }
+
   /** A slow drip below the stroke's end, where the nozzle lingered. */
-  private dripTween(guide: Guide): gsap.core.Tween {
+  private dripTween(guide: Guide, duration: number): gsap.core.Tween {
     const [x, y] = pointAt(guide, guide.length);
     const drip: Drip = {
       x: x + gsap.utils.random(-0.5, 0.5) * SPRAY.CORE_SIGMA_PX,
@@ -309,7 +348,7 @@ export class SprayEngine {
     let drawn = 0;
     return gsap.to(drip, {
       progress: 1,
-      duration: SPRAY.DRIP_DURATION,
+      duration,
       ease: SPRAY.DRIP_EASE,
       onStart: () => void (this.drips.includes(drip) || this.drips.push(drip)),
       onUpdate: () => {

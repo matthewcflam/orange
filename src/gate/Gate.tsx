@@ -8,7 +8,7 @@ import "./gate.css";
 export type GatePhase = "showing" | "leaving" | "done";
 
 const OPTIONS: { pref: SoundPref; label: string; aria: string }[] = [
-  { pref: "sound", label: "SOUND", aria: "Enter with sound" },
+  { pref: "sound", label: "Sound", aria: "Enter with sound" },
   { pref: "muted", label: "Muted", aria: "Enter muted" },
 ];
 
@@ -17,10 +17,10 @@ interface Props {
 }
 
 /**
- * The audio gate's options (spec §6). Rendered inside shared chrome, before
- * the grey squares, while gatePhase !== "done" (§4.1). Real <button>s;
- * hover or ↑/↓ moves the `>` cursor, click / Enter / Space selects. The exit
- * is the grey squares painting over it (gate/gateToHome.ts).
+ * The audio gate's options (spec §6). Rendered inside shared chrome while
+ * gatePhase !== "done" (§4.1). Real <button>s; hover or ↑/↓ moves the `>`
+ * cursor, click / Enter / Space selects. On select they vanish at once
+ * (gate/gateToHome.ts).
  */
 export default function Gate({ onSelect }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,8 @@ export default function Gate({ onSelect }: Props) {
     activeRef.current = active;
   }, [active]);
 
-  // Measure option centers once and on resize; never in pointer handlers (§12).
+  // Measure option centers on mount and whenever an option changes size (resize,
+  // font-size edits); never in pointer handlers (§12).
   useLayoutEffect(() => {
     const measure = () => {
       centers.current = buttonRefs.current.map((b) => (b ? b.offsetTop + b.offsetHeight / 2 : 0));
@@ -42,8 +43,9 @@ export default function Gate({ onSelect }: Props) {
     };
     measure();
     buttonRefs.current[activeRef.current]?.focus({ preventScroll: true });
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    const ro = new ResizeObserver(measure);
+    buttonRefs.current.forEach((b) => b && ro.observe(b));
+    return () => ro.disconnect();
   }, []);
 
   useGSAP(

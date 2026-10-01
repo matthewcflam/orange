@@ -7,10 +7,11 @@
 :root {
   /* ---- Fonts (spec §5). Family names must match Fontsource exactly. ---- */
   --font-body:    "Inter Variable", system-ui, sans-serif;
-  --font-name:    "Newsreader Variable", Georgia, serif;
+  --font-name:    "Inter Variable", system-ui, sans-serif;
+  --font-serif:   "Newsreader Variable", Georgia, serif; /* Oyster News artifacts */
   --font-station: "Fragment Mono", ui-monospace, monospace;
-  --font-sound:   "Monofett", monospace;
-  --font-muted:   "Megrim", sans-serif;
+  --font-sound:   "Inter Variable", system-ui, sans-serif;
+  --font-muted:   "Inter Variable", system-ui, sans-serif;
 
   /* ---- Base ---- */
   --color-bg:   #FFFFFF;
@@ -28,7 +29,7 @@
   --color-minimap-border: #7C6C6C;  /* spec said ≈#7A6E6E; sampled */
 
   /* ---- Home ---- */
-  --color-square: #D9D9D9;          /* grey paint-over squares */
+  /* Screen door (LCD close-up), after the user's reference photo */
 
   /* ---- Project pages ---- */
   --color-link-underline: #BE4525;  /* spec said ≈#C8452F; sampled. Asset missing */

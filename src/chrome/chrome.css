@@ -51,38 +51,3 @@
   outline: 2px solid var(--color-route);
   outline-offset: 2px;
 }
-
-/* ---- Grey squares (spec §6.6). Mockup px come in as unitless --x/--y/--w/--h. ---- */
-.grey-square {
-  position: absolute;
-  left: calc(var(--x) * var(--px));
-  top: calc(var(--y) * var(--px));
-  width: calc(var(--w) * var(--px));
-  height: calc(var(--h) * var(--px));
-  visibility: hidden; /* revealed by the gate → home paint-over */
-}
-
-.grey-square__paint {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.grey-square__paint rect {
-  fill: var(--color-square);
-}
-
-.grey-square__stroke {
-  fill: none;
-  stroke: #fff; /* mask luminance: white = painted */
-  stroke-linecap: round;
-}
-
-/* Painted: a plain box, so the mask and filter stop costing anything. */
-.grey-square[data-painted] {
-  background: var(--color-square);
-}
-
-.grey-square[data-painted] .grey-square__paint {
-  display: none;
-}

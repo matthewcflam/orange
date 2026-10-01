@@ -89,6 +89,22 @@ canvas {
   pointer-events: none;
 }
 
+/* Screen door: multiplies over everything below, never takes input. The
+   blend mode is on the layer, not the canvas: the layer is a stacking
+   context, so a canvas blend would only see the empty layer. */
+.layer--fx {
+  z-index: 30;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: multiply;
+}
+
+/* Glass: what's painted on the screen (the "who?" spray), above the fx. */
+.layer--glass {
+  z-index: 40;
+  pointer-events: none;
+}
+
 
 /* Interactive elements inside pass-through layers opt back in individually. */
 .interactive {

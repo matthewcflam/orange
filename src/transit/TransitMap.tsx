@@ -6,6 +6,7 @@ import { STATION_HOVER_SEMITONES, semitonesToRate } from "../config/sounds";
 import { play } from "../audio/engine";
 import { onNavClick, useRoute } from "../lib/router";
 import { prefetchRoute } from "../lib/assets";
+import { setScreenDoorClip } from "../fx/screenDoorEngine";
 import { CARD, LABEL_BASE_SIZE, type Layout, type LayoutName, layoutFor, lerpLayout, stationY } from "./stations";
 import "./transit.css";
 
@@ -50,6 +51,7 @@ export default function TransitMap({ visible }: { visible: boolean }) {
     line.setAttribute("stroke-width", String(l.lineWidth));
     clipRef.current!.setAttribute("width", String(l.clipW));
     clipRef.current!.setAttribute("height", String(l.clipH));
+    setScreenDoorClip(l.clipW, l.clipH); // the dither covers the same box
     cardRef.current!.setAttribute("opacity", String(l.cardOpacity));
     const cap = getCapRatio();
     const scale = l.labelSize / LABEL_BASE_SIZE;

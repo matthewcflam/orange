@@ -7,10 +7,11 @@ import { FONTS } from "../config/timings";
  */
 export const FAMILY = {
   body: "Inter Variable",
-  name: "Newsreader Variable",
+  name: "Inter Variable",
+  serif: "Newsreader Variable",
   station: "Fragment Mono",
-  sound: "Monofett",
-  muted: "Megrim",
+  sound: "Inter Variable",
+  muted: "Inter Variable",
 } as const;
 
 /** Project body text (spec §10.1; 15px measured from the mockups, see
@@ -41,7 +42,7 @@ export async function waitForFonts(timeoutMs = FONTS.TIMEOUT_MS): Promise<void> 
     Promise.all([
       document.fonts.load(`1em "${FAMILY.sound}"`),
       document.fonts.load(`1em "${FAMILY.muted}"`),
-      document.fonts.load(`1em "${FAMILY.name}"`),
+      document.fonts.load(`1em "${FAMILY.serif}"`),
       document.fonts.load(`1em "${FAMILY.station}"`),
       document.fonts.load(fontString(400, 16, FAMILY.body)),
     ]),

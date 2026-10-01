@@ -17,7 +17,7 @@
   border-radius: calc(10 * var(--px));
   background: var(--color-oyster-card);
   color: #fff;
-  font-family: var(--font-name);
+  font-family: var(--font-serif);
   font-size: calc(29 * var(--px));
   line-height: 0.95;
   white-space: nowrap;
@@ -61,7 +61,7 @@
 .oy-logo {
   position: relative;
   color: var(--color-oyster-grey);
-  font-family: var(--font-name);
+  font-family: var(--font-serif);
   font-size: calc(100 * var(--px));
   line-height: 1;
   white-space: nowrap;

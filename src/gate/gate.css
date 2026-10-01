@@ -20,21 +20,21 @@
 
 .gate__option--sound {
   font-family: var(--font-sound);
-  font-size: calc(60 * var(--px));
+  font-size: calc(30 * var(--px));
 }
 
 .gate__option--muted {
   font-family: var(--font-muted);
-  font-size: calc(45 * var(--px));
+  font-size: calc(30 * var(--px));
 }
 
 .gate__cursor {
   position: absolute;
-  top: calc(4 * var(--px));
-  left: calc(-34 * var(--px));
+  top: 0;
+  left: calc(-28 * var(--px));
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: calc(38 * var(--px));
+  font-size: calc(28 * var(--px));
   line-height: 1;
   /* vertical centering is yPercent: -50 in Gate.tsx; GSAP owns the transform */
   pointer-events: none;
