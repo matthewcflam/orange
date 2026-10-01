@@ -1,21 +1,13 @@
-/* Transit map (spec §7.1, §8.4). The SVG's viewBox is the 1440×1024 mockup
+/* Transit map on home (spec §7.1). The SVG's viewBox is the 1767×1024 mockup
    frame, so every attribute set from stations.ts is in mockup px. */
 .transit-map {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(1440 * var(--px));
+  width: calc(1767 * var(--px));
   height: calc(1024 * var(--px));
   overflow: visible;
   visibility: hidden; /* shown after the gate */
-}
-
-.transit-map__card {
-  fill: var(--color-minimap-card);
-}
-
-.transit-map__card-border {
-  fill: var(--color-minimap-border);
 }
 
 .transit-map__line {
@@ -41,14 +33,6 @@
   stroke: var(--color-route);
 }
 
-.station--current .station__dot {
-  fill: var(--color-station-active);
-}
-
-.station--current {
-  cursor: default;
-}
-
 .station__focus {
   fill: none;
   stroke: var(--color-text);
@@ -61,8 +45,10 @@
 }
 
 .station__label {
-  font-family: var(--font-station);
-  font-size: 38px; /* LABEL_BASE_SIZE; layouts scale from it */
+  font-family: var(--font-body);
+  font-size: 47px; /* LABEL_BASE_SIZE; layouts scale from it */
+  /* Browser Inter sets wider than the mockup's; this matches label widths. */
+  letter-spacing: -0.035em;
   text-anchor: middle;
   fill: var(--color-text);
 }

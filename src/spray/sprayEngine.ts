@@ -19,7 +19,7 @@
 import whoSvg from "../../assets-src/svg/who-spray.svg?raw";
 import { gsap } from "../lib/gsap";
 import { readToken } from "../lib/tokens";
-import { SPRAY, SCREEN_DOOR } from "../config/timings";
+import { SPRAY } from "../config/timings";
 // TODO(spray rattle): restore with the play() call in spray().
 // import { play } from "../audio/engine";
 import { startHiss, type Hiss } from "../audio/sprayHiss";
@@ -129,9 +129,6 @@ export interface SprayOptions {
 }
 
 export class SprayEngine {
-  /** Called while spraying (never on replays or instant sprays) with the
-   *  nozzle's client position and how much it dwelt there (0–1). */
-  onImpact: ((x: number, y: number, dwell: number) => void) | null = null;
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly color = readToken("--color-orange");
@@ -154,12 +151,6 @@ export class SprayEngine {
   private sized = false;
   /** From show(): drawn instead of a replay if the canvas size matches. */
   private cached: HTMLCanvasElement | null = null;
-  /** Timeline time of the last onImpact, for throttling. */
-  private lastImpact = -Infinity;
-  /** The running spray's time scale (see spray()). */
-  private speed = 1;
-  /** An instant spray (reduced motion) presses on nothing. */
-  private instant = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -173,8 +164,6 @@ export class SprayEngine {
     this.clear();
     const tl = gsap.timeline({ onComplete: () => this.stopHiss() });
     this.timeline = tl;
-    this.instant = instant;
-    this.lastImpact = -Infinity;
 
     if (!instant) {
       // The hiss starts silent. TODO(spray rattle): the rattle that led the
@@ -201,7 +190,6 @@ export class SprayEngine {
       return { guide, start, duration, drip };
     });
     const speed = instant ? 1 : SPRAY.TOTAL_S / end;
-    this.speed = speed;
 
     let lastEnd = 0;
     for (const { guide, start, duration, drip } of plan) {
@@ -308,7 +296,6 @@ export class SprayEngine {
           this.paint(guide, lastAlong, dist, flow * dt);
           const level = Math.min(dist / dt / peakSpeed, 1);
           this.hiss?.set(SPRAY.HISS_FLOOR + (1 - SPRAY.HISS_FLOOR) * level);
-          this.impact(guide, nozzle.along, 1 - level);
         }
         lastTime = time;
         lastAlong = nozzle.along;
@@ -317,22 +304,6 @@ export class SprayEngine {
       onComplete: () => this.hiss?.set(0),
     });
     return tween;
-  }
-
-  /** Report the nozzle hitting the screen, at most every IMPACT_EVERY_S. */
-  private impact(guide: Guide, along: number, dwell: number) {
-    if (!this.onImpact || this.fastForward || this.instant) return;
-    const now = this.timeline?.time() ?? 0;
-    // IMPACT_EVERY_S is at natural speed, so hits land as densely along the path.
-    if (now - this.lastImpact < SCREEN_DOOR.IMPACT_EVERY_S * this.speed && now >= this.lastImpact) return;
-    this.lastImpact = now;
-    const [x, y] = pointAt(guide, along);
-    const rect = this.canvas.getBoundingClientRect();
-    this.onImpact(
-      rect.left + (x + SPRAY.CANVAS_PAD_PX) * this.scale,
-      rect.top + (y + SPRAY.CANVAS_PAD_PX) * this.scale,
-      dwell,
-    );
   }
 
   /** A slow drip below the stroke's end, where the nozzle lingered. */

@@ -1,31 +1,19 @@
-/* Home (spec §7.1). Mockup coordinates at 1440×1024. */
+/* Home (spec §7.1), design/mockups-v2/Home Page (7).png at 1767×1024. The
+   map and the name block are shared chrome; this page holds "who?". */
 .home {
   position: relative;
   min-height: 100vh;
 }
 
-.home__smiley {
-  position: absolute;
-  /* Centre at mockup x 1171 on the stretched axis, so it stays over Inspo. */
-  left: calc(1171 * var(--vx) - 148.5 * var(--px));
-  top: calc(42 * var(--px));
-  width: calc(297 * var(--px));
-}
-
-.home__smiley svg {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-/* "who?" spray (§7.2). The 910×302 guide box sits at mockup (512, 537), so its
-   ink matches 02-home.png; the canvas extends --who-pad past it on every side
-   for overspray and drips. Centred at x 967 on the stretched axis. It lives in
-   the glass layer (fixed, full viewport), which home's layout matches. */
+/* "who?" spray (§7.2). The 910×302 guide box sits at mockup (713, 582), so
+   its ink lands where the mockup's does (714–1647 × 631–902); the canvas
+   extends --who-pad past it on every side for overspray and drips. Centred at
+   x 1168 on the stretched axis. It lives in the glass layer (fixed, full
+   viewport), which home's layout matches. */
 .home__who {
   position: absolute;
-  left: calc(967 * var(--vx) - (var(--who-w) / 2 + var(--who-pad)) * var(--px));
-  top: calc((537 - var(--who-pad)) * var(--px));
+  left: calc(1168 * var(--vx) - (var(--who-w) / 2 + var(--who-pad)) * var(--px));
+  top: calc((582 - var(--who-pad)) * var(--px));
   width: calc((var(--who-w) + 2 * var(--who-pad)) * var(--px));
   height: calc((var(--who-h) + 2 * var(--who-pad)) * var(--px));
   pointer-events: none;
