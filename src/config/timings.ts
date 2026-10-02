@@ -45,23 +45,15 @@ export const GATE = {
 /** "who?" spray engine (§7.2). Distances are mockup px (the 1767×1024 frame),
  *  which are also the units of who-spray.svg. */
 export const SPRAY = {
-  /** The whole spray, lead to last drip, lasts this long. The timings below
-   *  set the proportions; they're all scaled by the same factor to fit. */
-  TOTAL_S: 1.5,
-  STROKE_EASE: "power1.inOut",
-  /** Pause between strokes (the can lifts off). */
-  LIFT_MIN: 0.08,
-  LIFT_MAX: 0.15,
-  /** Average nozzle speed along a stroke, px/s. power1.inOut peaks at 2× this. */
-  NOZZLE_SPEED_PX: 900,
-  /** Shortest stroke. The ?-dot is a near-zero-length path, so the nozzle
-   *  dwells in place this long and builds up a blob. */
-  MIN_STROKE: 0.16,
+  // The nozzle's speed, the lifts and the lead (so the spray's length) are
+  // set per segment in config/sprayPace.ts, shaped by spray/paceModel.ts.
   /** Max distance between stamps so fast moves don't leave gaps. */
   STEP_PX: 2,
   /** Paint the can emits, in dots per second of stroke. Flow is constant, so
-   *  slow parts of a stroke get heavier paint per px (density ∝ 1/speed). */
-  FLOW_DOTS_PER_S: 18000,
+   *  slow parts of a stroke get heavier paint per px (density ∝ 1/speed), and
+   *  a slower sprayPace means more paint overall. (18000 before the pace
+   *  table; 21000 keeps the same total paint at its starting values.) */
+  FLOW_DOTS_PER_S: 21000,
   /** Dots per stamp are clamped to this range. */
   DOTS_MIN: 30,
   DOTS_MAX: 80,
@@ -78,8 +70,6 @@ export const SPRAY = {
   SPIT_CHANCE: 1 / 40,
   SPIT_SIGMA_PX: 12,
   SPIT_RADIUS_PX: [2, 3.8],
-  /** Rattle sample plays this long before the first stroke. */
-  RATTLE_LEAD: 0.25,
   /** Chance that a stroke end grows a drip (the nozzle lingers there). */
   DRIP_CHANCE: 0.35,
   /** At most this many drips per spray. */

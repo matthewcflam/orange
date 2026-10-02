@@ -51,3 +51,10 @@ export function introSpray(): void {
 export function skipIntroSpray(): void {
   introPending = false;
 }
+
+/** Dev (/?spray-debug): spray again from scratch, e.g. after editing sprayPace.ts. */
+export function respray(): void {
+  if (!engine) return;
+  sprayedOnce = true;
+  engine.spray();
+}

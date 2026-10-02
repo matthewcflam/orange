@@ -2,15 +2,14 @@
  * "who?" spray engine (spec §7.2). A plain class; React only mounts the canvas.
  *
  * The guide paths in who-spray.svg are never shown. Each is sampled once into
- * a point table, then a GSAP tween moves the nozzle along it. Every update
+ * a point table (spray/paceModel.ts), then a GSAP tween moves the nozzle
+ * along it at a hand's pace: config/sprayPace.ts sets how long each segment
+ * between the SVG's anchor points takes, and the handwriting model shapes
+ * the speed inside it (slow on curves, fast on straights). Every update
  * stamps Gaussian dot clusters between the previous and current nozzle
  * position (≤ STEP_PX apart) and sets the hiss level from the same nozzle
  * speed. The can's flow is constant per second, so slow stretches (stroke
  * ends, the ?-dot) get heavier paint.
- *
- * The whole spray (lead, strokes, lifts, drips) is laid out at natural speed,
- * then scaled by one factor so it lasts exactly SPRAY.TOTAL_S. Flow and the
- * hiss are per timeline second, so the picture is the same at any speed.
  *
  * The canvas is never cleared during a spray. Every stamp is recorded and the
  * dots come from a seeded PRNG, so a resize (or a devicePixelRatio change)
@@ -20,6 +19,8 @@ import whoSvg from "../../assets-src/svg/who-spray.svg?raw";
 import { gsap } from "../lib/gsap";
 import { readToken } from "../lib/tokens";
 import { SPRAY } from "../config/timings";
+import { SPRAY_PACE } from "../config/sprayPace";
+import { alongAt, maxSpeed, sampleGuide, speedShape, timeMap, type Guide } from "./paceModel";
 // TODO(spray rattle): restore with the play() call in spray().
 // import { play } from "../audio/engine";
 import { startHiss, type Hiss } from "../audio/sprayHiss";
@@ -28,17 +29,7 @@ import { startHiss, type Hiss } from "../audio/sprayHiss";
 // Guide paths (sampled once per session)
 // ---------------------------------------------------------------------------
 
-/** Guide sampling interval, in SVG units (= mockup px). */
-const SAMPLE_STEP = 1;
 const TAU = Math.PI * 2;
-const SVG_NS = "http://www.w3.org/2000/svg";
-
-interface Guide {
-  /** x, y pairs at `segments + 1` evenly spaced points along the path. */
-  pts: Float32Array;
-  segments: number;
-  length: number;
-}
 
 const guideDoc = new DOMParser().parseFromString(whoSvg, "image/svg+xml");
 const [, , VIEW_W, VIEW_H] = guideDoc.documentElement.getAttribute("viewBox")!.split(/\s+/).map(Number);
@@ -48,28 +39,34 @@ export const WHO_BOX = { width: VIEW_W, height: VIEW_H } as const;
 let guides: Guide[] | null = null;
 
 /** Paths in document order = draw order: w, h, o, ?-hook, ?-dot. */
-function loadGuides(): Guide[] {
-  if (guides) return guides;
-  // getPointAtLength needs the paths in a rendered document (Safari).
-  const svg = document.createElementNS(SVG_NS, "svg");
-  svg.setAttribute("style", "position:absolute;width:0;height:0;visibility:hidden");
-  document.body.append(svg);
-  guides = Array.from(guideDoc.querySelectorAll("path"), (source) => {
-    const path = document.createElementNS(SVG_NS, "path");
-    path.setAttribute("d", source.getAttribute("d")!);
-    svg.append(path);
-    const length = path.getTotalLength();
-    const segments = Math.max(1, Math.ceil(length / SAMPLE_STEP));
-    const pts = new Float32Array((segments + 1) * 2);
-    for (let i = 0; i <= segments; i++) {
-      const p = path.getPointAtLength((length * i) / segments);
-      pts[i * 2] = p.x;
-      pts[i * 2 + 1] = p.y;
-    }
-    return { pts, segments, length };
-  });
-  svg.remove();
+export function loadGuides(): Guide[] {
+  guides ??= Array.from(guideDoc.querySelectorAll("path"), (p) => sampleGuide(p.getAttribute("d")!));
   return guides;
+}
+
+/** Live pace table: replaced when sprayPace.ts is edited in dev (HMR). */
+let pace = SPRAY_PACE;
+export const getPace = () => pace;
+/** Fired on window when the pace table changes in dev (the debug overlay replays). */
+export const PACE_EVENT = "spraypace";
+if (import.meta.hot) {
+  import.meta.hot.accept("../config/sprayPace", (m) => {
+    if (!m) return;
+    pace = m.SPRAY_PACE;
+    window.dispatchEvent(new Event(PACE_EVENT));
+  });
+}
+
+/** A stroke's time map (seconds at every sample) from the pace table. The
+ *  word's last real stroke (the ?-hook) gets the model's finishing rush. */
+export function strokeTimes(i: number): Float32Array {
+  const g = loadGuides()[i];
+  const ms = pace.strokes[i]?.segmentsMs ?? [];
+  if (import.meta.env.DEV && ms.length !== g.anchors.length - 1) {
+    console.warn(`sprayPace: "${pace.strokes[i]?.letter}" has ${ms.length} segments, its path has ${g.anchors.length - 1}`);
+  }
+  const segMs = Array.from({ length: g.anchors.length - 1 }, (_, s) => Math.max(1, ms[s] ?? 50));
+  return timeMap(g, speedShape(g, { finish: i === loadGuides().length - 2 }), segMs);
 }
 
 /** Point at distance `along` on a guide (linear between samples). */
@@ -175,28 +172,20 @@ export class SprayEngine {
       }, undefined, 0);
     }
 
-    // Lay out at natural speed, then scale everything to last TOTAL_S.
-    const guides = loadGuides();
-    let t = instant ? 0 : SPRAY.RATTLE_LEAD;
-    let end = t;
-    let drips = 0;
-    const plan = guides.map((guide) => {
-      const start = t;
-      const duration = Math.max(SPRAY.MIN_STROKE, guide.length / SPRAY.NOZZLE_SPEED_PX);
-      const drip = drips < SPRAY.DRIP_MAX && Math.random() < SPRAY.DRIP_CHANCE;
-      if (drip) drips++;
-      end = Math.max(end, start + duration + (drip ? SPRAY.DRIP_DURATION : 0));
-      t = start + duration + gsap.utils.random(SPRAY.LIFT_MIN, SPRAY.LIFT_MAX);
-      return { guide, start, duration, drip };
-    });
-    const speed = instant ? 1 : SPRAY.TOTAL_S / end;
-
+    // Lay out from the pace table (config/sprayPace.ts), in real seconds.
+    let t = instant ? 0 : pace.leadMs / 1000;
     let lastEnd = 0;
-    for (const { guide, start, duration, drip } of plan) {
-      tl.add(this.strokeTween(guide, duration * speed, speed), start * speed);
-      lastEnd = (start + duration) * speed;
-      if (drip) tl.add(this.dripTween(guide, SPRAY.DRIP_DURATION * speed), lastEnd);
-    }
+    let drips = 0;
+    loadGuides().forEach((guide, i) => {
+      const times = strokeTimes(i);
+      tl.add(this.strokeTween(guide, times), t);
+      lastEnd = t + times[times.length - 1];
+      t = lastEnd + (pace.strokes[i]?.liftMs ?? 0) / 1000;
+      if (drips < SPRAY.DRIP_MAX && Math.random() < SPRAY.DRIP_CHANCE) {
+        drips++;
+        tl.add(this.dripTween(guide, SPRAY.DRIP_DURATION), lastEnd);
+      }
+    });
     // Drips keep growing silently after the last stroke.
     tl.call(() => this.stopHiss(), undefined, lastEnd);
 
@@ -269,25 +258,25 @@ export class SprayEngine {
     this.hiss = null;
   }
 
-  /** Moves the nozzle along one guide. */
-  private strokeTween(guide: Guide, duration: number, speed: number): gsap.core.Tween {
-    const nozzle = { along: 0 };
+  /** Moves the nozzle along one guide, following its time map. */
+  private strokeTween(guide: Guide, times: Float32Array): gsap.core.Tween {
+    const nozzle = { along: 0, time: 0 };
     let lastAlong = 0;
     let lastTime = 0;
-    // Timeline seconds are scaled by `speed`, so per-timeline-second rates are too.
-    const flow = SPRAY.FLOW_DOTS_PER_S / speed;
-    const peakSpeed = (2 * SPRAY.NOZZLE_SPEED_PX) / speed;
+    const flow = SPRAY.FLOW_DOTS_PER_S;
+    const peakSpeed = maxSpeed(guide, times);
 
     const tween: gsap.core.Tween = gsap.to(nozzle, {
-      along: guide.length,
-      duration,
-      ease: SPRAY.STROKE_EASE,
+      time: times[times.length - 1],
+      duration: times[times.length - 1],
+      ease: "none",
       onStart: () => {
         lastAlong = 0;
         lastTime = 0;
         this.hiss?.set(SPRAY.HISS_FLOOR);
       },
       onUpdate: () => {
+        nozzle.along = alongAt(guide, times, nozzle.time);
         const time = tween.time();
         const dt = time - lastTime;
         const dist = nozzle.along - lastAlong;

@@ -1,10 +1,16 @@
-import { useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { SprayEngine, WHO_BOX } from "../spray/sprayEngine";
 import { attachWho } from "../spray/who";
 import { SPRAY } from "../config/timings";
 import { useGlass } from "../lib/glass";
 import "./home.css";
+
+/** Dev only: /?spray-debug shows the sprayPace tuning overlay (never shipped). */
+const SprayDebug =
+  import.meta.env.DEV && new URLSearchParams(location.search).has("spray-debug")
+    ? lazy(() => import("../spray/SprayDebug"))
+    : null;
 
 /**
  * Home (spec §7). The transit map and the name block are shared chrome; this
@@ -46,6 +52,11 @@ export default function Home() {
           />,
           glass,
         )}
+      {glass && SprayDebug && (
+        <Suspense>
+          <SprayDebug glass={glass} />
+        </Suspense>
+      )}
     </div>
   );
 }

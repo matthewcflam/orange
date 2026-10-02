@@ -47,6 +47,7 @@
 .station__label {
   font-family: var(--font-body);
   font-size: 47px; /* LABEL_BASE_SIZE; layouts scale from it */
+  font-weight: 700;
   /* Browser Inter sets wider than the mockup's; this matches label widths. */
   letter-spacing: -0.035em;
   text-anchor: middle;

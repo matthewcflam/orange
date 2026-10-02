@@ -124,7 +124,7 @@ export default function Keychain({ open }: { open: boolean }) {
             const enter = () => {
               if (isCurrent) return;
               setHover({ route, index: i });
-              play("station.hover", { rate: semitonesToRate(STATION_HOVER_SEMITONES[i]) });
+              play("station.hover", { rate: semitonesToRate(STATION_HOVER_SEMITONES[i]), vary: false });
               prefetchRoute(s.path);
             };
             const leave = () => setHover((h) => (h?.index === i ? null : h));

@@ -36,6 +36,13 @@
   margin: 0 0 calc(29 * var(--px));
 }
 
+/* The chrome layer ignores the pointer (clicks reach the map); opt the text
+   back in so it can be selected. */
+.name-block__name,
+.name-block__bio p {
+  pointer-events: auto;
+}
+
 .name-block__links {
   position: relative;
   height: calc(36 * var(--px));
@@ -47,11 +54,6 @@
   top: 0;
   display: block;
   color: var(--color-text);
-  transition: transform 0.15s;
-}
-
-.name-block__icon:hover {
-  transform: translateY(calc(-2 * var(--px)));
 }
 
 .name-block__icon:focus-visible {
@@ -64,24 +66,27 @@
   height: 100%;
 }
 
-/* GitHub 35, LinkedIn 36, mail 41×35, at mockup x 84, 133, 188. */
+/* github */
 .name-block__icon:nth-child(1) {
   left: calc(-1 * var(--px));
   width: calc(35 * var(--px));
   height: calc(35 * var(--px));
 }
 
+/* linkedin */
 .name-block__icon:nth-child(2) {
   left: calc(48 * var(--px));
-  top: calc(-1 * var(--px));
-  width: calc(36 * var(--px));
-  height: calc(36 * var(--px));
+  top: calc(-3 * var(--px));
+  width: calc(40 * var(--px));
+  height: calc(40 * var(--px));
 }
 
+/* mail */
 .name-block__icon--mail {
   left: calc(103 * var(--px));
-  width: calc(41 * var(--px));
-  height: calc(35 * var(--px));
+  top: calc(-1 * var(--px));
+  width: calc(46 * var(--px));
+  height: calc(40 * var(--px));
 }
 
 .name-block__bio .name-block__toast {

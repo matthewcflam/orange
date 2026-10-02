@@ -15,7 +15,7 @@ let capRatio: number | null = null;
 function getCapRatio(): number {
   if (capRatio === null) {
     const ctx = document.createElement("canvas").getContext("2d")!;
-    ctx.font = `${LABEL_BASE_SIZE}px "Inter Variable"`;
+    ctx.font = `700 ${LABEL_BASE_SIZE}px "Inter Variable"`;
     capRatio = ctx.measureText("H").actualBoundingBoxAscent / LABEL_BASE_SIZE;
   }
   return capRatio;
@@ -69,7 +69,7 @@ export default function TransitMap({ visible }: { visible: boolean }) {
       overwrite: "auto",
     });
     if (!on) return;
-    play("station.hover", { rate: semitonesToRate(STATION_HOVER_SEMITONES[i]) });
+    play("station.hover", { rate: semitonesToRate(STATION_HOVER_SEMITONES[i]), vary: false });
     prefetchRoute(STATIONS[i].path);
   };
 
