@@ -48,7 +48,7 @@
   --color-key-card:        #F8F7F2;  /* the station key card, sampled */
   --color-key-card-text:   #000000;
   --color-key-bubble:      #FFFFFF;  /* station bubbles, measured */
-  --color-key-here:        #FF61F4;  /* the current station's bubble (user's pink) */
+  --color-key-here:        var(--color-route);  /* the current station's bubble: filled with the route blue (was pink #FF61F4) */
 
   /* ---- Home ---- */
 

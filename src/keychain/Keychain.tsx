@@ -47,8 +47,8 @@ const ROUTE = [{ x: 328.7, y: -94.7 }, ...STOPS.map((s) => s.bubble), { x: 232.5
  * route) with Doug and a Compass Card. The current station's bubble is
  * pink; a hovered or focused station's bubble grows, as on the home map.
  *
- * Loaded on demand (StationChrome lazy-imports it; hovering Map prefetches)
- * and kept mounted once opened. While closed it is hidden and inert.
+ * Mounted with the station chrome (StationChrome) and kept mounted. While
+ * closed it is hidden and inert.
  */
 export default function Keychain({ open }: { open: boolean }) {
   const route = useRoute();
@@ -63,16 +63,30 @@ export default function Keychain({ open }: { open: boolean }) {
   // and back out the same way. It only ever moves up and right from its
   // resting place, so what's off screen at rest stays off screen.
   const away = () => ({ x: K.SLIDE_PX * pxScale(), y: -K.SLIDE_PX * pxScale() });
+  // Until the first open, the box is either pre-warming or parked away.
+  const opened = useRef(false);
   useLayoutEffect(() => {
-    gsap.set(boxRef.current, { ...away(), autoAlpha: 0 });
+    // Pre-warm: paint the card once, in place but invisible (and inert), so
+    // its first raster (shadow, rotation, noise tile) doesn't land on the
+    // first frames of the first open. Then park it away and hidden.
+    const box = boxRef.current!;
+    gsap.set(box, { x: 0, y: 0, opacity: 0.001, visibility: "visible" });
+    let raf = requestAnimationFrame(() => {
+      raf = requestAnimationFrame(() => {
+        if (!opened.current) gsap.set(box, { ...away(), autoAlpha: 0 });
+      });
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
   useLayoutEffect(() => {
     const box = boxRef.current!;
     const reduced = prefersReducedMotion();
     if (open) {
+      if (!opened.current) gsap.set(box, away());
+      opened.current = true;
       gsap.set(box, { autoAlpha: 1 });
       gsap.to(box, { x: 0, y: 0, duration: reduced ? 0 : K.OPEN, ease: K.OPEN_EASE, overwrite: true });
-    } else {
+    } else if (opened.current) {
       gsap.to(box, {
         ...away(),
         duration: reduced ? 0 : K.CLOSE,

@@ -1,10 +1,8 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRoute } from "../lib/router";
 import MapButton from "../keychain/MapButton";
+import Keychain from "../keychain/Keychain";
 import SpeechBubble from "./SpeechBubble";
-import { loadKeychain } from "../keychain/loadKeychain";
-
-const Keychain = lazy(loadKeychain);
 
 /**
  * Chrome on station pages (design/mockups-v2): the Map pill top-right and
@@ -18,20 +16,15 @@ export default function StationChrome() {
   // (under the transition cover) closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
   const open = openOn === route;
-  // Mounted on first open, then kept (hidden and asleep while closed).
-  const [mounted, setMounted] = useState(false);
-  const toggle = useCallback(() => {
-    setMounted(true);
-    setOpenOn((o) => (o === route ? null : route));
-  }, [route]);
+  const toggle = useCallback(() => setOpenOn((o) => (o === route ? null : route)), [route]);
 
   return (
     <>
-      {mounted && (
-        <Suspense fallback={null}>
-          <Keychain open={open} />
-        </Suspense>
-      )}
+      {/* Mounted with the chrome (under the transition cover), not lazily on
+          the first click: a lazy chunk made the first open wait ≥300 ms
+          (React throttles revealing a Suspense retry). Closed it is
+          invisible and inert. */}
+      <Keychain open={open} />
       <MapButton open={open} onToggle={toggle} />
       <SpeechBubble />
       <p className="station-name">Matthew Lam</p>

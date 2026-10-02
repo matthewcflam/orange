@@ -214,7 +214,7 @@ export const KEYCHAIN = {
   /** Open: the keychain slides in diagonally from the top-right corner,
    *  SLIDE_PX (mockup px) along each axis; close: it slides back out. */
   SLIDE_PX: 500,
-  OPEN: 0.8,
+  OPEN: 0.5,
   OPEN_EASE: "power3.out",
   CLOSE: 0.45,
   CLOSE_EASE: "power2.in",
@@ -280,4 +280,11 @@ export const AUDIO = {
   VOICE_STEAL_FADE: 0.01,
   MUTE_RAMP: 0.05,
   LIMITER: { threshold: -6, ratio: 20, attack: 0.003, release: 0.1 },
+} as const;
+
+/** Smooth wheel scrolling (Lenis, lib/scroll.ts). Touch stays native. */
+export const SCROLL = {
+  /** Fraction of the remaining distance covered per frame: lower = floatier. */
+  LERP: 0.1,
+  WHEEL_MULTIPLIER: 1,
 } as const;

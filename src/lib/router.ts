@@ -9,6 +9,7 @@
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 import { documentTitle, resolvePath, routeFor } from "../config/routes";
+import { lockScroll, resetScroll, unlockScroll } from "./scroll";
 
 /**
  * Runs the visual transition to `to`. Must call `commit()` exactly once, when
@@ -61,12 +62,13 @@ function commitRoute(to: string) {
   if (to === current) return;
   current = to;
   document.title = documentTitle(routeFor(to));
-  window.scrollTo(0, 0);
+  resetScroll();
   flushSync(emit);
 }
 
 async function run(to: string) {
   transitioning = true;
+  lockScroll(); // no wheel glide under the cover or into the new page
   try {
     await runner(to, () => commitRoute(to));
   } finally {
@@ -76,6 +78,7 @@ async function run(to: string) {
     queued = null;
     if (next && next !== current) void run(next);
     if (!transitioning) {
+      unlockScroll();
       const waiters = idleWaiters;
       idleWaiters = [];
       for (const w of waiters) w();

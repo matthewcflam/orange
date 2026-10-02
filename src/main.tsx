@@ -12,6 +12,7 @@ import { preloadSounds } from "./audio/engine";
 import { setTransitionRunner } from "./lib/router";
 import { pageTransition } from "./transition/pageTransition";
 import { GATE } from "./config/timings";
+import { initScroll } from "./lib/scroll";
 
 // Page theme changes fade (only visible on a deep link's gate exit; elsewhere
 // they happen under the transition cover).
@@ -19,6 +20,7 @@ document.documentElement.style.setProperty("--theme-fade", `${GATE.DEEP_LINK_FAD
 
 // The router owns scrolling (spec §4.3).
 history.scrollRestoration = "manual";
+initScroll();
 
 // Fetch + decode every sound while the gate idles (spec §9.2). No AudioContext yet.
 void preloadSounds();

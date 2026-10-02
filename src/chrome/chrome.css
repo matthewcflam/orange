@@ -75,10 +75,10 @@
 
 /* linkedin */
 .name-block__icon:nth-child(2) {
-  left: calc(48 * var(--px));
-  top: calc(-3 * var(--px));
-  width: calc(40 * var(--px));
-  height: calc(40 * var(--px));
+  left: calc(51 * var(--px));
+  top: calc(0 * var(--px));
+  width: calc(37 * var(--px));
+  height: calc(37 * var(--px));
 }
 
 /* mail */

@@ -63,7 +63,7 @@ export default function NameBlock({ visible }: { visible: boolean }) {
         <p>Vancouver, CA<br />
           Computer Engineering at UBC (c/o 2028)
         </p>
-        <p>currently: trying to get a job :)</p>
+        <p>currently: learning sound design!</p>
         <div className="name-block__links">
           <a className="name-block__icon interactive" href={GITHUB} target="_blank" rel="noopener noreferrer" aria-label="GitHub" onPointerEnter={hover}>
             <FontAwesomeIcon icon={faGithub} aria-hidden="true" />

@@ -55,6 +55,22 @@ body {
   overflow-x: hidden;
 }
 
+/* Lenis (lib/scroll.ts). Its stock .lenis-stopped { overflow: clip } is left
+   out on purpose: stop() runs during every transition, and clipping would drop
+   the scrollbar (a layout shift) and block the router scroll-to-top. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 button {
   font: inherit;
   color: inherit;

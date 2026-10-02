@@ -5,7 +5,6 @@ import { readToken } from "../lib/tokens";
 import { prefersReducedMotion } from "../lib/motion";
 import { MAP_BUTTON } from "../config/timings";
 import scribbleSvg from "../../assets-src/svg/portfolio-scribble.svg?raw";
-import { loadKeychain } from "./loadKeychain";
 
 /**
  * The Map pill, top-right on station pages (design/mockups-v2). Hover draws
@@ -57,7 +56,6 @@ export default function MapButton({ open, onToggle }: { open: boolean; onToggle:
     draw(on);
     if (!on) return;
     play("link.hover");
-    void loadKeychain();
   };
 
   return (
