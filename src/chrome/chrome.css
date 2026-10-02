@@ -123,14 +123,15 @@
 }
 
 /* ---- Station pages: the Map pill, top-right, on the station edge and
-   centred on the midline (About (2).png). Pill 91×44, 20px. ---- */
+   centred on the midline (About (2).png). 91×44, 20px; a near-square
+   rectangle (user change: was a full pill). ---- */
 .map-button {
   position: absolute;
   top: calc((var(--station-mid) - 22) * var(--px));
   right: calc(var(--station-edge) * var(--px));
   width: calc(91 * var(--px));
   height: calc(44 * var(--px));
-  border-radius: 999px;
+  border-radius: calc(4 * var(--px));
   font-size: calc(20 * var(--px));
   line-height: 1;
   background: var(--color-map-pill);
@@ -162,55 +163,6 @@
 .map-button__scribble path {
   vector-effect: non-scaling-stroke;
   stroke-width: max(1.5px, calc(2 * var(--px)));
-}
-
-/* ---- Speech bubble (SpeechBubble.tsx), from speech.svg ----
-   .speech is a zero-size anchor at the rect's bottom-right corner (mockup
-   1580, 925, moved to its Menu Open (3) spot: 1588, 923), so
-   the body grows up and left from the tail. */
-.speech {
-  position: absolute;
-  right: calc(179 * var(--px));
-  bottom: calc(101 * var(--px));
-  width: 0;
-  height: 0;
-}
-
-.speech__body {
-  --bubble-w: 162;
-  --bubble-min-h: 80;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: calc(162 * var(--px));
-  height: calc(80 * var(--px));
-  padding: calc(6 * var(--px)) calc(13 * var(--px));
-  border-radius: calc(6 * var(--px));
-  background: var(--color-bubble);
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.speech__text {
-  width: calc((162 - 26) * var(--px));
-  margin: 0;
-  font-size: calc(20 * var(--px));
-  line-height: calc(24 * var(--px));
-  letter-spacing: -0.01em;
-  color: var(--color-bubble-text);
-}
-
-/* Its viewBox starts at speech.svg (117, 56): 44.8 left of and 23.6 above
-   the rect's bottom-right corner. */
-.speech__tail {
-  position: absolute;
-  left: calc(-44.8 * var(--px));
-  top: calc(-23.6 * var(--px));
-  width: calc(48 * var(--px));
-  height: calc(77 * var(--px));
-  fill: var(--color-bubble);
-  transform-origin: 70% 15%;
-  pointer-events: none;
 }
 
 /* ---- Mute toggle, home only (open question #6) ---- */

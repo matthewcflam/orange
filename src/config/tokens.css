@@ -39,10 +39,8 @@
   /* ---- Station chrome ---- */
   --color-map-pill:      #D9D9D9;
   --color-map-pill-text: #000000;
-  --color-map-open:      #000000;  /* the pill while the keychain is open */
+  --color-map-open:      var(--color-station-bg);  /* "Close" while the keychain is open: matches the page (user change) */
   --color-map-open-text: #FFFFFF;
-  --color-bubble:        #FF7700;  /* speech bubble, from speech.svg */
-  --color-bubble-text:   #FFFFFF;
 
   /* ---- Keychain (keychain/) ---- */
   --color-key-card:        #F8F7F2;  /* the station key card, sampled */

@@ -13,6 +13,8 @@ import { prefersReducedMotion } from "./lib/motion";
 import { GlassContext } from "./lib/glass";
 import TransitionLayer from "./transition/TransitionLayer";
 import StationChrome from "./chrome/StationChrome";
+import Cursor from "./chrome/Cursor";
+import ScrollBar from "./chrome/ScrollBar";
 import { routeFor } from "./config/routes";
 
 /**
@@ -80,6 +82,9 @@ export default function App() {
   // Nothing renders until fonts are ready, so no swap can land mid-animation (§5.4).
   return (
     <div ref={rootRef} style={{ opacity: 0 }}>
+      {/* Portals into <body>, outside this fading root. */}
+      <Cursor />
+      <ScrollBar />
       {fontsReady && (
         <>
           <main className="layer--page" inert={gated}>

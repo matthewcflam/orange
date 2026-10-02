@@ -1,0 +1,25 @@
+/* The cursor (Cursor.tsx). White with difference blending, so it inverts
+   whatever is under it: black on the light home, white on dark station
+   pages. It lives in <body>, outside App's root (whose opacity fade makes it
+   its own group, which would hide the body colour from the blend). */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60; /* above the transition cover (50) */
+  width: calc(var(--cursor-ring) * 1px);
+  height: calc(var(--cursor-ring) * 1px);
+  margin: calc(var(--cursor-ring) * -0.5px) 0 0 calc(var(--cursor-ring) * -0.5px);
+  border: calc(var(--cursor-stroke) * 1px) solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  visibility: hidden;
+  will-change: transform;
+}

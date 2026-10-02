@@ -177,36 +177,6 @@ export const MAP_BUTTON = {
 } as const;
 
 /**
- * The orange speech bubble from "Matthew Lam" (chrome/SpeechBubble.tsx),
- * animated like the iPhone's Dynamic Island: it springs out of a small pill
- * at the tail, resizes to each new line, and shrinks back to the pill.
- */
-export const SPEECH = {
-  /** It always closes this long after the latest line. */
-  HOLD: 5,
-  /** The collapsed pill it grows from and shrinks to, mockup px. */
-  PILL_W_PX: 44,
-  PILL_H_PX: 18,
-  OPEN: 0.55,
-  OPEN_EASE: "back.out(1.7)",
-  /** Resizing to a new line while open. */
-  RESIZE: 0.45,
-  RESIZE_EASE: "back.out(1.4)",
-  CLOSE: 0.35,
-  CLOSE_EASE: "power3.in",
-  /** Text fades in this far into the open/resize, and out before a resize. */
-  TEXT_IN_DELAY: 0.12,
-  TEXT_IN: 0.25,
-  TEXT_OUT: 0.12,
-  /** The tail pops after the body starts growing. */
-  TAIL_DELAY: 0.08,
-  TAIL: 0.35,
-  /** After the first station visit's cover starts clearing, before
-   *  "Click the title to go home!". */
-  FIRST_VISIT_DELAY: 0.8,
-} as const;
-
-/**
  * The keychain the Map pill opens (keychain/): a static picture
  * (design/mockups-v2/Menu Open (3).png) that drops in from above as one piece.
  */
@@ -287,4 +257,29 @@ export const SCROLL = {
   /** Fraction of the remaining distance covered per frame: lower = floatier. */
   LERP: 0.1,
   WHEEL_MULTIPLIER: 1,
+} as const;
+
+/** The cursor (chrome/Cursor.tsx): a dot that opens into a ring over
+ *  anything clickable. Sizes in screen px (it doesn't scale with the frame). */
+export const CURSOR = {
+  DOT_PX: 10,
+  RING_PX: 22,
+  RING_STROKE_PX: 1.5,
+  /** Dot ↔ ring. */
+  GROW: 0.2,
+  GROW_EASE: "power3.out",
+} as const;
+
+/** The scroll thumb (chrome/ScrollBar.tsx) that replaces the native scrollbar
+ *  on mouse devices. Display only; shows while scrolling. Sizes in screen px. */
+export const SCROLLBAR = {
+  WIDTH_PX: 4,
+  /** Gap from the right and top/bottom edges. */
+  INSET_PX: 3,
+  MIN_THUMB_PX: 40,
+  OPACITY: 0.5,
+  FADE_IN: 0.15,
+  FADE_OUT: 0.4,
+  /** Seconds after the last scroll frame before it fades out. */
+  IDLE: 0.8,
 } as const;

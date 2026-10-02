@@ -13,7 +13,7 @@ None of these SVGs has element IDs. Reference paths by document order.
 | `new-portfolio.svg` | Projects list | orange loop around "This Portfolio" (active) | 212×139, 1 path; DrawSVG in |
 | `new-oyster.svg` | Projects list | orange speech-box outline around "Oyster News" (active) | 224×124, 1 path; DrawSVG in |
 | `new-mango.svg` | Projects list | orange loop around "Mango" (active) | 180×131, 1 path; DrawSVG in |
-| `speech.svg` | station pages | the orange speech bubble from "Matthew Lam" | 173×137: a 162×80 rect (r 6) + tail. Rebuilt in HTML/SVG by `chrome/SpeechBubble.tsx` (the rect has to resize to its text) |
+| `speech.svg` | station pages | the orange speech bubble from "Matthew Lam" | 173×137: a 162×80 rect (r 6) + tail. **Unused**: the speech bubble was removed (user request) |
 | `doug-keychain.svg` | keychain | Doug, the dog charm, with his chain and split ring | 304×252, placed 1:1 at keychain box (102, −160) as in `Menu Open (3).png`. `?charm` → AVIF/WebP 300/600w |
 | `compass-keychain.svg` | keychain | the Compass Card charm, with its ring | 387×354, placed 1:1 at keychain box (302, 120). `?charm` like Doug |
 | `mango.svg` | Mango | **draggable obstacle** in the body text | 39×67. Two filled ellipses (`#FFA62A`) plus a green stem stroke (`#76C933`). The text wraps around the ellipse union (spec §11.4). |

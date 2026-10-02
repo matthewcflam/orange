@@ -34,3 +34,17 @@ export function resetScroll(): void {
 /** Stops any glide and swallows wheel input until unlockScroll(). */
 export const lockScroll = () => lenis?.stop();
 export const unlockScroll = () => lenis?.start();
+
+/** Scroll position and how far the page can scroll (0 = it doesn't). */
+export type ScrollState = { scroll: number; limit: number };
+
+/** Calls back on every scroll frame. Lenis keeps `limit` cached (its own
+ *  ResizeObserver), so this reads no layout; without Lenis (reduced motion)
+ *  it falls back to a passive native listener. Returns an unsubscribe. */
+export function onScroll(cb: (s: ScrollState) => void): () => void {
+  if (lenis) return lenis.on("scroll", (l) => cb({ scroll: l.scroll, limit: l.limit }));
+  const root = document.documentElement;
+  const onNative = () => cb({ scroll: window.scrollY, limit: root.scrollHeight - window.innerHeight });
+  window.addEventListener("scroll", onNative, { passive: true });
+  return () => window.removeEventListener("scroll", onNative);
+}

@@ -15,7 +15,7 @@
  */
 import { gsap } from "../lib/gsap";
 import { play } from "../audio/engine";
-import { PROJECT, SPEECH, TRANSITION } from "../config/timings";
+import { PROJECT, TRANSITION } from "../config/timings";
 import { routeFor, STATIONS } from "../config/routes";
 import { getRoute, type TransitionRunner } from "../lib/router";
 import { preloadRoute } from "../lib/assets";
@@ -23,10 +23,6 @@ import { markPageHidden, markPageShown } from "../lib/pageReveal";
 import { prefersReducedMotion } from "../lib/motion";
 import { cover } from "./ditherCover";
 import { title } from "./scrambleTitle";
-import { say } from "../lib/speech";
-
-/** The first trip from home to a station says how to get back (once). */
-let toldHowHome = false;
 
 const isProject = (path: string) => routeFor(path).station === "projects";
 
@@ -50,10 +46,7 @@ export const pageTransition: TransitionRunner = async (to, commit) => {
   if (isProject(getRoute()) && isProject(to)) return projectSwitch(ready, commit);
 
   const reduced = prefersReducedMotion();
-  const leavingHome = routeFor(getRoute()).theme === "light";
   const tone = toneLeaving(getRoute());
-  const tellHowHome = leavingHome && !toldHowHome;
-  toldHowHome ||= tellHowHome;
   cover.setTone(tone);
   play("station.click");
 
@@ -71,10 +64,7 @@ export const pageTransition: TransitionRunner = async (to, commit) => {
   await new Promise<void>((unlock) => {
     void cover.hide(reduced, {
       delay: TRANSITION.HOLD,
-      onClearStart: () => {
-        markPageShown();
-        if (tellHowHome) gsap.delayedCall(SPEECH.FIRST_VISIT_DELAY, say, ["Click the title to go home!"]);
-      },
+      onClearStart: markPageShown,
       onUnlock: () => {
         if (reduced) title.hide();
         unlock();

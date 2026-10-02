@@ -30,7 +30,6 @@ export default function NameBlock({ visible }: { visible: boolean }) {
         <p>Vancouver, CA<br />
           Computer Engineering at UBC (c/o 2028)
         </p>
-        <p>currently: learning sound design!</p>
         <SocialLinks />
       </div>
     </div>

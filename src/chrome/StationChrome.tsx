@@ -2,12 +2,11 @@ import { useCallback, useState } from "react";
 import { useRoute } from "../lib/router";
 import MapButton from "../keychain/MapButton";
 import Keychain from "../keychain/Keychain";
-import SpeechBubble from "./SpeechBubble";
 import SocialLinks from "./SocialLinks";
 
 /**
  * Chrome on station pages (design/mockups-v2, About (2).png): the social
- * glyphs and the Map pill top-right, and the speech bubble. Mounted while the
+ * glyphs and the Map pill top-right. Mounted while the
  * route is a station page, so it persists from one station to the next. (The
  * name top-left is what goes home: pages/StationLayout.tsx.)
  */
@@ -29,7 +28,6 @@ export default function StationChrome() {
           invisible and inert. */}
       <Keychain open={open} />
       <MapButton open={open} onToggle={toggle} />
-      <SpeechBubble />
     </>
   );
 }

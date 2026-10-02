@@ -110,12 +110,6 @@
   position: absolute;
   left: calc(var(--x) * var(--px));
   white-space: nowrap;
-  cursor: pointer;
-}
-
-.experience__company:focus-visible {
-  outline: 2px solid var(--color-route);
-  outline-offset: 4px;
 }
 
 .experience__extras {

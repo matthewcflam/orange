@@ -1,0 +1,18 @@
+/* The scroll thumb (ScrollBar.tsx). White with difference blending like the
+   cursor, so it reads on the light home and the dark station pages; it lives
+   in <body> for the same reason. Below the transition cover (50), which hides
+   it during a page change. */
+.scrollbar {
+  position: fixed;
+  top: 0;
+  right: calc(var(--scrollbar-inset) * 1px);
+  z-index: 45;
+  width: calc(var(--scrollbar-w) * 1px);
+  height: 0;
+  border-radius: calc(var(--scrollbar-w) * 1px);
+  background: #fff;
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}

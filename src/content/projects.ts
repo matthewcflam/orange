@@ -79,7 +79,7 @@ export const PROJECTS: readonly Project[] = [
     slug: "mango",
     title: "Mango",
     listTitle: "Mango",
-    year: "2026",
+    year: "2025",
     path: "/projects/mango",
     heroes: [
       // TODO(open-question #12): the mockup's first hero is Oyster News's world map.

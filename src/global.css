@@ -20,8 +20,8 @@
   /* Station pages (About (2).png): the name, the glyphs and the Map pill sit
      on one line, the name and the pill the same distance from their edges.
      Unitless mockup px. */
-  --station-edge: 40;
-  --station-mid: 62;
+  --station-edge: 30;
+  --station-mid: 52;
 }
 
 /* Page theme: light on home and the gate, dark on station pages. App sets
@@ -66,6 +66,21 @@ body {
 html.lenis,
 html.lenis body {
   height: auto;
+}
+
+/* No native scrollbar on mouse devices (chrome/ScrollBar.tsx draws a thin
+   thumb instead). Windows' classic bar takes ~16px of layout width, so it
+   appearing at a page commit shifted the cover, its title and the right-hand
+   chrome, and the browser draws it above the cover. Touch bars overlay, so
+   they stay. */
+@media (hover: hover) and (pointer: fine) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .lenis [data-lenis-prevent] {
