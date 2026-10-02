@@ -40,7 +40,7 @@ function Row({ entry, x }: { entry: Entry; x: number }) {
  *  so the page scrolls. The gaps under each job are left for copy to come. */
 export default function Experience() {
   return (
-    <StationLayout title="Experience" className="experience">
+    <StationLayout className="experience">
       <TrainLine className="experience__line" />
       {JOBS.map((e) => (
         <Row key={e.company} entry={e} x={414} />

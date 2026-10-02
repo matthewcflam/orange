@@ -9,12 +9,14 @@
   min-height: 100vh;
 }
 
+/* "Matthew Lam", 38px (About (2).png): on the station edge, its cap centre
+   on the station midline (Inter's cap height is 0.727em). */
 .station-page__title {
   position: absolute;
-  left: calc(64 * var(--px));
-  top: calc((64 - 0.136 * 62) * var(--px));
+  left: calc(var(--station-edge) * var(--px));
+  top: calc((var(--station-mid) - 0.727 * 38 / 2 - 0.136 * 38) * var(--px));
   margin: 0;
-  font-size: calc(62 * var(--px));
+  font-size: calc(38 * var(--px));
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -65,7 +67,7 @@
 /* ---- About ---- */
 .about__copy {
   position: absolute;
-  left: calc(64 * var(--px));
+  left: calc(var(--station-edge) * var(--px));
   top: calc((217 - 6.3) * var(--px));
   width: calc(660 * var(--px));
 }

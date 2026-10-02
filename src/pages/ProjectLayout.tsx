@@ -66,7 +66,7 @@ export default function ProjectLayout({ active, children }: { active: ProjectSlu
   }, [active]);
 
   return (
-    <StationLayout title="Projects" className="project">
+    <StationLayout className="project">
       <div ref={rootRef} className="project__rail">
         <nav className="project-list" aria-label="Projects">
           <ul>

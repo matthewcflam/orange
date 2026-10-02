@@ -5,7 +5,7 @@ import TrainLine from "./TrainLine";
  *  software, and" is placeholder, reaching about halfway down the page. */
 export default function About() {
   return (
-    <StationLayout title="About">
+    <StationLayout>
       <div className="station-copy about__copy">
         <p>My name is Matthew. I’m in my third year studying computer engineering at the University of British Columbia.</p>
         {/* TODO(open-question #15): placeholder copy from here on. */}

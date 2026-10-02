@@ -17,6 +17,11 @@
      the composition instead of leaving the right side empty. Use it for x
      positions only; sizes stay in --px. */
   --vx: calc(100vw / 1767);
+  /* Station pages (About (2).png): the name, the glyphs and the Map pill sit
+     on one line, the name and the pill the same distance from their edges.
+     Unitless mockup px. */
+  --station-edge: 40;
+  --station-mid: 62;
 }
 
 /* Page theme: light on home and the gate, dark on station pages. App sets
