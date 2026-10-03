@@ -1,30 +1,11 @@
 import { useRef, type ReactNode } from "react";
 import { gsap } from "../lib/gsap";
 import { play } from "../audio/engine";
-import { HERO_SIZES, type Picture } from "../lib/assets";
+import ResponsivePicture from "./ResponsivePicture";
 import { prefersReducedMotion } from "../lib/motion";
 import { PROJECT } from "../config/timings";
 import type { Hero, Project } from "../content/projects";
 import ObstacleText, { type ObstacleDef } from "../textflow/ObstacleText";
-
-function ResponsivePicture({ picture, alt, eager }: { picture: Picture; alt: string; eager: boolean }) {
-  return (
-    <picture>
-      {Object.entries(picture.sources).map(([format, srcset]) => (
-        <source key={format} type={`image/${format}`} srcSet={srcset} sizes={HERO_SIZES} />
-      ))}
-      <img
-        src={picture.img.src}
-        width={picture.img.w}
-        height={picture.img.h}
-        alt={alt}
-        decoding="async"
-        fetchPriority={eager ? "high" : undefined}
-        loading={eager ? "eager" : "lazy"}
-      />
-    </picture>
-  );
-}
 
 function HeroBlock({ hero, eager }: { hero: Hero; eager: boolean }) {
   return (

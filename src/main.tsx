@@ -13,6 +13,7 @@ import { setTransitionRunner } from "./lib/router";
 import { pageTransition } from "./transition/pageTransition";
 import { GATE } from "./config/timings";
 import { initScroll } from "./lib/scroll";
+import { prefetchRoute } from "./lib/assets";
 
 // Page theme changes fade (only visible on a deep link's gate exit; elsewhere
 // they happen under the transition cover).
@@ -26,6 +27,9 @@ initScroll();
 void preloadSounds();
 
 setTransitionRunner(pageTransition);
+
+// A deep link's images (About photos, project heroes) download while the gate idles.
+prefetchRoute(location.pathname);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

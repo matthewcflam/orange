@@ -166,6 +166,22 @@ export const LINE = {
   DELAY: 0.15,
 } as const;
 
+/** About photos: the frosted glass melts clear once the page is on screen
+ *  (pages/AboutPhoto.tsx). Seconds. Look (blur, wash, grain) is in tokens.css. */
+export const FROST = {
+  /** After the page starts to appear, before the first photo melts. */
+  DELAY: 0.25,
+  /** Between photos, in content/aboutPhotos.ts order (top first). */
+  STAGGER: 0.15,
+  /** The heavy blur fades out. */
+  HEAVY_S: 1.2,
+  /** The milky wash and grain fade out (from the start, with the heavy blur). */
+  WASH_S: 1.1,
+  /** The light blur starts fading at this time, and takes this long. */
+  LIGHT_AT: 0.5,
+  LIGHT_S: 1.0,
+} as const;
+
 /** Station-page chrome: the Map pill (top-right). */
 export const MAP_BUTTON = {
   /** portfolio-scribble.svg draws under "Map" on hover, undraws on leave. */

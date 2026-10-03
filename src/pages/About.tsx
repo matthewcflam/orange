@@ -1,25 +1,47 @@
+import { useLayoutEffect, useRef } from "react";
 import StationLayout from "./StationLayout";
 import TrainLine from "./TrainLine";
+import AboutPhoto from "./AboutPhoto";
+import { ABOUT_PHOTOS } from "../content/aboutPhotos";
+import { defrost } from "./aboutFrost";
+import { prefersReducedMotion } from "../lib/motion";
 
-/** About (design/mockups-v2/About (1).png). The copy after "I like beautiful
- *  software, and" is placeholder, reaching about halfway down the page. */
+/** About (design/mockups-v2/About (4).png): copy, the line, and photos right
+ *  of it (content/aboutPhotos.ts) that defrost in (pages/aboutFrost.ts). */
 export default function About() {
+  const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const frost = !prefersReducedMotion();
+
+  useLayoutEffect(() => {
+    if (!frost) return;
+    return defrost(ABOUT_PHOTOS.map((p, i) => ({ el: photoRefs.current[i]!, frostLight: p.frostLight })));
+  }, [frost]);
+
   return (
     <StationLayout>
       <div className="station-copy about__copy">
-        <p>My name is Matthew. I’m in my third year studying computer engineering at the University of British Columbia.</p>
-        {/* TODO(open-question #15): placeholder copy from here on. */}
-        <p>
-          I like beautiful software, and the small details that make it feel alive: a sound that lands exactly when you
-          click, a line that moves like something with weight.
-        </p>
-        <p>
-          Placeholder: a few sentences about what I’m building right now, what I want to work on next, and the kind of
-          team I’d love to join.
-        </p>
-        <p>Placeholder: something about life outside of school (sailing, swimming, transit maps).</p>
+        <p>Hello! I’m Matthew.</p>
+        <p>I’m in my third year of computer engineering at the University of British Columbia.</p>
+        <p>I like to solve problems with clever software and great design.</p>
+        <p>Outside of school, I love:</p>
+        <ul>
+          <li>graphic design</li>
+          <li>swimming</li>
+          <li>cinema</li>
+        </ul>
+        <p>Currently: learning sound design!</p>
       </div>
       <TrainLine className="about__line" />
+      {ABOUT_PHOTOS.map((photo, i) => (
+        <AboutPhoto
+          key={photo.id}
+          ref={(el) => {
+            photoRefs.current[i] = el;
+          }}
+          photo={photo}
+          frost={frost}
+        />
+      ))}
     </StationLayout>
   );
 }

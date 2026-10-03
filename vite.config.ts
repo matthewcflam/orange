@@ -14,6 +14,11 @@ const PRESETS: Record<string, Record<string, string>> = {
   hero: { w: '700;1400', format: 'avif;webp', as: 'picture' },
   obstacle: { w: '64;128', format: 'avif;webp', as: 'picture' },
   charm: { w: '300;600', format: 'avif;webp', as: 'picture' },
+  // About photos' frosted glass, blurred here instead of with CSS filters.
+  // `frost` (heavy) is tiny and inlined as a data URI, so it shows before
+  // any image loads; `frostlight` (the mid blur) is a small file.
+  frost: { w: '32', blur: '1.6', format: 'webp', quality: '70', inline: '' },
+  frostlight: { w: '160', blur: '3', format: 'webp', quality: '70' },
 }
 
 // https://vite.dev/config/

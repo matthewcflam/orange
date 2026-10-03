@@ -50,6 +50,10 @@
 
   /* ---- Home ---- */
 
+  /* ---- About photos: frosted glass (pages/AboutPhoto.tsx) ---- */
+  --color-frost-wash: rgba(226, 232, 240, 0.38);  /* milky, slightly cool */
+  --frost-grain:      0.14;
+
   /* ---- Project pages ---- */
   --color-link-underline: #BE4525;  /* spec said ≈#C8452F; sampled. Asset missing */
   --color-obstacle-oyster: #D24F39; /* spec said ≈#D9503A; sampled */

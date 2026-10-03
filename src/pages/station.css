@@ -68,7 +68,7 @@
 .about__copy {
   position: absolute;
   left: calc(var(--station-edge) * var(--px));
-  top: calc((217 - 6.3) * var(--px));
+  top: calc((204 - 6.3) * var(--px));
   width: calc(660 * var(--px));
 }
 
@@ -120,4 +120,75 @@
   font-size: calc(30 * var(--px));
   font-weight: 700;
   line-height: 1;
+}
+
+/* ---- About: copy list and photos (About (4).png) ---- */
+/* "Outside of school, I love:" runs straight into its list (no gap); the
+   bullets sit 13px in, the text 35px. */
+.about__copy ul + p {
+  margin-top: calc(29 * var(--px));
+}
+
+.about__copy ul {
+  margin: 0;
+  padding-left: calc(35 * var(--px));
+  list-style: disc;
+}
+
+/* A photo box in mockup px (--x, --y, --w, --h from content/aboutPhotos.ts). */
+.about-photo {
+  position: absolute;
+  left: calc(var(--x) * var(--px));
+  top: calc(var(--y) * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+  overflow: hidden;
+  /* Clips the overscaled heavy frost. */
+  isolation: isolate;
+}
+
+.about-photo picture,
+.about-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.about-photo img {
+  object-fit: cover;
+}
+
+.about-photo__glass,
+.about-photo__frost {
+  position: absolute;
+  inset: 0;
+}
+
+/* Pre-blurred copies (vite.config.ts ?frost / ?frostlight), upscaled: the
+   browser's smoothing finishes the blur, so there are no CSS filters. The
+   heavy one is opaque and inlined, so the frame is never an empty box. */
+.about-photo__frost--heavy,
+.about-photo__frost--light {
+  background-size: cover;
+  background-position: center;
+  will-change: opacity;
+}
+
+/* Upscaling a 32px image shows its pixel edges at the frame's border; the
+   slight overscale pushes them outside. */
+.about-photo__frost--heavy {
+  inset: -6%;
+}
+
+.about-photo__wash {
+  background: var(--color-frost-wash);
+  will-change: opacity;
+}
+
+/* White noise at low alpha (no blend mode: one less pass per frame while it
+   fades). */
+.about-photo__grain {
+  opacity: var(--frost-grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  will-change: opacity;
 }

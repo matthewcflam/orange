@@ -25,6 +25,10 @@ None of these SVGs has element IDs. Reference paths by document order.
 | `oyster-news.png` | Oyster News | hero #2 (Vancouver news map) | 1771×996 RGBA |
 | `mango.png` | Mango | hero #2 (MineMotion gesture control + Minecraft screenshot) | 1716×1028 RGBA. This is **not** the draggable mango. |
 | `portfolio-orange.png` | Portfolio | unused for now | 380×380 orange circle. The Portfolio hero circles are built in CSS/SVG. Possible drag obstacle; see open question #4. |
+| `me4.jpg` | About | photo: alley by the dumpsters | 2048×1536. Box (1317, 191) 331×303 in `About (4).png` |
+| `me3.jpg` | About | photo: hoodie against a brick wall | 2048×1536. Box (1022, 283) 225×299 in `About (4).png` |
+| `me1.jpg` | About | photo: as a kid in a car | 2560×1920, EXIF-rotated to portrait (imagetools outputs it upright). Not in the mockup: box (1423, 564) 225×300 is my placement |
+| `me2.jpg` | About | photo: on the bus | 4032×3024 (converted from HEIC: sharp can't decode HEIC). Not in the mockup: box (1022, 652) 331×248 is my placement |
 
 ## Sounds (`assets-src/sounds/`)
 
