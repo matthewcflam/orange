@@ -1,6 +1,6 @@
 /**
  * Transit map geometry (spec §7.1), in mockup px: the SVG's viewBox is the
- * 1767×1024 frame. Measured from design/mockups-v2/Home Page (8).png. The map
+ * 1767×1024 frame. Measured from design/mockups-v2/Home Page (8).png; labels from Home Page (9).png. The map
  * only shows on home (station pages navigate with the keychain instead).
  */
 import { STATIONS } from "../config/routes";
@@ -36,8 +36,8 @@ const FULL: Layout = {
   bendX: 521,
   // The diagonal ends at Experience.
   x: [424, 840, 1246],
-  labelTop: [46.5, 53.5, 53.5],
-  labelSize: 47,
+  labelTop: [42.5, 45.5, 45.5],
+  labelSize: 36,
   lineWidth: 20,
   dotR: 20,
   dotRing: 3,

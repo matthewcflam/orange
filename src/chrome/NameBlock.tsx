@@ -27,9 +27,15 @@ export default function NameBlock({ visible }: { visible: boolean }) {
     <div ref={ref} className="name-block">
       <p className="name-block__name">Matthew Lam</p>
       <div className="name-block__bio">
-        <p>Vancouver, CA<br />
-          Computer Engineering at UBC (c/o 2028)
-        </p>
+        <p>Software Developer based in Vancouver, CA<br />
+        Computer Engineering at UBC (c/o 2028)</p>
+        {/* <p>
+          Computer Engineering at UBC (c/o 2028)<br />
+          prev. SWE @ EnerSys<br />
+          Web Development @ UBC Sailbot<br />
+          Operations Lead @ Third Quadrant Design
+        </p> */}
+        <p>currently: trying to use figma at 120%</p>
         <SocialLinks />
       </div>
     </div>

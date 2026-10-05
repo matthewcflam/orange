@@ -6,7 +6,7 @@ import { ABOUT_PHOTOS } from "../content/aboutPhotos";
 import { defrost } from "./aboutFrost";
 import { prefersReducedMotion } from "../lib/motion";
 
-/** About (design/mockups-v2/About (4).png): copy, the line, and photos right
+/** About (design/mockups-v2/About (5).png): copy, the line, and photos right
  *  of it (content/aboutPhotos.ts) that defrost in (pages/aboutFrost.ts). */
 export default function About() {
   const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -18,7 +18,7 @@ export default function About() {
   }, [frost]);
 
   return (
-    <StationLayout>
+    <StationLayout className="about">
       <div className="station-copy about__copy">
         <p>Hello! I’m Matthew.</p>
         <p>I’m in my third year of computer engineering at the University of British Columbia.</p>

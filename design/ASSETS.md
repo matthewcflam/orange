@@ -25,6 +25,7 @@ None of these SVGs has element IDs. Reference paths by document order.
 | `oyster-news.png` | Oyster News | hero #2 (Vancouver news map) | 1771×996 RGBA |
 | `mango.png` | Mango | hero #2 (MineMotion gesture control + Minecraft screenshot) | 1716×1028 RGBA. This is **not** the draggable mango. |
 | `portfolio-orange.png` | Portfolio | unused for now | 380×380 orange circle. The Portfolio hero circles are built in CSS/SVG. Possible drag obstacle; see open question #4. |
+| `texture.png` | keychain | paper texture laid over the whole key card | 509×289, the card's own size, uniform 30% alpha (it sits on top of everything, labels and bands included). `?paper` → WebP |
 | `me4.jpg` | About | photo: alley by the dumpsters | 2048×1536. Box (1317, 191) 331×303 in `About (4).png` |
 | `me3.jpg` | About | photo: hoodie against a brick wall | 2048×1536. Box (1022, 283) 225×299 in `About (4).png` |
 | `me1.jpg` | About | photo: as a kid in a car | 2560×1920, EXIF-rotated to portrait (imagetools outputs it upright). Not in the mockup: box (1423, 564) 225×300 is my placement |

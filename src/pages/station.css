@@ -65,16 +65,22 @@
 }
 
 /* ---- About ---- */
+/* The page is one group laid out in mockup px around the line, whose centre
+   (x 884 in About (5).png) sits in the exact middle of the page. */
+.about {
+  --about-mid: 884;
+}
+
 .about__copy {
   position: absolute;
-  left: calc(var(--station-edge) * var(--px));
-  top: calc((204 - 6.3) * var(--px));
+  left: calc(50% + (111 - var(--about-mid)) * var(--px));
+  top: calc((249 - 6.3) * var(--px));
   width: calc(660 * var(--px));
 }
 
 .about__line {
-  left: calc(849 * var(--px));
-  top: calc(212 * var(--px));
+  left: calc(50% - max(1px, calc(2 * var(--px))) / 2);
+  top: calc(228 * var(--px));
   bottom: 0;
 }
 
@@ -122,7 +128,7 @@
   line-height: 1;
 }
 
-/* ---- About: copy list and photos (About (4).png) ---- */
+/* ---- About: copy list and photos (About (5).png) ---- */
 /* "Outside of school, I love:" runs straight into its list (no gap); the
    bullets sit 13px in, the text 35px. */
 .about__copy ul + p {
@@ -138,7 +144,7 @@
 /* A photo box in mockup px (--x, --y, --w, --h from content/aboutPhotos.ts). */
 .about-photo {
   position: absolute;
-  left: calc(var(--x) * var(--px));
+  left: calc(50% + (var(--x) - var(--about-mid)) * var(--px));
   top: calc(var(--y) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));

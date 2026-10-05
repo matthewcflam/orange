@@ -3,7 +3,7 @@
   position: absolute;
   /* Under the name, where home's bio starts. */
   left: calc(85 * var(--px));
-  top: calc(660 * var(--px));
+  top: calc(634 * var(--px));
   display: flex;
   flex-direction: column;
   align-items: flex-start;

@@ -6,34 +6,48 @@
 .name-block {
   position: absolute;
   left: calc(85 * var(--px));
-  top: calc((594 - 0.136 * 62) * var(--px));
+  top: calc((579 - 0.136 * 48) * var(--px));
 }
 
 .name-block__name {
   margin: 0;
   font-family: var(--font-name);
-  font-size: calc(62 * var(--px));
+  font-size: calc(48 * var(--px));
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
   white-space: nowrap;
 }
 
-/* Bio, 22.5/29 (cap tops 667, 724, 870 in the mockup). Hidden on the gate;
-   the gate → home timeline reveals it. */
+/* Bio, 16/19 (Home Page (9).png: first cap top 632, a blank line between
+   paragraphs). Hidden on the gate; the gate → home timeline reveals it. */
 .name-block__bio {
   position: absolute;
   left: 0;
-  top: calc((667 - 6.3 - (594 - 0.136 * 62)) * var(--px));
-  font-size: calc(22.5 * var(--px));
-  line-height: calc(29 * var(--px));
-  letter-spacing: -0.01em;
+  top: calc((632 - 3.7 - (579 - 0.136 * 48)) * var(--px));
+  font-size: calc(20 * var(--px));
+  font-weight: 300;
+  line-height: calc(24 * var(--px));
+  letter-spacing: -0.04em;
   white-space: nowrap;
   visibility: hidden;
 }
 
 .name-block__bio p {
-  margin: 0 0 calc(29 * var(--px));
+  margin: 0 0 calc(19 * var(--px));
+}
+
+/* Home's glyphs are the station pages' size (user change; the mockup's are
+   0.69). */
+.name-block .social-links {
+  --icon-scale: 0.8;
+  left: calc(3 * var(--px));
+}
+
+.name-block .social-links .social-links__toast {
+  left: calc(136 * var(--px));
+  margin-top: calc(-7 * var(--px));
+  font-size: calc(14 * var(--px));
 }
 
 /* The chrome layer ignores the pointer (clicks reach the map); opt the text

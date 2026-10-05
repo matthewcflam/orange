@@ -8,6 +8,7 @@ import { prefetchRoute } from "../lib/assets";
 import { routeFor, STATIONS } from "../config/routes";
 import { KEYCHAIN as K, STATION } from "../config/timings";
 import { STATION_HOVER_SEMITONES, semitonesToRate } from "../config/sounds";
+import paper from "../../assets-src/images/texture.png?paper";
 // import doug from "../../assets-src/svg/doug-keychain.svg?charm";
 // import compass from "../../assets-src/svg/compass-keychain.svg?charm";
 import "./keychain.css";
@@ -28,24 +29,39 @@ import "./keychain.css";
 // ];
 
 /** The key card: top-left corner, size, rotated -30° about that corner
- *  (keychain.css). Its right and top run off screen. Below, card px. */
-const CARD = { w: 560, h: 287 };
+ *  (keychain.css). Its right and top run off screen. Below, card px,
+ *  measured from Group 67.png (the card alone, unrotated, 509×289). */
+const CARD = { w: 509, h: 289 };
 
-/** Per station: its bubble's centre and its label's right ink edge and baseline. */
+/** The blue bands across the top and bottom, and the faint strip across the middle. */
+const BANDS = [
+  { y: 0, h: 24 },
+  { y: 269, h: 20 },
+];
+const STRIP = { y: 138, h: 38 };
+
+/** Per station: its bubble's centre and its label's right edge and baseline. */
 const STOPS = [
-  { bubble: { x: 221.2, y: 61.1 }, right: 185.6, baseline: 70.1 },
-  { bubble: { x: 220.8, y: 141.7 }, right: 187.8, baseline: 149.3 },
-  { bubble: { x: 224.8, y: 224.8 }, right: 191.8, baseline: 230.1 },
+  { bubble: { x: 222.5, y: 74 }, right: 194.5, baseline: 86 },
+  { bubble: { x: 222.5, y: 148 }, right: 194.5, baseline: 156.3 },
+  { bubble: { x: 222.5, y: 224 }, right: 194.5, baseline: 233.3 },
 ];
 
-/** The route: in from off screen, through the bubbles, out under the Compass Card. */
-const ROUTE = [{ x: 328.7, y: -94.7 }, ...STOPS.map((s) => s.bubble), { x: 232.5, y: 385.3 }];
+/** The route: down from the top band, through the bubbles, into the bottom band. */
+const ROUTE = [{ x: 268, y: -4 }, ...STOPS.map((s) => s.bubble), { x: 222.5, y: CARD.h + 4 }];
+
+/** The small print: left edge and baseline. */
+const META = [
+  { text: "2026", left: 8, baseline: 53 },
+  { text: "Lam", left: 11, baseline: 251 },
+];
 
 /**
  * The keychain the Map pill opens: the website's navigation, a still picture
  * of the station key card (stations right-aligned to their bubbles on the
- * route) with Doug and a Compass Card. The current station's bubble is
- * pink; a hovered or focused station's bubble grows, as on the home map.
+ * route, under a paper texture) with Doug and a Compass Card. The current
+ * station's bubble is orange; a hovered or focused station's bubble grows,
+ * as on the home map.
  *
  * Mounted with the station chrome (StationChrome) and kept mounted. While
  * closed it is hidden and inert.
@@ -117,6 +133,10 @@ export default function Keychain({ open }: { open: boolean }) {
       {/* <Charm charm={CHARMS[0]} /> */}
       <div className="keychain__card">
         <svg className="keychain__route" viewBox={`0 0 ${CARD.w} ${CARD.h}`} aria-hidden="true">
+          {BANDS.map((b) => (
+            <rect key={b.y} className="keychain__band" x={0} y={b.y} width={CARD.w} height={b.h} />
+          ))}
+          <rect className="keychain__strip" x={0} y={STRIP.y} width={CARD.w} height={STRIP.h} />
           <polyline points={ROUTE.map((p) => `${p.x},${p.y}`).join(" ")} />
           {STOPS.map((s, i) => (
             <circle
@@ -169,6 +189,18 @@ export default function Keychain({ open }: { open: boolean }) {
             );
           })}
         </nav>
+        {META.map((m) => (
+          <span
+            key={m.text}
+            className="keychain__meta"
+            aria-hidden="true"
+            style={{ left: `calc(${m.left} * var(--px))`, top: `calc(${m.baseline} * var(--px))` }}
+          >
+            {m.text}
+          </span>
+        ))}
+        {/* The paper texture lies over everything (it's 30% alpha), as in the mockup. */}
+        <div className="keychain__paper" style={{ backgroundImage: `url(${paper})` }} />
       </div>
       {/* <Charm charm={CHARMS[1]} /> */}
     </div>
