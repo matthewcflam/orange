@@ -22,6 +22,8 @@
      Unitless mockup px. */
   --station-edge: 30;
   --station-mid: 52;
+  /* Corner rounding on every photo (user request): 10 mockup px. */
+  --image-radius: calc(10 * var(--px));
 }
 
 /* Page theme: light on home and the gate, dark on station pages. App sets

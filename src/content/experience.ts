@@ -47,7 +47,7 @@ export const JOBS: Job[] = [
     date: "2026",
     company: "EnerSys",
     body: [
-      "Built a battery diagnostic tool in C# and XAML for incorrect protocol configurations, accelerating troubleshooting and resolving a 6-month roadblock for Rogers Communications",
+      "Built a battery diagnostic tool in C# and XAML for incorrect protocol configurations, accelerating troubleshooting and resolving a 6-month roadblock",
       "Led 3 cross-team technical demonstrations of the tool’s setup, core features, and use cases, aligning Tech Support and Controller teams on product capabilities and eliminating support escalations",
       "Resolved 10+ controller defects through root-cause analysis and targeted fixes, improving stability on 800+ sites",
       "Executed physical tests on battery systems, validating 90% of targeted functionality for the upcoming release",

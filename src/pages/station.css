@@ -21,6 +21,8 @@
   letter-spacing: -0.03em;
   line-height: 1;
   white-space: nowrap;
+  /* Above page content that flows under it (Experience's padded list). */
+  z-index: 1;
 }
 
 /* The title goes home. */
@@ -294,18 +296,20 @@
 }
 
 /* Hover photos: mockup box x from the page's left, dy from the header's cap
-   top. Hidden until the job is hovered (autoAlpha); never take the pointer,
-   so they can't steal the band's hover. */
+   top. Hidden until the job is hovered (autoAlpha). A shown photo is part of
+   its job's hover area: it sits inside the <section>, so pointerleave waits
+   until the cursor leaves both. Hidden, visibility keeps it out of
+   hit-testing, so it can't start a hover on its own. */
 .experience__photo {
   position: absolute;
   left: calc(var(--x) * var(--px));
   top: calc((var(--dy) + 3.26) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));
+  border-radius: var(--image-radius);
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
   will-change: transform, opacity;
 }
 
@@ -328,6 +332,7 @@
   top: calc(var(--y) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));
+  border-radius: var(--image-radius);
   overflow: hidden;
   /* Clips the overscaled heavy frost. */
   isolation: isolate;

@@ -106,7 +106,7 @@
 
 .project-hero {
   height: calc(var(--h) * var(--apx));
-  border-radius: calc(30 * var(--apx));
+  border-radius: var(--image-radius);
   overflow: hidden;
 }
 

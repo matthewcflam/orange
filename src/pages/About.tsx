@@ -39,7 +39,7 @@ export default function About() {
     <StationLayout className="about">
       <div className="station-copy about__copy">
         <p>Hi, I’m Matthew</p>
-        <p>I’m a curious, creative thinker that uses clever software and design to solve problems.</p>
+        <p>I’m a curious, user-focused developer that likes to use clever software and design to solve problems.</p>
         <p>In my free time, you could catch me:</p>
         <ul className="about__list">
           <li>

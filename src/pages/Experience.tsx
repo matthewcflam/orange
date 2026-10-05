@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import StationLayout from "./StationLayout";
 import TrainLine from "./TrainLine";
 import ResponsivePicture from "./ResponsivePicture";
@@ -7,6 +7,8 @@ import { revealOnScroll } from "../lib/scrollReveal";
 import { gsap } from "../lib/gsap";
 import { pxScale } from "../lib/frame";
 import { prefersReducedMotion } from "../lib/motion";
+import { whenPageShown } from "../lib/pageReveal";
+import { isUnderPointer } from "../lib/pointer";
 import { EXPERIENCE } from "../config/timings";
 import extras from "../../assets-src/svg/extras.svg";
 
@@ -44,9 +46,11 @@ const noHover = () => window.matchMedia("(hover: none)").matches;
 /**
  * One job: a full-width band from its header's top to the foot of its copy.
  * The role and date hang left of the line; the photos show only while the
- * cursor is over the band (a tap toggles them on touch screens).
+ * cursor is over the band or a shown photo (a tap toggles them on touch
+ * screens).
  */
 function JobRow({ job, extrasMark }: { job: Job; extrasMark?: boolean }) {
+  const sectionRef = useRef<HTMLElement>(null);
   const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
   const shown = useRef(false);
   const hasPhotos = job.photos.length > 0;
@@ -62,17 +66,34 @@ function JobRow({ job, extrasMark }: { job: Job; extrasMark?: boolean }) {
     };
   }, [hasPhotos]);
 
-  const toggle = (on: boolean) => {
-    if (!hasPhotos || shown.current === on) return;
-    shown.current = on;
-    setPhotos(
-      photoRefs.current.filter((el): el is HTMLDivElement => el !== null),
-      on,
-    );
-  };
+  const toggle = useCallback(
+    (on: boolean) => {
+      if (!hasPhotos || shown.current === on) return;
+      shown.current = on;
+      setPhotos(
+        photoRefs.current.filter((el): el is HTMLDivElement => el !== null),
+        on,
+      );
+    },
+    [hasPhotos],
+  );
+
+  // The page can appear under a cursor that isn't moving, which fires no
+  // pointerenter: open the job it's already resting on.
+  useEffect(() => {
+    if (!hasPhotos) return;
+    let live = true;
+    void whenPageShown().then(() => {
+      if (live && isUnderPointer(sectionRef.current!)) toggle(true);
+    });
+    return () => {
+      live = false;
+    };
+  }, [hasPhotos, toggle]);
 
   return (
     <section
+      ref={sectionRef}
       className="experience__job"
       onPointerEnter={hasPhotos ? (e) => e.pointerType !== "touch" && toggle(true) : undefined}
       onPointerLeave={hasPhotos ? (e) => e.pointerType !== "touch" && toggle(false) : undefined}
