@@ -20,3 +20,7 @@ export function viewportInMockupPx() {
  *  it in its right pane at this many --px per old mockup px (project.css
  *  --apx must match). */
 export const ARTICLE_SCALE = 1.1;
+
+/** `<source sizes>` for an image box `w` mockup px wide in the --px frame. */
+export const frameSizes = (w: number) =>
+  `(min-aspect-ratio: 1767/1024) ${((w / FRAME.H) * 100).toFixed(2)}vh, ${((w / FRAME.W) * 100).toFixed(2)}vw`;

@@ -11,6 +11,7 @@ None of these SVGs has element IDs. Reference paths by document order.
 | `who-spray.svg` | home | **guide paths** for the "who?" spray engine; not displayed | 910×302, 5 stroked paths, `#FF7700`, 30px stroke. Draw order = document order: 0 `w`, 1 `h`, 2 `o`, 3 `?` hook, 4 `?` dot |
 | `line1.svg`, `line2.svg`, `line3.svg` | About | hand-drawn list dashes, one per list item, static | 8×2 / 8×2 / 8×1, `#FF7700`, drawn 1:1 |
 | `anything.svg` | About | the word "anything" inline in the Connect line, raised above the text, static | 59×16, `#FF7700`, drawn 1:1 |
+| `extras.svg` | Experience | the hand-drawn word "extras" above the extra jobs, static | 126×34, `#FF7700`, drawn 1:1, right edge at x 419 |
 | `portfolio-scribble.svg` | station pages (Map pill) | squiggle drawn under "Map" on hover | 119×49, 1 path, `#FF7700`; stretched to the mockup's 78×85 box (non-scaling stroke) |
 | `new-portfolio.svg` | Projects list | orange loop around "This Portfolio" (active) | 212×139, 1 path; DrawSVG in |
 | `new-oyster.svg` | Projects list | orange speech-box outline around "Oyster News" (active) | 224×124, 1 path; DrawSVG in |
@@ -29,6 +30,12 @@ None of these SVGs has element IDs. Reference paths by document order.
 | `portfolio-orange.png` | Portfolio | unused for now | 380×380 orange circle. The Portfolio hero circles are built in CSS/SVG. Possible drag obstacle; see open question #4. |
 | `texture.png` | keychain | paper texture laid over the whole key card | 509×289, the card's own size, uniform 30% alpha (it sits on top of everything, labels and bands included). `?paper` → WebP |
 | `me-final.png` | About | the photo: thumbs up on the seawall | 2134×2222. Box (941, 278) 447×465 in `About (6).png` |
+| `enersys1.png` | Experience (EnerSys) | hover photo: selfie by the EnerSys logo | 2305×1728. Box (1288, header cap −45) 235×176 in `Experience (2).png` |
+| `enersys2.png` | Experience (EnerSys) | hover photo: meeting-room demo, on top | 2736×2060. Box (1432, +55) 229×173 |
+| `sailbot1.png` | Experience (UBC Sailbot) | hover photo: the Sailbot logo | 1612×1612. Box (1547, −49) 128×128 |
+| `sailbot2.png` | Experience (UBC Sailbot) | hover photo: the team, on top | 3044×2283. Box (1298, +42) 268×201 |
+| `tqd.png` | Experience (Third Quadrant Design) | hover photo: the TQD logo | 2050×988. Box (1263, +11) 224×108 (`Experience (3).png`) |
+| `tqd2.png` | Experience (Third Quadrant Design) | hover photo: the Poetry Night competition board, over the logo | 4680×3300. Box (1395, +103) 303×214 (`Experience (3).png`) |
 | `me4.jpg` | About (unused since `About (6)`) | photo: alley by the dumpsters | 2048×1536. Box (1317, 191) 331×303 in `About (4).png` |
 | `me3.jpg` | About (unused) | photo: hoodie against a brick wall | 2048×1536. Box (1022, 283) 225×299 in `About (4).png` |
 | `me1.jpg` | About (unused) | photo: as a kid in a car | 2560×1920, EXIF-rotated to portrait (imagetools outputs it upright). Not in the mockup: box (1423, 564) 225×300 is my placement |

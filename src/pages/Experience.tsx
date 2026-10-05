@@ -1,48 +1,132 @@
-import type { CSSProperties } from "react";
+import { useLayoutEffect, useRef, type CSSProperties } from "react";
 import StationLayout from "./StationLayout";
 import TrainLine from "./TrainLine";
+import ResponsivePicture from "./ResponsivePicture";
+import { JOBS, EXTRAS, type Job } from "../content/experience";
+import { revealOnScroll } from "../lib/scrollReveal";
+import { gsap } from "../lib/gsap";
+import { pxScale } from "../lib/frame";
+import { prefersReducedMotion } from "../lib/motion";
+import { EXPERIENCE } from "../config/timings";
+import extras from "../../assets-src/svg/extras.svg";
 
-interface Entry {
-  date: string;
-  company: string;
-  /** Cap top in mockup px (design/mockups-v2/Experience (1).png). */
-  y: number;
-}
-
-/** Company names start at x 414; the Extras group at x 395. */
-const JOBS: Entry[] = [
-  { date: "2026", company: "EnerSys", y: 239 },
-  { date: "2026", company: "UBC Sailbot", y: 752 },
-  { date: "2024-2026", company: "UBC Third Quadrant Design", y: 935 },
-];
-
-const EXTRAS: Entry[] = [
-  { date: "2025-2026", company: "UBC Aquatics Centre", y: 1351 },
-  { date: "2025", company: "UBC Geering Up Engineering Outreach", y: 1415 },
-];
-
-function Row({ entry, x }: { entry: Entry; x: number }) {
-  return (
-    <div className="experience__row" style={{ "--y": entry.y, "--x": x } as CSSProperties}>
-      <span className="experience__date">{entry.date}</span>
-      <span className="experience__company">{entry.company}</span>
-    </div>
+/** Show or hide a job's photos (the later one lands on top, second). */
+function setPhotos(els: HTMLElement[], on: boolean) {
+  if (prefersReducedMotion()) {
+    gsap.set(els, { autoAlpha: on ? 1 : 0 });
+    return;
+  }
+  gsap.to(
+    els,
+    on
+      ? {
+          autoAlpha: 1,
+          scale: 1,
+          y: 0,
+          duration: EXPERIENCE.PHOTO_IN,
+          ease: EXPERIENCE.PHOTO_EASE,
+          stagger: EXPERIENCE.PHOTO_STAGGER,
+          overwrite: "auto",
+        }
+      : {
+          autoAlpha: 0,
+          scale: EXPERIENCE.PHOTO_SCALE_FROM,
+          y: EXPERIENCE.PHOTO_Y * pxScale(),
+          duration: EXPERIENCE.PHOTO_OUT,
+          ease: "power2.in",
+          overwrite: "auto",
+        },
   );
 }
 
-/** Experience (design/mockups-v2/Experience (1).png): taller than the window,
- *  so the page scrolls. The gaps under each job are left for copy to come. */
-export default function Experience() {
+const noHover = () => window.matchMedia("(hover: none)").matches;
+
+/**
+ * One job: a full-width band from its header's top to the foot of its copy.
+ * The role and date hang left of the line; the photos show only while the
+ * cursor is over the band (a tap toggles them on touch screens).
+ */
+function JobRow({ job, extrasMark }: { job: Job; extrasMark?: boolean }) {
+  const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const shown = useRef(false);
+  const hasPhotos = job.photos.length > 0;
+
+  useLayoutEffect(() => {
+    if (!hasPhotos) return;
+    const els = photoRefs.current.filter((el): el is HTMLDivElement => el !== null);
+    if (!prefersReducedMotion()) {
+      gsap.set(els, { scale: EXPERIENCE.PHOTO_SCALE_FROM, y: EXPERIENCE.PHOTO_Y * pxScale() });
+    }
+    return () => {
+      gsap.killTweensOf(els);
+    };
+  }, [hasPhotos]);
+
+  const toggle = (on: boolean) => {
+    if (!hasPhotos || shown.current === on) return;
+    shown.current = on;
+    setPhotos(
+      photoRefs.current.filter((el): el is HTMLDivElement => el !== null),
+      on,
+    );
+  };
+
   return (
-    <StationLayout className="experience">
+    <section
+      className="experience__job"
+      onPointerEnter={hasPhotos ? (e) => e.pointerType !== "touch" && toggle(true) : undefined}
+      onPointerLeave={hasPhotos ? (e) => e.pointerType !== "touch" && toggle(false) : undefined}
+      onClick={hasPhotos ? () => noHover() && toggle(!shown.current) : undefined}
+    >
+      <div className="experience__role" data-reveal>
+        {extrasMark && <img className="experience__extras" src={extras} alt="Extras" />}
+        <p className="experience__title">{job.role}</p>
+        <p className="experience__date">{job.date}</p>
+      </div>
+      <h2 className="experience__company" data-reveal>
+        {job.company}
+      </h2>
+      {job.body.map((para) => (
+        <p key={para} className="experience__para" data-reveal>
+          {para}
+        </p>
+      ))}
+      {job.photos.map((p, i) => (
+        <div
+          key={p.picture.img.src}
+          ref={(el) => {
+            photoRefs.current[i] = el;
+          }}
+          className="experience__photo"
+          style={{ "--x": p.x, "--dy": p.dy, "--w": p.w, "--h": p.h } as CSSProperties}
+        >
+          <ResponsivePicture picture={p.picture} alt={p.alt} eager sizes={p.sizes} />
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/** Experience (design/mockups-v2/Experience (2).png): jobs, then the extras.
+ *  Everything fades up as it's scrolled into view (lib/scrollReveal.ts). */
+export default function Experience() {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => revealOnScroll([...listRef.current!.closest(".station-page")!.querySelectorAll<HTMLElement>("[data-reveal]")]), []);
+
+  return (
+    <StationLayout className="experience" footerReveal>
       <TrainLine className="experience__line" />
-      {JOBS.map((e) => (
-        <Row key={e.company} entry={e} x={414} />
-      ))}
-      <h2 className="experience__extras">Extras</h2>
-      {EXTRAS.map((e) => (
-        <Row key={e.company} entry={e} x={395} />
-      ))}
+      <div ref={listRef} className="experience__list">
+        {JOBS.map((job) => (
+          <JobRow key={job.company} job={job} />
+        ))}
+        <div className="experience__extras-group">
+          {EXTRAS.map((job, i) => (
+            <JobRow key={job.company} job={job} extrasMark={i === 0} />
+          ))}
+        </div>
+      </div>
     </StationLayout>
   );
 }

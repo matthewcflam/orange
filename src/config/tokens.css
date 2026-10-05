@@ -19,6 +19,7 @@
   --color-station-bg:   #212121;  /* About, Experience, Projects */
   --color-station-text: #FFFFFF;
   --color-divider:      #909090;  /* the station pages' vertical line */
+  --color-experience-date: #A8A8A8;  /* Experience dates (sampled) and body copy */
 
   /* ---- Brand ---- */
   --color-orange: #FF7700;          /* "who?", scribbles, Portfolio hero */

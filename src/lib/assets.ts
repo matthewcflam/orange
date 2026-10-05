@@ -5,6 +5,7 @@
  */
 import { projectByPath } from "../content/projects";
 import { ABOUT_PHOTOS } from "../content/aboutPhotos";
+import { EXPERIENCE_PHOTOS } from "../content/experience";
 
 /** vite-imagetools `as=picture` output: srcset per format + <img> fallback. */
 export interface Picture {
@@ -21,9 +22,11 @@ interface RouteImage {
   sizes: string;
 }
 
-/** Above-the-fold images per route. */
+/** Images per route that must be decoded before it shows (above the fold,
+ *  or Experience's hover photos, which must not pop in). */
 function routeImages(path: string): RouteImage[] {
   if (path === "/about") return ABOUT_PHOTOS.map(({ picture, sizes }) => ({ picture, sizes }));
+  if (path === "/experience") return EXPERIENCE_PHOTOS.map(({ picture, sizes }) => ({ picture, sizes }));
   const heroes = projectByPath(path)?.heroes ?? [];
   return heroes.flatMap((h) => (h.kind === "image" ? [{ picture: h.picture, sizes: HERO_SIZES }] : []));
 }

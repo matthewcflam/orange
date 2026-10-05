@@ -4,6 +4,7 @@
  * (me1–me4.jpg were the About (5) photos; they are unused now.)
  */
 import type { Picture } from "../lib/assets";
+import { frameSizes } from "../lib/frame";
 import meFinal from "../../assets-src/images/me-final.png?hero";
 import meFinalFrost from "../../assets-src/images/me-final.png?frost";
 import meFinalFrostLight from "../../assets-src/images/me-final.png?frostlight";
@@ -25,9 +26,6 @@ export interface AboutPhoto {
   sizes: string;
 }
 
-const sizes = (w: number) =>
-  `(min-aspect-ratio: 1767/1024) ${((w / 1024) * 100).toFixed(2)}vh, ${((w / 1767) * 100).toFixed(2)}vw`;
-
 const photo = (
   id: string,
   [picture, frost, frostLight]: [Picture, string, string],
@@ -36,7 +34,7 @@ const photo = (
   y: number,
   w: number,
   h: number,
-): AboutPhoto => ({ id, picture, frost, frostLight, alt, x, y, w, h, sizes: sizes(w) });
+): AboutPhoto => ({ id, picture, frost, frostLight, alt, x, y, w, h, sizes: frameSizes(w) });
 
 /** In reveal order, top first. */
 export const ABOUT_PHOTOS: AboutPhoto[] = [

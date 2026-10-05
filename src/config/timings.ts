@@ -182,6 +182,32 @@ export const FROST = {
   LIGHT_S: 1.0,
 } as const;
 
+/** Experience (pages/Experience.tsx). Seconds unless noted. */
+export const EXPERIENCE = {
+  /** Scroll reveal (lib/scrollReveal.ts): each element fades up once as it
+   *  enters the window. Rise in mockup px. */
+  REVEAL_Y: 24,
+  REVEAL_DURATION: 0.8,
+  REVEAL_EASE: "power3.out",
+  /** Between elements that enter together (the first screen cascades). */
+  REVEAL_STAGGER: 0.06,
+  /** After the page starts to appear, before the first screen reveals. */
+  REVEAL_DELAY: 0.2,
+  /** Reveal once this fraction of an element is in the window. (A fraction,
+   *  not a margin above the bottom edge: elements at the page's foot, like
+   *  the footer, could never scroll past such a line.) */
+  REVEAL_THRESHOLD: 0.25,
+  /** Hover photos: in while the cursor is over a job, out when it leaves. */
+  PHOTO_IN: 0.45,
+  PHOTO_OUT: 0.25,
+  /** The photo on top lands this much after the one below. */
+  PHOTO_STAGGER: 0.07,
+  /** Photos grow from this scale and rise PHOTO_Y mockup px. */
+  PHOTO_SCALE_FROM: 0.94,
+  PHOTO_Y: 12,
+  PHOTO_EASE: "power3.out",
+} as const;
+
 /** Station-page chrome: the Map pill (top-right). */
 export const MAP_BUTTON = {
   /** portfolio-scribble.svg draws under "Map" on hover, undraws on leave. */
