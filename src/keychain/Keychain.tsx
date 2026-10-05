@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap } from "../lib/gsap";
 import { play } from "../audio/engine";
 import { pxScale } from "../lib/frame";
@@ -8,7 +8,6 @@ import { prefetchRoute } from "../lib/assets";
 import { routeFor, STATIONS } from "../config/routes";
 import { KEYCHAIN as K, STATION } from "../config/timings";
 import { STATION_HOVER_SEMITONES, semitonesToRate } from "../config/sounds";
-import paper from "../../assets-src/images/texture.png?paper";
 // import doug from "../../assets-src/svg/doug-keychain.svg?charm";
 // import compass from "../../assets-src/svg/compass-keychain.svg?charm";
 import "./keychain.css";
@@ -28,17 +27,19 @@ import "./keychain.css";
 //   { id: "compass", picture: compass, at: { x: 302, y: 120 }, size: { x: 387, y: 354 } },
 // ];
 
-/** The key card: top-left corner, size, rotated -30° about that corner
- *  (keychain.css). Its right and top run off screen. Below, card px,
- *  measured from Group 67.png (the card alone, unrotated, 509×289). */
-const CARD = { w: 509, h: 289 };
+/** The key card: top-left corner (keychain.css), size, and its tilt in degrees
+ *  about that corner (About (8).png). Its right and top run off screen.
+ *  Below, card px, measured from Group 67.png (the card alone, unrotated,
+ *  509×289). */
+const CARD = { w: 509, h: 289, angle: -9.4 };
 
-/** The blue bands across the top and bottom, and the faint strip across the middle. */
+/** The blue bands across the top and bottom, and the faint strip between
+ *  Experience and Projects (About (8).png). */
 const BANDS = [
   { y: 0, h: 24 },
   { y: 269, h: 20 },
 ];
-const STRIP = { y: 138, h: 38 };
+const STRIP = { y: 176, h: 38 };
 
 /** Per station: its bubble's centre and its label's right edge and baseline. */
 const STOPS = [
@@ -59,7 +60,7 @@ const META = [
 /**
  * The keychain the Map pill opens: the website's navigation, a still picture
  * of the station key card (stations right-aligned to their bubbles on the
- * route, under a paper texture) with Doug and a Compass Card. The current
+ * route) with Doug and a Compass Card. The current
  * station's bubble is orange; a hovered or focused station's bubble grows,
  * as on the home map.
  *
@@ -75,10 +76,14 @@ export default function Keychain({ open }: { open: boolean }) {
   const [hover, setHover] = useState<{ route: string; index: number } | null>(null);
   const hovered = hover?.route === route ? hover.index : null;
 
-  // Open/close: the whole box slides in diagonally from the top-right corner
-  // and back out the same way. It only ever moves up and right from its
-  // resting place, so what's off screen at rest stays off screen.
-  const away = () => ({ x: K.SLIDE_PX * pxScale(), y: -K.SLIDE_PX * pxScale() });
+  // Open/close: the whole box slides in along the card's length, from off
+  // screen right, and back out the same way. It only ever moves up and right
+  // from its resting place, so what's off screen at rest stays off screen.
+  const away = () => {
+    const d = K.SLIDE_PX * pxScale();
+    const a = (CARD.angle * Math.PI) / 180;
+    return { x: d * Math.cos(a), y: d * Math.sin(a) };
+  };
   // Until the first open, the box is either pre-warming or parked away.
   const opened = useRef(false);
   useLayoutEffect(() => {
@@ -131,7 +136,7 @@ export default function Keychain({ open }: { open: boolean }) {
   return (
     <div ref={boxRef} id="keychain" className="keychain" inert={!open}>
       {/* <Charm charm={CHARMS[0]} /> */}
-      <div className="keychain__card">
+      <div className="keychain__card" style={{ "--card-angle": CARD.angle } as CSSProperties}>
         <svg className="keychain__route" viewBox={`0 0 ${CARD.w} ${CARD.h}`} aria-hidden="true">
           {BANDS.map((b) => (
             <rect key={b.y} className="keychain__band" x={0} y={b.y} width={CARD.w} height={b.h} />
@@ -199,8 +204,6 @@ export default function Keychain({ open }: { open: boolean }) {
             {m.text}
           </span>
         ))}
-        {/* The paper texture lies over everything (it's 30% alpha), as in the mockup. */}
-        <div className="keychain__paper" style={{ backgroundImage: `url(${paper})` }} />
       </div>
       {/* <Charm charm={CHARMS[1]} /> */}
     </div>

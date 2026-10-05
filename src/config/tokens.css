@@ -45,7 +45,7 @@
   --color-map-open-text: #FFFFFF;
 
   /* ---- Keychain (keychain/) ---- */
-  --color-key-card:        #FFFFFF;  /* the station key card, under its paper texture (Group 67.png) */
+  --color-key-card:        #FFFFFF;  /* the station key card (Group 67.png) */
   --color-key-card-text:   #000000;
   --color-key-bubble:      #FFFFFF;  /* station bubbles, measured */
   --color-key-here:        #FFA62A;  /* the current station's bubble (user change; was the route blue, then pink) */

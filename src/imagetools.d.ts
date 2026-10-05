@@ -20,7 +20,3 @@ declare module "*?charm" {
   const picture: import("./lib/assets").Picture;
   export default picture;
 }
-declare module "*?paper" {
-  const src: string;
-  export default src;
-}

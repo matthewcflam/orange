@@ -13,16 +13,17 @@
   will-change: transform;
 }
 
-/* The station key card (Group 67.png), rotated -30° about its top-left corner. */
+/* The station key card (Group 67.png), rotated --card-angle (CARD.angle in
+   Keychain.tsx) about its top-left corner (About (8).png). */
 .keychain__card {
   position: absolute;
-  left: calc(68.1 * var(--px));
-  top: calc(141.7 * var(--px));
+  left: calc(76.6 * var(--px));
+  top: calc(13.8 * var(--px));
   width: calc(509 * var(--px));
   height: calc(289 * var(--px));
   border-radius: calc(34.5 * var(--px));
   overflow: hidden;
-  transform: rotate(-30deg);
+  transform: rotate(calc(var(--card-angle) * 1deg));
   transform-origin: 0 0;
   pointer-events: auto;
   color: var(--color-key-card-text);
@@ -87,14 +88,6 @@
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
-}
-
-/* The paper texture over the whole card; the links underneath stay live. */
-.keychain__paper {
-  position: absolute;
-  inset: 0;
-  background-size: 100% 100%;
-  pointer-events: none;
 }
 
 /* The bubble's hit area (home map hitR 28 around a 12 dot), centred on it. */

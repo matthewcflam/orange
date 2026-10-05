@@ -40,10 +40,7 @@ export interface Project {
 
 // The copy in all three mockups. Mango and Portfolio reuse Oyster News's text.
 const OYSTER_BODY = [
-  "Some people scroll Instagram. Or TikTok. Some go outside. Me? I read the news. It got to the point I would wonder what else was going on in the world. Some people scroll Instagram. Or TikTok.",
-  "Some go outside. Me? I read the news. It got to the point I would wonder what else was going on in the world. Some people scroll Instagram. Or TikTok. Some go outside. Me? I read the news. It got to the point I would wonder what else was going on in the world. Some people scroll Instagram. Or TikTok. Some go outside Me? I read the news. It got to the point I would wonder what else was going on in the world. Some people scroll Instagram.",
-  "Or TikTok. Some go outside. Me?",
-  "I read the news. It got to the point I would wonder what else was going on in the world.",
+  "PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER"
 ];
 
 /** List order (design/mockups-v2): Portfolio, Oyster News, Mango. */

@@ -19,9 +19,6 @@ const PRESETS: Record<string, Record<string, string>> = {
   // any image loads; `frostlight` (the mid blur) is a small file.
   frost: { w: '32', blur: '1.6', format: 'webp', quality: '70', inline: '' },
   frostlight: { w: '160', blur: '3', format: 'webp', quality: '70' },
-  // The key card's paper texture (texture.png, 509×289 at 30% alpha), kept at
-  // its own size; WebP keeps the alpha.
-  paper: { format: 'webp', quality: '85' },
 }
 
 // https://vite.dev/config/
