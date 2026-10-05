@@ -9,6 +9,8 @@ None of these SVGs has element IDs. Reference paths by document order.
 | File | Page | Role | Notes |
 |---|---|---|---|
 | `who-spray.svg` | home | **guide paths** for the "who?" spray engine; not displayed | 910×302, 5 stroked paths, `#FF7700`, 30px stroke. Draw order = document order: 0 `w`, 1 `h`, 2 `o`, 3 `?` hook, 4 `?` dot |
+| `line1.svg`, `line2.svg`, `line3.svg` | About | hand-drawn list dashes, one per list item, static | 8×2 / 8×2 / 8×1, `#FF7700`, drawn 1:1 |
+| `anything.svg` | About | the word "anything" inline in the Connect line, raised above the text, static | 59×16, `#FF7700`, drawn 1:1 |
 | `portfolio-scribble.svg` | station pages (Map pill) | squiggle drawn under "Map" on hover | 119×49, 1 path, `#FF7700`; stretched to the mockup's 78×85 box (non-scaling stroke) |
 | `new-portfolio.svg` | Projects list | orange loop around "This Portfolio" (active) | 212×139, 1 path; DrawSVG in |
 | `new-oyster.svg` | Projects list | orange speech-box outline around "Oyster News" (active) | 224×124, 1 path; DrawSVG in |
@@ -26,10 +28,11 @@ None of these SVGs has element IDs. Reference paths by document order.
 | `mango.png` | Mango | hero #2 (MineMotion gesture control + Minecraft screenshot) | 1716×1028 RGBA. This is **not** the draggable mango. |
 | `portfolio-orange.png` | Portfolio | unused for now | 380×380 orange circle. The Portfolio hero circles are built in CSS/SVG. Possible drag obstacle; see open question #4. |
 | `texture.png` | keychain | paper texture laid over the whole key card | 509×289, the card's own size, uniform 30% alpha (it sits on top of everything, labels and bands included). `?paper` → WebP |
-| `me4.jpg` | About | photo: alley by the dumpsters | 2048×1536. Box (1317, 191) 331×303 in `About (4).png` |
-| `me3.jpg` | About | photo: hoodie against a brick wall | 2048×1536. Box (1022, 283) 225×299 in `About (4).png` |
-| `me1.jpg` | About | photo: as a kid in a car | 2560×1920, EXIF-rotated to portrait (imagetools outputs it upright). Not in the mockup: box (1423, 564) 225×300 is my placement |
-| `me2.jpg` | About | photo: on the bus | 4032×3024 (converted from HEIC: sharp can't decode HEIC). Not in the mockup: box (1022, 652) 331×248 is my placement |
+| `me-final.png` | About | the photo: thumbs up on the seawall | 2134×2222. Box (941, 278) 447×465 in `About (6).png` |
+| `me4.jpg` | About (unused since `About (6)`) | photo: alley by the dumpsters | 2048×1536. Box (1317, 191) 331×303 in `About (4).png` |
+| `me3.jpg` | About (unused) | photo: hoodie against a brick wall | 2048×1536. Box (1022, 283) 225×299 in `About (4).png` |
+| `me1.jpg` | About (unused) | photo: as a kid in a car | 2560×1920, EXIF-rotated to portrait (imagetools outputs it upright). Not in the mockup: box (1423, 564) 225×300 is my placement |
+| `me2.jpg` | About (unused) | photo: on the bus | 4032×3024 (converted from HEIC: sharp can't decode HEIC). Not in the mockup: box (1022, 652) 331×248 is my placement |
 
 ## Sounds (`assets-src/sounds/`)
 

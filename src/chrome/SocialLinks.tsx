@@ -1,8 +1,6 @@
-import { useRef, useState } from "react";
-import { gsap } from "../lib/gsap";
-import { HOME } from "../config/timings";
 import { play } from "../audio/engine";
-import { copyText } from "../lib/clipboard";
+import { useCopyEmail } from "./useCopyEmail";
+import { EMAIL, GITHUB, LINKEDIN } from "../content/contact";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -15,31 +13,13 @@ import "./chrome.css";
 // Font Awesome styles come from the import above, not injected at runtime.
 config.autoAddCss = false;
 
-const EMAIL = "matthewcflam@gmail.com";
-const GITHUB = "https://github.com/matthewcflam";
-const LINKEDIN = "https://www.linkedin.com/in/matthewcflam/";
-
 /**
  * GitHub, LinkedIn and a mail button that copies the address, with its
  * "copied" toast. Under the bio on home; top-right, beside the Map pill, on
  * station pages (`social-links--station`, scaled by --icon-scale).
  */
 export default function SocialLinks({ className }: { className?: string }) {
-  const toastRef = useRef<HTMLParagraphElement>(null);
-  const toastTl = useRef<gsap.core.Timeline | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  const copyEmail = async () => {
-    const ok = await copyText(EMAIL);
-    if (!ok) return;
-    play("project.select");
-    setCopied(true);
-    toastTl.current?.kill();
-    toastTl.current = gsap
-      .timeline({ onComplete: () => setCopied(false) })
-      .fromTo(toastRef.current, { autoAlpha: 0, y: HOME.TOAST_RISE_PX }, { autoAlpha: 1, y: 0, duration: HOME.TOAST_IN, ease: HOME.TOAST_EASE })
-      .to(toastRef.current, { autoAlpha: 0, duration: HOME.TOAST_OUT }, `+=${HOME.TOAST_HOLD}`);
-  };
+  const { copyEmail, toastRef, copied } = useCopyEmail();
 
   const hover = (e: React.PointerEvent) => e.pointerType !== "touch" && play("link.hover");
 

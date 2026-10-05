@@ -64,24 +64,117 @@
   margin-top: calc(29 * var(--px));
 }
 
-/* ---- About ---- */
-/* The page is one group laid out in mockup px around the line, whose centre
-   (x 884 in About (5).png) sits in the exact middle of the page. */
+/* ---- About (About (6).png) ---- */
+/* The copy and the photo are one group in mockup px (copy left 356 to photo
+   right 1388), centred on the page: x is calc(50% + (x - mid) * px). */
 .about {
-  --about-mid: 884;
+  --about-mid: 872;
+  /* The copy is 18px (user change; the mockup has 16): everything in it,
+     the hand-drawn SVGs included, is mockup px times 18/16. */
+  --cp: calc(var(--px) * 18 / 16);
 }
 
+/* Mockup: Inter 16/19 on a 19px grid (the home bio's tracking); one blank
+   line between paragraphs, two before "Connect"; Inter's cap top sits 3.7
+   below the line box. Scaled by --cp, the block (246 tall, cap top to the
+   last line's foot) stays centred on mockup y 514, the photo's middle. */
 .about__copy {
   position: absolute;
-  left: calc(50% + (111 - var(--about-mid)) * var(--px));
-  top: calc((249 - 6.3) * var(--px));
-  width: calc(660 * var(--px));
+  left: calc(50% + (356 - var(--about-mid)) * var(--px));
+  top: round(calc(514 * var(--px) - (123 + 3.7) * var(--cp)), 1px);
+  width: calc(470 * var(--cp));
+  font-size: calc(16 * var(--cp));
+  line-height: round(calc(19 * var(--cp)), 1px);
+  letter-spacing: -0.04em;
 }
 
-.about__line {
-  left: calc(50% - max(1px, calc(2 * var(--px))) / 2);
-  top: calc(228 * var(--px));
-  bottom: 0;
+.about__copy p + p,
+.about__list {
+  margin: round(calc(19 * var(--cp)), 1px) 0 0;
+}
+
+.about__copy .about__connect {
+  margin-top: round(calc(38 * var(--cp)), 1px);
+}
+
+/* Hand-drawn dashes (line1–3.svg, 1:1 at 16px): no list markers, the text
+   15 in. The line grid and the dash offsets are rounded to whole px, so each
+   1px-ish stroke lands on the same pixel phase and the three match. */
+.about__list {
+  padding: 0;
+  list-style: none;
+}
+
+.about__list li {
+  position: relative;
+  padding-left: calc(15 * var(--cp));
+}
+
+.about__dash {
+  position: absolute;
+  left: calc(2 * var(--cp));
+  top: round(calc(10.2 * var(--cp)), 1px);
+  width: calc(8 * var(--cp));
+  height: calc(2 * var(--cp));
+}
+
+.about__list li:nth-child(2) .about__dash {
+  top: round(calc(9.2 * var(--cp)), 1px);
+}
+
+.about__dash--thin {
+  top: round(calc(11.2 * var(--cp)), 1px);
+  height: calc(1 * var(--cp));
+}
+
+/* "anything" (anything.svg, 59×16, 1:1 at 16px), inline. */
+.about__anything {
+  display: inline-block;
+  width: calc(59 * var(--cp));
+  height: calc(16 * var(--cp));
+  margin: 0 calc(1 * var(--cp)) 0 calc(3.5 * var(--cp));
+  vertical-align: calc(-8.4 * var(--cp));
+  /* Raised (user change): its baseline about 7 above the text's. Relative,
+     so it doesn't grow the line box. */
+  position: relative;
+  top: calc(-10 * var(--cp));
+}
+
+.about__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, calc(1.2 * var(--cp)));
+  text-underline-offset: calc(3.2 * var(--cp));
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.about__link:hover {
+  opacity: 0.7;
+}
+
+.about__link:focus-visible {
+  outline: 2px solid var(--color-route);
+  outline-offset: 3px;
+}
+
+.about__smile {
+  color: var(--color-orange);
+}
+
+.about__copy .about__toast {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 19 * var(--cp));
+  margin: 0;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* ---- Experience (scrolls: the page is taller than the window) ---- */
@@ -128,19 +221,7 @@
   line-height: 1;
 }
 
-/* ---- About: copy list and photos (About (5).png) ---- */
-/* "Outside of school, I love:" runs straight into its list (no gap); the
-   bullets sit 13px in, the text 35px. */
-.about__copy ul + p {
-  margin-top: calc(29 * var(--px));
-}
-
-.about__copy ul {
-  margin: 0;
-  padding-left: calc(35 * var(--px));
-  list-style: disc;
-}
-
+/* ---- About: the photo ---- */
 /* A photo box in mockup px (--x, --y, --w, --h from content/aboutPhotos.ts). */
 .about-photo {
   position: absolute;
