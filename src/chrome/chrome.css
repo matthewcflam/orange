@@ -20,21 +20,23 @@
 }
 
 /* Bio, 16/19 (Home Page (9).png: first cap top 632, a blank line between
-   paragraphs). Hidden on the gate; the gate → home timeline reveals it. */
+   paragraphs). Hidden on the gate; the gate → home timeline reveals it.
+   Body text never drops below 16px: --bu is --px floored at 16/20. */
 .name-block__bio {
+  --bu: max(var(--px), 16px / 20);
   position: absolute;
   left: 0;
   top: calc((632 - 3.7 - (579 - 0.136 * 48)) * var(--px));
-  font-size: calc(20 * var(--px));
+  font-size: calc(20 * var(--bu));
   font-weight: 300;
-  line-height: calc(24 * var(--px));
+  line-height: calc(24 * var(--bu));
   letter-spacing: -0.04em;
   white-space: nowrap;
   visibility: hidden;
 }
 
 .name-block__bio p {
-  margin: 0 0 calc(19 * var(--px));
+  margin: 0 0 calc(19 * var(--bu));
 }
 
 /* Home's glyphs are the station pages' size (user change; the mockup's are

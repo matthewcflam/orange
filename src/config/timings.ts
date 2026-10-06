@@ -223,8 +223,8 @@ export const MAP_BUTTON = {
  * (design/mockups-v2/Menu Open (3).png) that drops in from above as one piece.
  */
 export const KEYCHAIN = {
-  /** Open: the keychain slides in along the card's length from off screen
-   *  right, SLIDE_PX (mockup px); close: it slides back out the same way. */
+  /** Open: the keychain slides in diagonally from the top-right corner,
+   *  SLIDE_PX (mockup px) along each axis; close: it slides back out. */
   SLIDE_PX: 500,
   OPEN: 0.5,
   OPEN_EASE: "power3.out",

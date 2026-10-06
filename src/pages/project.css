@@ -143,13 +143,16 @@
 
 /* Body: Inter 15/19 (the mockup ink measures 15px, not the spec's ~16:
    the line breaks match 06 at 15), justified; each paragraph's last line
-   stays left. Integer px (Pretext needs them; TextFlow also rounds), with a fallback. */
+   stays left. Integer px (Pretext needs them; TextFlow also rounds), with a fallback.
+   Never below 16px (body text floor); the column stays (the heroes and the
+   obstacle shapes are tied to it), so the text wraps into extra lines. */
 .project__body,
 .project__date {
-  font-size: calc(15 * var(--apx));
-  font-size: round(calc(15 * var(--apx)), 1px);
-  line-height: calc(19 * var(--apx));
-  line-height: round(calc(19 * var(--apx)), 1px);
+  --size: max(16px, 15 * var(--apx));
+  font-size: var(--size);
+  font-size: round(var(--size), 1px);
+  line-height: calc(var(--size) * 19 / 15);
+  line-height: round(calc(var(--size) * 19 / 15), 1px);
 }
 
 .project__body {

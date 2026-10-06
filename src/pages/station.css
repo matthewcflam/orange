@@ -50,7 +50,7 @@
   right: calc(39 * var(--px));
   bottom: calc(var(--station-edge) * var(--px));
   margin: 0;
-  font-size: calc(16 * var(--px));
+  font-size: max(14px, 16 * var(--px));
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -82,13 +82,19 @@
 }
 
 /* ---- About (About (6).png) ---- */
-/* The copy and the photo are one group in mockup px (copy left 356 to photo
-   right 1388), centred on the page: x is calc(50% + (x - mid) * px). */
+/* The copy and the photo are one group (copy left 356 to photo right 1388 in
+   the mockup), centred on the page. */
 .about {
-  --about-mid: 872;
   /* The copy is 18px (user change; the mockup has 16): everything in it,
-     the hand-drawn SVGs included, is mockup px times 18/16. */
-  --cp: calc(var(--px) * 18 / 16);
+     the hand-drawn SVGs included, is mockup px times 18/16, and never below
+     16px (body text floor), so it can outgrow its mockup share of the group. */
+  --cp: max(var(--px) * 18 / 16, 1px);
+  /* The group is laid out from the copy's width: the copy, then the 56.25 gap
+     and the 447 photo (503.25) in --px. Capped so the group fits with a 16px
+     gutter; past that the copy wraps into extra lines. At the reference size
+     the copy sits at 50% - 516 and the photo at 50% + 69, as in the mockup. */
+  --copy-w: min(470 * var(--cp), 100vw - 32px - 503.25 * var(--px));
+  --group-left: calc(50% - (var(--copy-w) + 503.25 * var(--px)) / 2);
 }
 
 /* Mockup: Inter 16/19 on a 19px grid (the home bio's tracking); one blank
@@ -97,9 +103,9 @@
    last line's foot) stays centred on mockup y 514, the photo's middle. */
 .about__copy {
   position: absolute;
-  left: calc(50% + (356 - var(--about-mid)) * var(--px));
+  left: var(--group-left);
   top: round(calc(514 * var(--px) - (123 + 3.7) * var(--cp)), 1px);
-  width: calc(470 * var(--cp));
+  width: var(--copy-w);
   font-size: calc(16 * var(--cp));
   line-height: round(calc(19 * var(--cp)), 1px);
   letter-spacing: -0.04em;
@@ -201,6 +207,13 @@
    long as its content. With line-height 1, a 24px header's cap top sits 3.26
    below its box. */
 .experience__list {
+  /* Body text never drops below 16px: --eu is --px floored at 16/18. The
+     column (and the photos right of it) grows by --grow to keep the design's
+     line breaks, into the space on the right, but never pushes the rightmost
+     photo edge (mockup 1698, tqd2) off screen; past that the copy wraps into
+     extra lines. 0 at the reference size. */
+  --eu: max(var(--px), 16px / 18);
+  --grow: clamp(0px, 640 * (var(--eu) - var(--px)), 100vw - 16px - 1698 * var(--px));
   position: relative;
   /* The first header's cap top at mockup y 238. */
   padding: calc((238 - 3.26) * var(--px)) 0 calc(200 * var(--px));
@@ -270,7 +283,7 @@
 .experience__company,
 .experience__para {
   margin-left: calc(533 * var(--px));
-  width: calc(640 * var(--px));
+  width: calc(640 * var(--px) + var(--grow));
 }
 
 .experience__company {
@@ -281,9 +294,9 @@
 /* 18 on the mockup's 16/19 grid scaled by 18/16; the first line's cap top 44
    below the header's; a blank line between paragraphs. */
 .experience__para {
-  --lh: round(calc(19 * 18 / 16 * var(--px)), 1px);
+  --lh: round(calc(19 * 18 / 16 * var(--eu)), 1px);
   margin-top: var(--lh);
-  font-size: calc(18 * var(--px));
+  font-size: calc(18 * var(--eu));
   /* The home bio's weight and the dates' grey (user changes). */
   font-weight: 300;
   color: var(--color-experience-date);
@@ -292,7 +305,7 @@
 }
 
 .experience__company + .experience__para {
-  margin-top: calc(19 * var(--px));
+  margin-top: calc(19 * var(--eu));
 }
 
 /* Hover photos: mockup box x from the page's left, dy from the header's cap
@@ -302,7 +315,7 @@
    hit-testing, so it can't start a hover on its own. */
 .experience__photo {
   position: absolute;
-  left: calc(var(--x) * var(--px));
+  left: calc(var(--x) * var(--px) + var(--grow));
   top: calc((var(--dy) + 3.26) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));
@@ -325,10 +338,11 @@
 }
 
 /* ---- About: the photo ---- */
-/* A photo box in mockup px (--x, --y, --w, --h from content/aboutPhotos.ts). */
+/* A photo box in mockup px (--x, --y, --w, --h from content/aboutPhotos.ts);
+   x follows the copy's right edge (mockup 884.75). */
 .about-photo {
   position: absolute;
-  left: calc(50% + (var(--x) - var(--about-mid)) * var(--px));
+  left: calc(var(--group-left) + var(--copy-w) + (var(--x) - 884.75) * var(--px));
   top: calc(var(--y) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));
