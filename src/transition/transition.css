@@ -7,6 +7,8 @@
 .layer--transition {
   z-index: 50;
   pointer-events: none;
+  /* The dither canvas overhangs the viewport by under one cell. */
+  overflow: hidden;
   --fg: var(--color-station-text);
   --bg: var(--color-cover-dark);
   --accent: var(--color-transition-accent);
@@ -20,10 +22,20 @@
 .transition__canvas,
 .transition__fade {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+.transition__fade {
   width: 100%;
   height: 100%;
-  display: block;
+}
+
+/* One canvas pixel per dither cell, scaled up hard-edged (ditherCover.ts sets
+   its CSS size). */
+.transition__canvas {
+  image-rendering: pixelated;
 }
 
 .transition__fade {

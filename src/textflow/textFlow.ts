@@ -16,7 +16,9 @@ import {
   type LayoutCursor,
   type PreparedTextWithSegments,
 } from "@chenglou/pretext";
-import { gsap, Draggable } from "../lib/gsap";
+import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
+import { gsap } from "../lib/gsap";
 import { FAMILY, fontString } from "../lib/fonts";
 import { prefersReducedMotion } from "../lib/motion";
 import { play, type Voice } from "../audio/engine";
@@ -24,6 +26,9 @@ import { DRAG_GRAIN_GAIN } from "../config/sounds";
 import { OBSTACLE } from "../config/timings";
 import { justifySpacing } from "./justify";
 import type { ObstacleShape } from "./obstacles";
+
+// Only the obstacle text drags, so these register here, in the Projects chunk.
+gsap.registerPlugin(Draggable, InertiaPlugin);
 
 /** The column's width in mockup px. */
 const DESIGN_WIDTH = 600;

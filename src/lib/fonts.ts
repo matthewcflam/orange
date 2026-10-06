@@ -34,14 +34,15 @@ export const BODY_FONT = fontString(BODY_TEXT.weight, BODY_TEXT.sizePx, FAMILY.b
 /**
  * Resolve once every font the first screens need is loaded, or after the
  * timeout (spec §5.4). The gate waits for this so no font swap lands
- * mid-animation or after Pretext has measured.
+ * mid-animation or after Pretext has measured. Only Inter: Fragment Mono
+ * (the mute toggle, hero placeholder labels) loads on use and may swap in. The
+ * Inter latin file is preloaded from index.html (vite.config.ts).
  */
 export async function waitForFonts(timeoutMs = FONTS.TIMEOUT_MS): Promise<void> {
   await Promise.race([
     Promise.all([
       document.fonts.load(`1em "${FAMILY.sound}"`),
       document.fonts.load(`1em "${FAMILY.muted}"`),
-      document.fonts.load(`1em "${FAMILY.station}"`),
       document.fonts.load(fontString(400, 16, FAMILY.body)),
     ]),
     new Promise((resolve) => setTimeout(resolve, timeoutMs)),

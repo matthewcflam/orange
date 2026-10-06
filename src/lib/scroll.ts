@@ -20,7 +20,27 @@ export function initScroll(): void {
     syncTouch: false,
   });
   const l = lenis;
-  gsap.ticker.add((time) => l.raf(time * 1000));
+  // Lenis only needs frames while it glides, which a wheel starts (touch,
+  // keys and the scrollbar are native). Ticking it only then lets the GSAP
+  // ticker sleep when nothing moves, instead of running 60 times a second.
+  let ticking = false;
+  let still = 0;
+  const tick = (time: number) => {
+    l.raf(time * 1000);
+    if (l.isScrolling === "smooth") still = 0;
+    else if (++still > 2) {
+      gsap.ticker.remove(tick);
+      ticking = false;
+    }
+  };
+  const wake = () => {
+    still = 0;
+    if (ticking) return;
+    ticking = true;
+    l.time = 0; // the first frame's delta is 0, not the time asleep (which would snap the glide)
+    gsap.ticker.add(tick);
+  };
+  window.addEventListener("wheel", wake, { passive: true });
   if (import.meta.env.DEV) (window as unknown as { __lenis: Lenis }).__lenis = l;
 }
 

@@ -78,13 +78,31 @@ function routeUrls(path: string): string[] {
   return path === "/about" ? ABOUT_PHOTOS.map((p) => p.frostLight) : [];
 }
 
-/** The Projects page chunk (pages/Outlet.tsx lazy-loads it). */
-export const loadProjects = () => import("../pages/projects/Projects");
+/** Station pages' chunks (pages/Outlet.tsx renders them). Home is in the
+ *  main chunk: it's what the gate leads to. */
+export const PAGE_LOADERS = {
+  about: () => import("../pages/About"),
+  experience: () => import("../pages/Experience"),
+  projects: () => import("../pages/projects/Projects"),
+} as const;
+
+function pageLoader(path: string) {
+  if (path === "/about") return PAGE_LOADERS.about;
+  if (path === "/experience") return PAGE_LOADERS.experience;
+  return projectByPath(path) ? PAGE_LOADERS.projects : null;
+}
 
 /** Fetch a route's code and decode its images. Never rejects. */
 export function preloadRoute(path: string): Promise<void> {
-  const code = projectByPath(path) ? loadProjects().then(() => undefined, () => undefined) : null;
+  const code = pageLoader(path)?.().then(() => undefined, () => undefined);
   return Promise.all([...routeImages(path).map(load), ...routeUrls(path).map(decodeUrl), code]).then(() => undefined);
+}
+
+/** Fetch every page chunk (code only, no images) once the browser is idle. */
+export function prefetchPages(): void {
+  const run = () => Object.values(PAGE_LOADERS).forEach((load) => void load().catch(() => undefined));
+  if ("requestIdleCallback" in window) requestIdleCallback(run, { timeout: 3000 });
+  else setTimeout(run, 1000);
 }
 
 /** Start fetching a route's images. Cheap to call repeatedly (hover). */

@@ -12,7 +12,10 @@
  * "swarm" is the threshold passing through the dither.
  *
  * Draws only from tween updates; between them the canvas keeps its last
- * frame. Without WebGL (or after a context loss) a plain div fades instead,
+ * frame. The canvas has one pixel per dither cell (DITHER_PX device px),
+ * scaled up with `image-rendering: pixelated`: the same picture for 1/9 of
+ * the fragments. Between transitions it is `visibility: hidden`, so the
+ * idle site doesn't composite a full-screen layer over every frame. Without WebGL (or after a context loss) a plain div fades instead,
  * and reduced motion uses that fade too.
  */
 import { gsap } from "../lib/gsap";
@@ -164,6 +167,7 @@ export class DitherCover {
   constructor() {
     this.canvas.className = "transition__canvas";
     this.fade.className = "transition__fade";
+    this.setVisible(false);
     this.canvas.addEventListener("webglcontextlost", (e) => {
       e.preventDefault();
       this.gl = null;
@@ -205,6 +209,7 @@ export class DitherCover {
     this.offset = [rand(0, 100), rand(0, 100)];
     this.progress = 0;
     this.resize();
+    this.setVisible(true);
     return new Promise((resolve) => {
       this.tween = gsap.to(this, {
         progress: 1,
@@ -224,6 +229,7 @@ export class DitherCover {
       // mid-transition): fade out, and drop whatever dither is left.
       this.progress = 0;
       this.clear();
+      this.setVisible(false);
       return this.fadeTo(0, reduced ? T.REDUCED_FADE : T.HIDE * 0.15, delay, onClearStart).then(() => onUnlock?.());
     }
     this.direction = 0;
@@ -246,6 +252,7 @@ export class DitherCover {
         },
         onComplete: () => {
           this.clear();
+          this.setVisible(false);
           if (!unlocked) onUnlock?.();
           resolve();
         },
@@ -260,7 +267,12 @@ export class DitherCover {
     this.progress = progress;
     this.direction = direction;
     this.resize();
+    this.setVisible(true);
     this.draw();
+  }
+
+  private setVisible(on: boolean) {
+    this.canvas.style.visibility = on ? "visible" : "hidden";
   }
 
   private fadeTo(opacity: number, duration: number, delay: number, onStart?: () => void): Promise<void> {
@@ -296,7 +308,8 @@ export class DitherCover {
     gl.uniform1f(this.loc.uNoiseStrength, T.NOISE_STRENGTH);
     gl.uniform1f(this.loc.uEdgeSmooth, T.EDGE_SMOOTH);
     gl.uniform1f(this.loc.uPixelSize, T.PIXEL_SIZE);
-    gl.uniform1f(this.loc.uDitherSize, T.DITHER_PX);
+    // One canvas pixel per dither cell (resize()).
+    gl.uniform1f(this.loc.uDitherSize, 1);
     gl.clearColor(0, 0, 0, 0);
     this.gl = gl;
   }
@@ -307,15 +320,21 @@ export class DitherCover {
     this.draw();
   };
 
+  /** One canvas pixel per DITHER_PX × DITHER_PX device-px cell. The canvas
+   *  is rounded up to whole cells and sized in CSS so each cell lands on
+   *  exactly DITHER_PX device px; the overhang (under one cell) is clipped. */
   private resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, T.MAX_DPR);
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const cw = Math.round(w * dpr);
-    const ch = Math.round(h * dpr);
+    const cell = Math.max(1, T.DITHER_PX);
+    const cw = Math.ceil((w * dpr) / cell);
+    const ch = Math.ceil((h * dpr) / cell);
     if (this.canvas.width !== cw || this.canvas.height !== ch) {
       this.canvas.width = cw;
       this.canvas.height = ch;
+      this.canvas.style.width = `${(cw * cell) / dpr}px`;
+      this.canvas.style.height = `${(ch * cell) / dpr}px`;
     }
     const gl = this.gl;
     if (!gl) return;

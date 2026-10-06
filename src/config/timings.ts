@@ -130,7 +130,7 @@ export const TRANSITION = {
   NOISE_STRENGTH: 0.8,
   /** Half-width of the dithered band, in screen heights. Wider = more dots. */
   EDGE_SMOOTH: 1.0,
-  /** Bayer dither cell, device px. */
+  /** Bayer dither cell, device px. The cover canvas renders one pixel per cell. */
   DITHER_PX: 3,
   /** Optional chunky pixelation of the whole field, CSS px (0 = off). */
   PIXEL_SIZE: 0,
