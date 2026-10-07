@@ -141,18 +141,14 @@
   color: rgb(255 255 255 / 0.5);
 }
 
-/* Body: Inter 15/19 (the mockup ink measures 15px, not the spec's ~16:
-   the line breaks match 06 at 15), justified; each paragraph's last line
-   stays left. Integer px (Pretext needs them; TextFlow also rounds), with a fallback.
-   Never below 16px (body text floor); the column stays (the heroes and the
-   obstacle shapes are tied to it), so the text wraps into extra lines. */
+/* Body: the shared body size (--type-body, About's; user request; the old
+   mockup had 15/19), justified; each paragraph's last line stays left.
+   Integer px (Pretext needs them; TextFlow also rounds). The column stays
+   (the heroes and the obstacle shapes are tied to it), so the text wraps. */
 .project__body,
 .project__date {
-  --size: max(16px, 15 * var(--apx));
-  font-size: var(--size);
-  font-size: round(var(--size), 1px);
-  line-height: calc(var(--size) * 19 / 15);
-  line-height: round(calc(var(--size) * 19 / 15), 1px);
+  font-size: round(var(--type-body), 1px);
+  line-height: var(--type-body-lh);
 }
 
 .project__body {

@@ -44,15 +44,17 @@
 }
 
 /* "Now arriving at:" and the name, placed as in Transition (Dark).png:
-   cap-centred on the screen's middle, the lead starting 495 mockup px left of
-   the centre line and the name 186 right of it, so the lead stays put and
-   names of any length start at the same x. */
+   cap-centred on the screen's middle, the lead starting 383 mockup px left of
+   the centre line and the name 144 right of it (the mockup's 495 / 186 at
+   62px, scaled to the name's size), so the lead stays put and names of any
+   length start at the same x. The size is the home name's (--type-name,
+   user request). */
 .transition__title {
   position: absolute;
   inset: 0;
   z-index: 2;
   font-family: var(--font-transition);
-  font-size: calc(62 * var(--px));
+  font-size: var(--type-name);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -68,11 +70,11 @@
 }
 
 .transition__group--0 {
-  left: calc(50% - 495 * var(--px));
+  left: calc(50% - 383 * var(--px));
 }
 
 .transition__group--1 {
-  left: calc(50% + 186 * var(--px));
+  left: calc(50% + 144 * var(--px));
 }
 
 .transition__title[data-state="initial"] {

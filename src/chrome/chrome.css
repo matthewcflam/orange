@@ -12,7 +12,7 @@
 .name-block__name {
   margin: 0;
   font-family: var(--font-name);
-  font-size: calc(48 * var(--px));
+  font-size: var(--type-name);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -144,8 +144,9 @@
 }
 
 /* ---- Station pages: the Map pill, top-right, on the station edge and
-   centred on the midline (About (2).png). 91×44, 20px; a near-square
-   rectangle (user change: was a full pill). ---- */
+   centred on the midline (About (2).png). 91×44, a near-square rectangle
+   (user change: was a full pill). The label is --type-small, the footer's
+   size (user request). ---- */
 .map-button {
   position: absolute;
   top: calc((var(--station-mid) - 22) * var(--px));
@@ -153,7 +154,7 @@
   width: calc(91 * var(--px));
   height: calc(44 * var(--px));
   border-radius: calc(4 * var(--px));
-  font-size: calc(20 * var(--px));
+  font-size: var(--type-small);
   line-height: 1;
   background: var(--color-map-pill);
   color: var(--color-map-pill-text);

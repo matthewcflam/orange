@@ -9,14 +9,15 @@
   min-height: 100vh;
 }
 
-/* "Matthew Lam", 38px (About (2).png): on the station edge, its cap centre
-   on the station midline (Inter's cap height is 0.727em). */
+/* "Matthew Lam", the home name's size (--type-name, user request; About
+   (2).png has 38): on the station edge, its cap centre on the station
+   midline (Inter's cap height is 0.727em). */
 .station-page__title {
   position: absolute;
   left: calc(var(--station-edge) * var(--px));
-  top: calc((var(--station-mid) - 0.727 * 38 / 2 - 0.136 * 38) * var(--px));
+  top: calc((var(--station-mid) - 0.727 * 48 / 2 - 0.136 * 48) * var(--px));
   margin: 0;
-  font-size: calc(38 * var(--px));
+  font-size: var(--type-name);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -42,7 +43,8 @@
   outline-offset: 4px;
 }
 
-/* Credit line (About (7).png): Inter 16, weight 300; ink right edge 39 from
+/* Credit line (About (7).png): --type-small (Map / Close's size, user
+   request), weight 300; ink right edge 39 from
    the frame's right, its box's foot on the station edge. At the page's foot,
    so on scrolling pages it sits under the content. */
 .station-page__footer {
@@ -50,7 +52,7 @@
   right: calc(39 * var(--px));
   bottom: calc(var(--station-edge) * var(--px));
   margin: 0;
-  font-size: max(14px, 16 * var(--px));
+  font-size: var(--type-small);
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -88,7 +90,7 @@
   /* The copy is 18px (user change; the mockup has 16): everything in it,
      the hand-drawn SVGs included, is mockup px times 18/16, and never below
      16px (body text floor), so it can outgrow its mockup share of the group. */
-  --cp: max(var(--px) * 18 / 16, 1px);
+  --cp: calc(var(--tu) * 18 / 16);
   /* The group is laid out from the copy's width: the copy, then the 56.25 gap
      and the 447 photo (503.25) in --px. Capped so the group fits with a 16px
      gutter; past that the copy wraps into extra lines. At the reference size
@@ -106,8 +108,8 @@
   left: var(--group-left);
   top: round(calc(514 * var(--px) - (123 + 3.7) * var(--cp)), 1px);
   width: var(--copy-w);
-  font-size: calc(16 * var(--cp));
-  line-height: round(calc(19 * var(--cp)), 1px);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
   letter-spacing: -0.04em;
 }
 
@@ -212,7 +214,7 @@
      line breaks, into the space on the right, but never pushes the rightmost
      photo edge (mockup 1698, tqd2) off screen; past that the copy wraps into
      extra lines. 0 at the reference size. */
-  --eu: max(var(--px), 16px / 18);
+  --eu: var(--tu);
   --grow: clamp(0px, 640 * (var(--eu) - var(--px)), 100vw - 16px - 1698 * var(--px));
   position: relative;
   /* The first header's cap top at mockup y 238. */
@@ -229,6 +231,8 @@
 
 .experience__job {
   position: relative;
+  /* Contains the floated role block (below). */
+  display: flow-root;
 }
 
 /* Body foot to the next header's cap top: 61. */
@@ -245,19 +249,35 @@
   margin-top: calc(51 * var(--px));
 }
 
-/* Role and date, right-aligned to x 419 and sharing the company's cap top. */
+/* Role and date, right-aligned to x 419 and sharing the company's cap top.
+   A role too long for the space left of x 419 (with a 16px gutter) wraps
+   instead of running off screen (user request: "Lifeguard & Swim
+   Instructor" on small screens, where headers stop shrinking at --tu).
+   Floated so a wrapped role pushes the next row down; the negative bottom
+   margin takes the date out of the row's height, so an unwrapped role adds
+   nothing (its title is the company's height). Clear of the company, whose
+   margin starts at 533. */
 .experience__role {
-  position: absolute;
-  top: 0;
-  right: calc(100% - 419 * var(--px));
+  position: relative;
+  float: left;
+  box-sizing: border-box;
+  width: calc(419 * var(--px));
+  padding-left: 16px;
+  margin-bottom: calc(-23.8 * var(--px));
   text-align: right;
   white-space: nowrap;
+}
+
+.experience__role .experience__title {
+  white-space: normal;
+  text-wrap: balance;
 }
 
 .experience__title,
 .experience__company {
   margin: 0;
-  font-size: calc(24 * var(--px));
+  /* Scales with the body (--tu), so it never drops below it. */
+  font-size: calc(24 * var(--tu));
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -294,9 +314,12 @@
 /* 18 on the mockup's 16/19 grid scaled by 18/16; the first line's cap top 44
    below the header's; a blank line between paragraphs. */
 .experience__para {
-  --lh: round(calc(19 * 18 / 16 * var(--eu)), 1px);
+  --lh: var(--type-body-lh);
   margin-top: var(--lh);
-  font-size: calc(18 * var(--eu));
+  /* The job is a flow root, so a <p>'s default bottom margin would no
+     longer collapse into the gap between jobs. */
+  margin-bottom: 0;
+  font-size: var(--type-body);
   /* The home bio's weight and the dates' grey (user changes). */
   font-weight: 300;
   color: var(--color-experience-date);
