@@ -72,8 +72,9 @@ export default function ProjectLayout({ active, children }: { active: ProjectSlu
           <ul>
             {PROJECTS.map((p) => {
               const isActive = p.slug === active;
+              const { y, scribble: s } = ITEMS[p.slug];
               return (
-                <li key={p.slug} style={{ "--y": ITEMS[p.slug].y } as CSSProperties}>
+                <li key={p.slug} style={{ "--y": y } as CSSProperties}>
                   <a
                     href={p.path}
                     className="project-list__link"
@@ -88,23 +89,20 @@ export default function ProjectLayout({ active, children }: { active: ProjectSlu
                     <br />
                     {p.year}
                   </a>
+                  {/* Placed from the item's top-right corner (the list's
+                      right edge, x 280, and the name's line top), so it
+                      follows the item wherever the layout puts it. */}
+                  <span
+                    className="project-list__scribble"
+                    data-slug={p.slug}
+                    aria-hidden="true"
+                    style={{ "--right": 280 - s.x - s.w, "--top": s.y - (y - 6.3), "--w": s.w } as CSSProperties}
+                    dangerouslySetInnerHTML={{ __html: s.svg }}
+                  />
                 </li>
               );
             })}
           </ul>
-          {PROJECTS.map((p) => {
-            const s = ITEMS[p.slug].scribble;
-            return (
-              <span
-                key={p.slug}
-                className="project-list__scribble"
-                data-slug={p.slug}
-                aria-hidden="true"
-                style={{ "--x": s.x, "--y": s.y, "--w": s.w } as CSSProperties}
-                dangerouslySetInnerHTML={{ __html: s.svg }}
-              />
-            );
-          })}
         </nav>
         <TrainLine className="project__line" />
       </div>

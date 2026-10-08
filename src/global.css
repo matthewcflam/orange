@@ -8,10 +8,22 @@
  * Design unit: 1px of the 1767×1024 reference frame (design/mockups-v2),
  * scaled to fit the viewport. Mockup coordinates are written as
  * calc(N * var(--px)). lib/frame.ts is the TS side.
- * TODO(open-question #7): narrow screens (< ~900px) need their own layout.
+ *
+ * Compact layout (open question #7, user decision): narrow, portrait or short
+ * windows don't fit the 1767×1024 composition, so pages stack and scroll
+ * instead. The query is COMPACT_QUERY in lib/frame.ts; CSS repeats it as
+ *   @media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px)
+ * --m is the compact unit: 1px of a 390-wide phone (or 390-tall, for a
+ * phone on its side), capped so a portrait tablet doesn't balloon. Compact content is at most --compact-w wide, with
+ * a 16px gutter.
  */
 :root {
-  --px: min(100vw / 1767, 100vh / 1024);
+  /* svh: the iOS address bar can't change it mid-scroll. */
+  --px-frame: min(100vw / 1767, 100svh / 1024);
+  --px: var(--px-frame);
+  --m: min(100vw / 390, 100svh / 390, 1.6px);
+  --gutter: 16px;
+  --compact-w: min(100vw - 2 * var(--gutter), 640px);
   /* Horizontal position unit for home content that spans the width (map
      stations, "who?"): stretches with the viewport, so a wide screen spreads
      the composition instead of leaving the right side empty. Use it for x
@@ -22,8 +34,18 @@
      Unitless mockup px. */
   --station-edge: 30;
   --station-mid: 52;
+  /* The same as lengths: the compact layout replaces these with its own. */
+  --station-edge-len: calc(var(--station-edge) * var(--px));
+  --station-mid-len: calc(var(--station-mid) * var(--px));
   /* Corner rounding on every photo (user request): 10 mockup px. */
   --image-radius: calc(10 * var(--px));
+}
+
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  :root {
+    --station-edge-len: var(--gutter);
+    --station-mid-len: 34px;
+  }
 }
 
 /* Page theme: light on home and the gate, dark on station pages. App sets
@@ -153,4 +175,14 @@ canvas {
 /* Interactive elements inside pass-through layers opt back in individually. */
 .interactive {
   pointer-events: auto;
+}
+
+/* Compact layout: the name scales with --m. It is 28px on a 390 phone and 45
+   on a portrait tablet (above the map labels there); under ~340px wide it may
+   drop to 24 so the station header row (name, glyphs, Map) still fits on one
+   line. The glyphs keep following the Map button (--iu). */
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  :root:root {
+    --type-name: max(1.5rem, 28 * var(--m));
+  }
 }

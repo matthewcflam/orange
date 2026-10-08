@@ -18,3 +18,16 @@
   height: calc((var(--who-h) + 2 * var(--who-pad)) * var(--px));
   pointer-events: none;
 }
+
+/* Placed by chrome/homeLayout.ts instead (Home.tsx sets data-placed and the
+   box in px; the height keeps the canvas's aspect): on the compact layout
+   (global.css) under the name block on a portrait screen (user request: it
+   has the height, so the spray doesn't cover the text) or beside it on a
+   phone on its side; on the full layout, only when the name block (its bio
+   floored at 16px) would reach under the spray, pushed right of it. */
+.home__who[data-placed] {
+  left: var(--who-left);
+  top: var(--who-top);
+  width: var(--who-width);
+  height: calc(var(--who-width) * (var(--who-h) + 2 * var(--who-pad)) / (var(--who-w) + 2 * var(--who-pad)));
+}

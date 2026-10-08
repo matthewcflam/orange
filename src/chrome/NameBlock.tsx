@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap, useGSAP } from "../lib/gsap";
 import { CHROME } from "../config/timings";
 import SocialLinks from "./SocialLinks";
+import { layoutHome } from "./homeLayout";
+import { onCompactChange } from "../lib/frame";
 import "./chrome.css";
 
 /**
@@ -22,6 +24,31 @@ export default function NameBlock({ visible }: { visible: boolean }) {
     },
     { dependencies: [visible] },
   );
+
+  // Compact layout: centre the name block and "who?" under the map, and
+  // decide where "who?" goes (homeLayout.ts). Again whenever the block's
+  // size (its bio wraps) or the window changes.
+  useLayoutEffect(() => {
+    const block = ref.current!;
+    const layout = () => layoutHome(block);
+    layout();
+    const observer = new ResizeObserver(layout);
+    observer.observe(block);
+    // Next frame: TransitMap moves the block (--map-foot) on the same event.
+    let frame = 0;
+    const layoutSoon = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(layout);
+    };
+    window.addEventListener("resize", layoutSoon);
+    const offCompact = onCompactChange(layoutSoon);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", layoutSoon);
+      offCompact();
+    };
+  }, []);
 
   return (
     <div ref={ref} className="name-block">

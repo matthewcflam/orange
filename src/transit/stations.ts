@@ -4,7 +4,7 @@
  * only shows on home (station pages navigate with the keychain instead).
  */
 import { STATIONS } from "../config/routes";
-import { FRAME, viewportInMockupPx } from "../lib/frame";
+import { FRAME, isCompact, pxScale, viewportInMockupPx } from "../lib/frame";
 
 export interface Layout {
   upperY: number;
@@ -44,12 +44,61 @@ const FULL: Layout = {
   hitR: 34,
 };
 
+/** Smallest label size in CSS px: --type-label's floor (tokens.css). */
+const LABEL_FLOOR_PX = 18;
+
+/**
+ * The compact layout (narrow, portrait or short windows; lib/frame.ts): the
+ * same route drawn for a phone. x is a fraction of the viewport width; the
+ * rest is in --m (1px of a 390-wide phone, global.css), measured by eye
+ * against the full map's proportions.
+ */
+const COMPACT = {
+  x: [0.2, 0.55, 0.85],
+  bendX: 0.32,
+  upperY: 70,
+  lowerY: 128,
+  labelTop: 15,
+  labelSize: 16,
+  lineWidth: 6,
+  dotR: 7,
+  dotRing: 2,
+  hitR: 24,
+};
+
 export function layoutFor(): Layout {
   const vp = viewportInMockupPx();
+  const px = pxScale();
+  const labelFloor = LABEL_FLOOR_PX / px;
+  if (isCompact()) {
+    // --m in mockup px. Short windows (phone landscape) scale by height too.
+    const m = Math.min(window.innerWidth / 390, window.innerHeight / 390, 1.6) / px;
+    const c = COMPACT;
+    return {
+      upperY: c.upperY * m,
+      lowerY: c.lowerY * m,
+      startX: -20,
+      endX: vp.w + 20,
+      bendX: c.bendX * vp.w,
+      x: c.x.map((x) => x * vp.w),
+      labelTop: c.x.map(() => c.labelTop * m),
+      labelSize: Math.max(c.labelSize * m, labelFloor),
+      lineWidth: c.lineWidth * m,
+      dotR: c.dotR * m,
+      dotRing: c.dotRing * m,
+      hitR: c.hitR * m,
+    };
+  }
   // On viewports wider than the mockup, spread the map across the full width
   // (same rule as --vx in global.css); sizes keep the uniform scale.
   const sx = vp.w / FRAME.W;
-  return { ...FULL, x: FULL.x.map((x) => x * sx), bendX: FULL.bendX * sx, endX: vp.w + 20 };
+  return {
+    ...FULL,
+    x: FULL.x.map((x) => x * sx),
+    bendX: FULL.bendX * sx,
+    endX: vp.w + 20,
+    labelSize: Math.max(FULL.labelSize, labelFloor),
+  };
 }
 
 export const stationY = (l: Layout, i: number) => (STATIONS[i].track === "upper" ? l.upperY : l.lowerY);

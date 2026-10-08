@@ -31,8 +31,11 @@
   list-style: none;
 }
 
-/* Name and year, 22.5/29, right edge at x 280; --y is the name's cap top. */
+/* Name and year, 22.5/29, right edge at x 280; --y is the name's cap top.
+   The text and its scribble are in --lu: --px, floored so the names are
+   never smaller than body text. */
 .project-list li {
+  --lu: max(var(--px), var(--type-body) / 22.5);
   position: absolute;
   right: calc(100% - 280 * var(--px));
   top: calc((var(--y) - 6.3) * var(--px));
@@ -41,8 +44,8 @@
 
 .project-list__link {
   display: block;
-  font-size: calc(22.5 * var(--px));
-  line-height: calc(29 * var(--px));
+  font-size: calc(22.5 * var(--lu));
+  line-height: calc(29 * var(--lu));
   letter-spacing: -0.02em;
   color: inherit;
   text-decoration: none;
@@ -58,12 +61,13 @@
   outline-offset: 4px;
 }
 
-/* The hand-drawn mark around the active project, at its mockup top-left. */
+/* The hand-drawn mark around the active project, placed from the item's
+   top-right corner (mockup px, ProjectLayout.tsx). */
 .project-list__scribble {
   position: absolute;
-  left: calc(var(--x) * var(--px));
-  top: calc(var(--y) * var(--px));
-  width: calc(var(--w) * var(--px));
+  right: calc(var(--right) * var(--lu));
+  top: calc(var(--top) * var(--lu));
+  width: calc(var(--w) * var(--lu));
   pointer-events: none;
   visibility: hidden;
 }
@@ -166,12 +170,15 @@
 }
 
 /* ---- External link, under the date ---- */
+/* --lk: --apx, floored so the link is never smaller than body text; the
+   underline scales with it. */
 .project-link {
   --link-size: 22.5;
+  --lk: max(var(--apx), 1rem / var(--link-size));
   position: relative;
   display: inline-block;
   margin-top: calc(40 * var(--apx));
-  font-size: calc(var(--link-size) * var(--apx));
+  font-size: calc(var(--link-size) * var(--lk));
   font-weight: 600;
   line-height: 1.2;
   color: inherit;
@@ -187,10 +194,10 @@
 /* The underline starts 37px left of the text, as in the old mockup. */
 .project-link__underline {
   position: absolute;
-  left: calc(-37.5 * var(--apx));
-  top: calc(35 * var(--apx));
-  width: calc(344 * var(--apx));
-  height: calc(18 * var(--apx));
+  left: calc(-37.5 * var(--lk));
+  top: calc(35 * var(--lk));
+  width: calc(344 * var(--lk));
+  height: calc(18 * var(--lk));
   overflow: visible;
   pointer-events: none;
 }
@@ -243,4 +250,58 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+
+/* ---- Compact layout (global.css): the list is a row under the header
+   (user decision), the article runs full width under it on the centred
+   column, and everything scrolls together. The article keeps its 600-unit
+   geometry (heroes, obstacles), scaled to fill the column. ---- */
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  .project {
+    --apx: calc(var(--compact-w) / 600);
+  }
+
+  .project .station-page__title {
+    position: absolute;
+  }
+
+  /* clip: a scribble overhanging the screen edge mustn't widen the page. */
+  .project__rail {
+    position: static;
+    width: auto;
+    overflow-x: clip;
+  }
+
+  .project-list ul {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    width: var(--compact-w);
+    margin: 0 auto;
+    /* Room for the scribbles around the names (Mango's runs 28px past
+       its right edge). */
+    padding: 12px 16px 12px 8px;
+  }
+
+  .project-list li {
+    position: relative;
+    right: auto;
+    top: auto;
+    --lu: calc(var(--type-body) / 22.5);
+  }
+
+  .project__line {
+    display: none;
+  }
+
+  .project__swap {
+    margin-left: 0;
+    min-height: 0;
+  }
+
+  .project__column {
+    width: var(--compact-w);
+    margin: 0 auto;
+    padding: 40px 0 0;
+  }
 }

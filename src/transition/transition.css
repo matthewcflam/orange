@@ -160,3 +160,20 @@
   border-right-color: var(--fg);
   border-radius: 0 5px 5px 0;
 }
+
+/* Compact layout (global.css): the lead and the name stack, left-aligned on
+   the centred column, instead of sitting either side of the centre. */
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  .transition__group--0,
+  .transition__group--1 {
+    left: max(var(--gutter), (100% - var(--compact-w)) / 2);
+  }
+
+  .transition__group--0 {
+    top: calc(50% - 0.6em);
+  }
+
+  .transition__group--1 {
+    top: calc(50% + 0.6em);
+  }
+}

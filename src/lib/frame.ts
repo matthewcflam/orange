@@ -10,6 +10,21 @@ export function pxScale(): number {
   return Math.min(window.innerWidth / FRAME.W, window.innerHeight / FRAME.H);
 }
 
+/** Narrow, portrait or short windows get the stacked compact layout (open
+ *  question #7, user decision). CSS repeats this query (global.css). */
+export const COMPACT_QUERY = "(max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px)";
+
+const compactMql = window.matchMedia(COMPACT_QUERY);
+
+export const isCompact = () => compactMql.matches;
+
+/** Calls `fn` whenever the layout switches between compact and full; returns
+ *  the unsubscribe. */
+export function onCompactChange(fn: () => void): () => void {
+  compactMql.addEventListener("change", fn);
+  return () => compactMql.removeEventListener("change", fn);
+}
+
 /** The viewport's size in mockup px (it can be wider or taller than the frame). */
 export function viewportInMockupPx() {
   const px = pxScale();

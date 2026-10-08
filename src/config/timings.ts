@@ -224,12 +224,11 @@ export const MAP_BUTTON = {
  */
 export const KEYCHAIN = {
   /** Open: the keychain slides in diagonally from the top-right corner,
-   *  SLIDE_PX (mockup px) along each axis; close: it slides back out. */
+   *  SLIDE_PX (mockup px) along each axis; close: it slides back out.
+   *  Both directions share one duration and ease. */
   SLIDE_PX: 500,
-  OPEN: 0.5,
-  OPEN_EASE: "power3.out",
-  CLOSE: 0.45,
-  CLOSE_EASE: "power2.in",
+  SLIDE: 0.5,
+  SLIDE_EASE: "power2.out",
 } as const;
 
 /** Station hover/click on the home map (§7.3). */

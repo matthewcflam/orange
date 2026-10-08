@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "../lib/gsap";
 import { play } from "../audio/engine";
-import { pxScale } from "../lib/frame";
 import { prefersReducedMotion } from "../lib/motion";
 import { onNavClick, useRoute } from "../lib/router";
 import { prefetchRoute } from "../lib/assets";
@@ -18,6 +17,9 @@ import "./keychain.css";
  * design/mockups-v2/Menu Open (3).png (mockup x 1300+), which the keychain
  * box is anchored to (the viewport's top-right corner).
  */
+
+/** The box's width in mockup px (keychain.css). */
+const BOX_W = 467;
 
 /** The charms, whole (chains and rings too) and 1:1 at their mockup spots,
  *  at their sources' own sizes. Doug's top and the Compass Card's right run
@@ -79,7 +81,12 @@ export default function Keychain({ open }: { open: boolean }) {
   // Open/close: the whole box slides in diagonally from the top-right corner
   // and back out the same way. It only ever moves up and right from its
   // resting place, so what's off screen at rest stays off screen.
-  const away = () => ({ x: K.SLIDE_PX * pxScale(), y: -K.SLIDE_PX * pxScale() });
+  // In the box's own unit: the frame's --px, or larger on the compact layout
+  // (keychain.css), read back from its 467-unit width.
+  const away = () => {
+    const unit = boxRef.current!.offsetWidth / BOX_W;
+    return { x: K.SLIDE_PX * unit, y: -K.SLIDE_PX * unit };
+  };
   // Until the first open, the box is either pre-warming or parked away.
   const opened = useRef(false);
   useLayoutEffect(() => {
@@ -102,12 +109,12 @@ export default function Keychain({ open }: { open: boolean }) {
       if (!opened.current) gsap.set(box, away());
       opened.current = true;
       gsap.set(box, { autoAlpha: 1 });
-      gsap.to(box, { x: 0, y: 0, duration: reduced ? 0 : K.OPEN, ease: K.OPEN_EASE, overwrite: true });
+      gsap.to(box, { x: 0, y: 0, duration: reduced ? 0 : K.SLIDE, ease: K.SLIDE_EASE, overwrite: true });
     } else if (opened.current) {
       gsap.to(box, {
         ...away(),
-        duration: reduced ? 0 : K.CLOSE,
-        ease: K.CLOSE_EASE,
+        duration: reduced ? 0 : K.SLIDE,
+        ease: K.SLIDE_EASE,
         overwrite: true,
         onComplete: () => void gsap.set(box, { autoAlpha: 0 }),
       });

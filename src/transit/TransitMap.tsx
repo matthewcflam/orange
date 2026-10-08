@@ -7,6 +7,7 @@ import { play } from "../audio/engine";
 import { onNavClick } from "../lib/router";
 import { prefetchRoute } from "../lib/assets";
 import { LABEL_BASE_SIZE, type Layout, layoutFor, stationY } from "./stations";
+import { pxScale } from "../lib/frame";
 import "./transit.css";
 
 /** Inter cap height / font size, so labels can be placed by their cap top as
@@ -50,6 +51,10 @@ export default function TransitMap({ visible }: { visible: boolean }) {
       const baseline = l.labelTop[i] + cap * l.labelSize;
       labelRefs.current[i]!.setAttribute("transform", `translate(0 ${baseline}) scale(${scale})`);
     });
+    // The map's foot (below the lower labels' descenders): the compact home
+    // stacks the name block under it (chrome.css).
+    const foot = (l.lowerY + Math.max(...l.labelTop) + l.labelSize) * pxScale();
+    document.documentElement.style.setProperty("--map-foot", `${Math.ceil(foot)}px`);
   };
 
   // Set on mount; re-fit to the viewport on resize.

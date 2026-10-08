@@ -10,6 +10,8 @@
   right: 0;
   width: calc(467 * var(--px));
   height: calc(640 * var(--px));
+  /* Over the glyphs, under the Map pill (chrome.css). */
+  z-index: 1;
   will-change: transform;
 }
 
@@ -126,4 +128,13 @@
   height: 100%;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* Compact layout (global.css): the card is drawn at a readable size instead
+   of the frame's (--px is redefined for the keychain and everything in it;
+   Keychain.tsx reads the scale back from the box). */
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  .keychain {
+    --px: max(var(--px-frame), min(100vw - 32px, 420px) / 467);
+  }
 }

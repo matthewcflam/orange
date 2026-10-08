@@ -14,13 +14,23 @@
   --font-muted:   "Inter Variable", system-ui, sans-serif;
 
   /* ---- Type scale (user request): text that should match uses these, so
-     it is the same size and scales the same way on every page. --tu is --px
-     floored so 18-unit body text never drops below 16px. ---- */
-  --tu:           max(var(--px), 16px / 18);
-  --type-name:    calc(48 * var(--px));      /* "Matthew Lam" (home, station header), transition title */
-  --type-body:    calc(18 * var(--tu));      /* body copy: max(16px, 18 * --px) */
+     it is the same size and scales the same way on every page. Each role is
+     its mockup size times --px, with its own floor (user request: legible on
+     phones, and the floors keep the hierarchy name > label > head > body >
+     small). The floors are in rem, so browser zoom and a larger default
+     font size still apply. --tu is --px floored so 18-unit body text never
+     drops below 16px. ---- */
+  --tu:           max(var(--px), 1rem / 18);
+  --type-name:    max(1.75rem, 48 * var(--px));   /* "Matthew Lam" (home, station header), transition title: floor 28 */
+  --type-label:   max(1.125rem, 30 * var(--px));  /* home map labels: floor 18 */
+  --type-head:    max(1.25rem, 24 * var(--tu));   /* Experience role and company, gate options: floor 20 */
+  --type-body:    calc(18 * var(--tu));           /* body copy: max(16px, 18 * --px) */
   --type-body-lh: round(calc(19 * 18 / 16 * var(--tu)), 1px);
-  --type-small:   max(10px, 20 * var(--px)); /* Map / Close and the footer */
+  --type-small:   max(0.8125rem, 20 * var(--px)); /* Map / Close, the footer, toasts: floor 13 */
+  /* Social glyphs: the unit of the 36-unit icon box. It is --type-small / 20,
+     the Map button's own unit (user request), so the glyphs and the button
+     always scale together and share its floor. */
+  --iu:           calc(var(--type-small) / 20);
 
   /* ---- Base: --color-bg / --color-text follow data-theme (global.css) ---- */
   --color-home-bg:      #FFFFF8;  /* home and the gate */

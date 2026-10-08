@@ -21,22 +21,32 @@
 
 .gate__option--sound {
   font-family: var(--font-sound);
-  font-size: calc(30 * var(--px));
+  font-size: max(1.25rem, 30 * var(--px)); /* floor: --type-head's */
 }
 
 .gate__option--muted {
   font-family: var(--font-muted);
-  font-size: calc(30 * var(--px));
+  font-size: max(1.25rem, 30 * var(--px)); /* floor: --type-head's */
 }
 
 .gate__cursor {
   position: absolute;
   top: 0;
-  left: calc(-28 * var(--px));
+  left: -1em;
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: calc(28 * var(--px));
+  font-size: max(1.1667rem, 28 * var(--px));
   line-height: 1;
   /* vertical centering is yPercent: -50 in Gate.tsx; GSAP owns the transform */
   pointer-events: none;
+}
+
+/* Compact layout (global.css): under the name, which sits under the map
+   (chrome.css). */
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  .gate {
+    left: calc(max(var(--gutter), 85 * var(--px)) + 1em);
+    top: calc(var(--map-foot, 170px) + 32 * var(--m) + var(--home-shift, 0px) + var(--type-name) + 12px);
+    gap: 4px;
+  }
 }

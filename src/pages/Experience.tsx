@@ -5,7 +5,7 @@ import ResponsivePicture from "./ResponsivePicture";
 import { JOBS, EXTRAS, type Job } from "../content/experience";
 import { revealOnScroll } from "../lib/scrollReveal";
 import { gsap } from "../lib/gsap";
-import { pxScale } from "../lib/frame";
+import { isCompact, pxScale } from "../lib/frame";
 import { prefersReducedMotion } from "../lib/motion";
 import { whenPageShown } from "../lib/pageReveal";
 import { isUnderPointer } from "../lib/pointer";
@@ -68,7 +68,8 @@ function JobRow({ job, extrasMark }: { job: Job; extrasMark?: boolean }) {
 
   const toggle = useCallback(
     (on: boolean) => {
-      if (!hasPhotos || shown.current === on) return;
+      // Compact layout: the photos are an always-shown strip (station.css).
+      if (!hasPhotos || isCompact() || shown.current === on) return;
       shown.current = on;
       setPhotos(
         photoRefs.current.filter((el): el is HTMLDivElement => el !== null),

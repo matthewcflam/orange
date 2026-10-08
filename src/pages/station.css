@@ -11,11 +11,12 @@
 
 /* "Matthew Lam", the home name's size (--type-name, user request; About
    (2).png has 38): on the station edge, its cap centre on the station
-   midline (Inter's cap height is 0.727em). */
+   midline (Inter's cap height is 0.727em, its cap top 0.136em below the
+   box). */
 .station-page__title {
   position: absolute;
-  left: calc(var(--station-edge) * var(--px));
-  top: calc((var(--station-mid) - 0.727 * 48 / 2 - 0.136 * 48) * var(--px));
+  left: var(--station-edge-len);
+  top: calc(var(--station-mid-len) - (0.727 / 2 + 0.136) * 1em);
   margin: 0;
   font-size: var(--type-name);
   font-weight: 700;
@@ -50,7 +51,7 @@
 .station-page__footer {
   position: absolute;
   right: calc(39 * var(--px));
-  bottom: calc(var(--station-edge) * var(--px));
+  bottom: var(--station-edge-len);
   margin: 0;
   font-size: var(--type-small);
   font-weight: 300;
@@ -276,8 +277,7 @@
 .experience__title,
 .experience__company {
   margin: 0;
-  /* Scales with the body (--tu), so it never drops below it. */
-  font-size: calc(24 * var(--tu));
+  font-size: var(--type-head);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -286,7 +286,7 @@
 .experience__date {
   margin: calc(5.8 * var(--px)) 0 0;
   color: var(--color-experience-date);
-  font-size: calc(18 * var(--px));
+  font-size: var(--type-body);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -419,4 +419,147 @@
   opacity: var(--frost-grain);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   will-change: opacity;
+}
+
+/* ---- Compact layout (global.css): stacked and scrolling. The header row
+   (title, glyphs, Map) sits on --station-mid-len; the content runs under it
+   on a centred column (--compact-w), the footer under the content. ---- */
+@media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
+  .station-page {
+    padding: 88px 0 calc(var(--station-edge-len) + 48px);
+  }
+
+  /* The glyphs and Map keep their floor (user request), so on the narrowest
+     phones the name gives way instead: it shrinks to fit the space left of
+     the chrome row (237.4 --iu: glyphs 118.4, gap 27, Map 92) with a 12px
+     gap. "Matthew Lam" is ~6.25em wide. Only bites under ~375px. */
+  .station-page__title {
+    font-size: min(var(--type-name),
+      (100vw - 2 * var(--station-edge-len) - 237.4 * var(--iu) - 12px) / 6.25);
+  }
+
+  /* About: the photo, then the copy. */
+  .about {
+    --copy-w: var(--compact-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .about__copy {
+    position: relative;
+    left: auto;
+    top: auto;
+  }
+
+  /* On the copy's left edge, at most 400 wide (a tablet's column is 640). */
+  .about-photo {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: -1;
+    align-self: flex-start;
+    margin-left: calc((100% - var(--compact-w)) / 2);
+    width: min(var(--compact-w), 400px);
+    height: auto;
+    max-height: 55svh;
+    aspect-ratio: var(--w) / var(--h);
+  }
+
+  /* Experience: each job is the company, the role and date, its photos (a
+     strip, always shown: touch has no hover; user decision), then the copy. */
+  .experience__list {
+    --grow: 0px;
+    width: var(--compact-w);
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .experience__line {
+    display: none;
+  }
+
+  .experience__job {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .experience__job > * {
+    flex: 0 0 100%;
+  }
+
+  .experience__job + .experience__job,
+  .experience__extras-group .experience__job + .experience__job {
+    margin-top: 48px;
+  }
+
+  .experience__company {
+    order: 1;
+  }
+
+  .experience__role {
+    position: static;
+    order: 2;
+    float: none;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .experience__role .experience__title {
+    text-wrap: wrap;
+  }
+
+  .experience__date {
+    margin-top: 6px;
+  }
+
+  .experience__company,
+  .experience__para {
+    width: auto;
+    margin-left: 0;
+  }
+
+  .experience__para {
+    order: 4;
+  }
+
+  .experience__company + .experience__para {
+    margin-top: 12px;
+  }
+
+  /* !important: the hover tweens (Experience.tsx) leave inline styles. */
+  .experience__photo {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: 3;
+    flex: 0 1 auto;
+    width: auto;
+    max-width: calc(50% - 4px);
+    height: calc(120 * var(--m));
+    aspect-ratio: var(--w) / var(--h);
+    margin-top: 8px;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  .experience__extras-group {
+    margin-top: calc(48px + 48 * var(--m));
+  }
+
+  /* "Extras", above the first extra (the job is its containing block). */
+  .experience__extras {
+    left: 0;
+    right: auto;
+    bottom: calc(100% + 12px);
+    width: calc(100 * var(--m));
+    height: auto;
+  }
 }

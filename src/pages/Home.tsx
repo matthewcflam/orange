@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { SprayEngine, WHO_BOX } from "../spray/sprayEngine";
+import { onWhoBox } from "../chrome/homeLayout";
 import { attachWho } from "../spray/who";
 import { SPRAY } from "../config/timings";
 import { useGlass } from "../lib/glass";
@@ -25,11 +26,24 @@ export default function Home() {
 
   useEffect(() => {
     if (!glass) return;
-    const engine = new SprayEngine(canvasRef.current!);
+    const canvas = canvasRef.current!;
+    // chrome/homeLayout.ts can move "who?" off its mockup spot (the compact
+    // layout, or a name block that would reach under it); set before the
+    // engine sizes the canvas. Otherwise home.css places it.
+    const offBox = onWhoBox((box) => {
+      canvas.toggleAttribute("data-placed", box !== null);
+      const props = { "--who-left": box?.left, "--who-top": box?.top, "--who-width": box?.width };
+      for (const [p, v] of Object.entries(props)) {
+        if (v === undefined) canvas.style.removeProperty(p);
+        else canvas.style.setProperty(p, v + "px");
+      }
+    });
+    const engine = new SprayEngine(canvas);
     const detach = attachWho(engine);
     return () => {
       detach();
       engine.destroy();
+      offBox();
     };
   }, [glass]);
 

@@ -20,14 +20,18 @@ export default function StationChrome() {
 
   return (
     <>
-      {/* Before the keychain, so its card covers the glyphs when open. */}
-      <SocialLinks className="social-links--station" />
       {/* Mounted with the chrome (under the transition cover), not lazily on
           the first click: a lazy chunk made the first open wait ≥300 ms
           (React throttles revealing a Suspense retry). Closed it is
-          invisible and inert. */}
+          invisible and inert. Its card covers the glyphs when open; the
+          Map pill stays above it (z-index, chrome.css). */}
       <Keychain open={open} />
-      <MapButton open={open} onToggle={toggle} />
+      {/* One row, so the glyphs and the pill stay locked together in the
+          corner at any size. */}
+      <div className="station-chrome__row">
+        <SocialLinks className="social-links--station" />
+        <MapButton open={open} onToggle={toggle} />
+      </div>
     </>
   );
 }
