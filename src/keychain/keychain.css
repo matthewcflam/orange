@@ -138,3 +138,16 @@
     --px: max(var(--px-frame), min(100vw - 32px, 420px) / 467);
   }
 }
+
+/* "coming soon!" under a comingSoon station (Keychain.tsx SOON): right is its
+   right edge, top its baseline (margin, not translate: GSAP tweens its y). */
+.keychain__soon {
+  position: absolute;
+  margin-top: -0.8em;
+  font-size: calc(16 * var(--px));
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}

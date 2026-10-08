@@ -14,9 +14,10 @@
    centred on the glyph and Map row (user request: in line with them; the
    row's centre is 1.1 × --type-station-small below the edge, see
    .station-chrome__row). Inter's cap top is 0.136em below the box and its
-   caps are 0.727em tall, so the cap centre is 0.4995em down. */
+   caps are 0.727em tall, so the cap centre is 0.4995em down. Fixed, on the
+   header bar, like the glyphs and Map (user request). */
 .station-page__title {
-  position: absolute;
+  position: fixed;
   left: var(--station-edge-len);
   top: calc(var(--station-edge-len) + 1.1 * var(--type-station-small) - 0.4995em);
   margin: 0;
@@ -25,8 +26,22 @@
   letter-spacing: -0.03em;
   line-height: 1;
   white-space: nowrap;
-  /* Above page content that flows under it (Experience's padded list). */
+  /* Above the header bar. */
+  z-index: 2;
+}
+
+/* The header row stays at the top (user request): a page-coloured bar the
+   content scrolls under, --station-head-h tall. The glyphs and Map
+   (.layer--chrome) sit above it; it fades with the page. */
+.station-page__bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--station-head-h);
+  background: var(--color-bg);
   z-index: 1;
+  pointer-events: none;
 }
 
 /* The title goes home. */
@@ -225,14 +240,6 @@
   position: relative;
   /* The first header's cap top at mockup y 238. */
   padding: calc((238 - 2.45) * var(--px)) 0 calc(200 * var(--px));
-}
-
-/* Vertical (the mockup's tilts from 479 to 468: a slip), from y 157 to just
-   past the last row. */
-.experience__line {
-  left: calc(479 * var(--px));
-  top: calc(157 * var(--px));
-  bottom: calc(120 * var(--px));
 }
 
 .experience__job {
@@ -508,10 +515,6 @@
     width: var(--compact-w);
     margin: 0 auto;
     padding: 0;
-  }
-
-  .experience__line {
-    display: none;
   }
 
   .experience__job {

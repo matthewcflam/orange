@@ -35,6 +35,10 @@
   --station-edge: 30;
   /* The same as a length: the compact layout replaces it with its own. */
   --station-edge-len: calc(var(--station-edge) * var(--px));
+  /* The fixed header bar (user request): the edge, the Map button (2.2em of
+     --type-station-small, the row's tallest item), then the edge again, so
+     the margin below the row matches the one above. */
+  --station-head-h: calc(2 * var(--station-edge-len) + 2.2 * var(--type-station-small));
   /* Corner rounding on every photo (user request): 10 mockup px. */
   --image-radius: calc(10 * var(--px));
 }

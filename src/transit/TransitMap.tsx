@@ -8,7 +8,14 @@ import { onNavClick } from "../lib/router";
 import { prefetchRoute } from "../lib/assets";
 import { LABEL_BASE_SIZE, type Layout, layoutFor, stationY } from "./stations";
 import { pxScale } from "../lib/frame";
+import { useToast } from "../chrome/useToast";
 import "./transit.css";
+
+/** The "coming soon!" toast (a comingSoon station): the home email toast's
+ *  size, mockup px with a 13px floor, its baseline this far above the grown dot. */
+const SOON_SIZE = 18;
+const SOON_FLOOR_PX = 13;
+const SOON_GAP = 14;
 
 /** Inter cap height / font size, so labels can be placed by their cap top as
  *  measured in the mockup. Fonts are loaded before first render. */
@@ -35,6 +42,8 @@ export default function TransitMap({ visible }: { visible: boolean }) {
   const hitRefs = useRef<(SVGCircleElement | null)[]>([]);
   const focusRefs = useRef<(SVGCircleElement | null)[]>([]);
   const labelRefs = useRef<(SVGTextElement | null)[]>([]);
+  const soonRef = useRef<SVGGElement>(null);
+  const { toastRef: soonToastRef, shown: soonShown, show: showSoon } = useToast<SVGTextElement>();
 
   const apply = (l: Layout) => {
     const line = lineRef.current!;
@@ -51,6 +60,12 @@ export default function TransitMap({ visible }: { visible: boolean }) {
       const baseline = l.labelTop[i] + cap * l.labelSize;
       labelRefs.current[i]!.setAttribute("transform", `translate(0 ${baseline}) scale(${scale})`);
     });
+    const soonAt = STATIONS.findIndex((s) => s.comingSoon);
+    if (soonAt >= 0) {
+      const g = soonRef.current!;
+      g.setAttribute("transform", `translate(${l.x[soonAt]} ${stationY(l, soonAt) - l.dotR * STATION.HOVER_SCALE - SOON_GAP})`);
+      g.setAttribute("font-size", String(Math.max(SOON_SIZE, SOON_FLOOR_PX / pxScale())));
+    }
     // The map's foot (below the lower labels' descenders): the compact home
     // stacks the name block under it (chrome.css).
     const foot = (l.lowerY + Math.max(...l.labelTop) + l.labelSize) * pxScale();
@@ -75,7 +90,7 @@ export default function TransitMap({ visible }: { visible: boolean }) {
     });
     if (!on) return;
     play("station.hover", { rate: semitonesToRate(STATION_HOVER_SEMITONES[i]), vary: false });
-    prefetchRoute(STATIONS[i].path);
+    if (!STATIONS[i].comingSoon) prefetchRoute(STATIONS[i].path);
   };
 
   return (
@@ -89,8 +104,13 @@ export default function TransitMap({ visible }: { visible: boolean }) {
                 key={s.id}
                 href={s.path}
                 className="station interactive"
-                aria-label={s.label}
-                onClick={(e) => onNavClick(e, s.path)}
+                aria-label={s.comingSoon ? `${s.label} (coming soon)` : s.label}
+                onClick={(e) => {
+                  if (!s.comingSoon) return onNavClick(e, s.path);
+                  e.preventDefault();
+                  play("station.click");
+                  showSoon();
+                }}
                 onPointerEnter={(e) => e.pointerType !== "touch" && hover(i, true)}
                 onPointerLeave={(e) => e.pointerType !== "touch" && hover(i, false)}
                 onFocus={(e) => e.currentTarget.matches(":focus-visible") && hover(i, true)}
@@ -131,6 +151,13 @@ export default function TransitMap({ visible }: { visible: boolean }) {
               </a>
             );
           })}
+          {STATIONS.some((s) => s.comingSoon) && (
+            <g ref={soonRef}>
+              <text ref={soonToastRef} className="transit-map__soon" role="status">
+                {soonShown ? "coming soon!" : ""}
+              </text>
+            </g>
+          )}
         </g>
       </svg>
     </nav>

@@ -21,6 +21,7 @@ export default function StationLayout({
 }) {
   return (
     <div className={`station-page${className ? ` ${className}` : ""}`}>
+      <div className="station-page__bar" aria-hidden="true" />
       <h1 className="station-page__title">
         <a
           href="/"

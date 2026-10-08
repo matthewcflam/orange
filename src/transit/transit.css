@@ -53,3 +53,14 @@
   text-anchor: middle;
   fill: var(--color-text);
 }
+
+/* "coming soon!" above a comingSoon station (TransitMap.tsx): font-size is
+   set from the layout, the home email toast's size. */
+.transit-map__soon {
+  font-family: var(--font-body);
+  text-anchor: middle;
+  fill: var(--color-text);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}

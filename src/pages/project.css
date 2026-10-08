@@ -9,13 +9,9 @@
   --apx: calc(1.1 * var(--px)); /* ARTICLE_SCALE */
 }
 
-/* ---- Left rail: the title, the list, its scribbles and the line stay on
-   screen; only the right pane scrolls. ---- */
-.project .station-page__title {
-  position: fixed;
-  z-index: 1; /* above the rail, which covers it */
-}
-
+/* ---- Left rail: the list, its scribbles and the line stay on screen
+   (the title and its bar are fixed on every station page); only the right
+   pane scrolls. ---- */
 .project__rail {
   position: fixed;
   top: 0;

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import StationLayout from "./StationLayout";
-import TrainLine from "./TrainLine";
 import ResponsivePicture from "./ResponsivePicture";
 import { JOBS, EXTRAS, type Job } from "../content/experience";
 import { revealOnScroll } from "../lib/scrollReveal";
@@ -55,7 +54,7 @@ const noHover = () => window.matchMedia("(hover: none)").matches;
 
 /**
  * One job: a full-width band from its header's top to the foot of its copy.
- * The company and date hang left of the line; the photos show only while the
+ * The company and date hang left of the copy; the photos show only while the
  * cursor is over the band or a shown photo (a tap toggles them on touch
  * screens).
  */
@@ -149,7 +148,6 @@ export default function Experience() {
 
   return (
     <StationLayout className="experience" footerReveal>
-      <TrainLine className="experience__line" />
       <div ref={listRef} className="experience__list">
         {JOBS.map((job) => (
           <JobRow key={job.company} job={job} />

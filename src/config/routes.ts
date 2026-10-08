@@ -12,14 +12,21 @@ export interface Station {
   path: string;
   /** Upper track (left of the diagonal) or lower track. */
   track: "upper" | "lower";
+  /** Not built yet: clicking shows "coming soon!" instead of navigating, and
+   *  its pages redirect home. */
+  comingSoon?: boolean;
 }
 
 /** Line order, left to right: About → Experience → Projects. */
 export const STATIONS: readonly Station[] = [
   { id: "about", label: "About", path: "/about", track: "upper" },
   { id: "experience", label: "Experience", path: "/experience", track: "lower" },
-  { id: "projects", label: "Projects", path: "/projects/portfolio", track: "lower" },
+  // TODO(projects): the Projects pages aren't finished (user request); drop comingSoon to open them.
+  { id: "projects", label: "Projects", path: "/projects/portfolio", track: "lower", comingSoon: true },
 ];
+
+/** Stations whose pages are closed for now (STATIONS' comingSoon). */
+const CLOSED = new Set(STATIONS.filter((s) => s.comingSoon).map((s) => s.id));
 
 export interface RouteDef {
   path: string;
@@ -47,11 +54,12 @@ const REDIRECTS: Record<string, string> = {
 const byPath = new Map(ROUTES.map((r) => [r.path, r]));
 
 /** Canonical path for any URL path: trailing slash stripped, redirects
- *  applied, unknown paths sent home. */
+ *  applied, unknown paths and closed (comingSoon) stations sent home. */
 export function resolvePath(path: string): string {
   const clean = path.length > 1 ? path.replace(/\/+$/, "") : path;
   const target = REDIRECTS[clean] ?? clean;
-  return byPath.has(target) ? target : "/";
+  const route = byPath.get(target);
+  return route && !(route.station && CLOSED.has(route.station)) ? target : "/";
 }
 
 export function routeFor(path: string): RouteDef {

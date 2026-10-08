@@ -7,6 +7,7 @@ import { prefetchRoute } from "../lib/assets";
 import { routeFor, STATIONS } from "../config/routes";
 import { KEYCHAIN as K, STATION } from "../config/timings";
 import { STATION_HOVER_SEMITONES, semitonesToRate } from "../config/sounds";
+import { useToast } from "../chrome/useToast";
 // import doug from "../../assets-src/svg/doug-keychain.svg?charm";
 // import compass from "../../assets-src/svg/compass-keychain.svg?charm";
 import paper from "../../assets-src/images/texture.png?paper";
@@ -53,6 +54,10 @@ const STOPS = [
 /** The route: down from the top band, through the bubbles, into the bottom band. */
 const ROUTE = [{ x: 268, y: -4 }, ...STOPS.map((s) => s.bubble), { x: 222.5, y: CARD.h + 4 }];
 
+/** "coming soon!" under a comingSoon station's label: right edge (the
+ *  labels') and baseline, above the bottom band. */
+const SOON = { right: 194.5, baseline: 258 };
+
 /** The small print: left edge and baseline. */
 const META = [
   { text: "2026", left: 8, baseline: 53 },
@@ -77,6 +82,7 @@ export default function Keychain({ open }: { open: boolean }) {
   // Hover is kept per route, so a page change (under the transition cover) ends it.
   const [hover, setHover] = useState<{ route: string; index: number } | null>(null);
   const hovered = hover?.route === route ? hover.index : null;
+  const { toastRef: soonToastRef, shown: soonShown, show: showSoon } = useToast<HTMLSpanElement>();
 
   // Open/close: the whole box slides in diagonally from the top-right corner
   // and back out the same way. It only ever moves up and right from its
@@ -167,7 +173,7 @@ export default function Keychain({ open }: { open: boolean }) {
               if (isCurrent) return;
               setHover({ route, index: i });
               play("station.hover", { rate: semitonesToRate(STATION_HOVER_SEMITONES[i]), vary: false });
-              prefetchRoute(s.path);
+              if (!s.comingSoon) prefetchRoute(s.path);
             };
             const leave = () => setHover((h) => (h?.index === i ? null : h));
             return (
@@ -177,7 +183,14 @@ export default function Keychain({ open }: { open: boolean }) {
                 className="keychain__station"
                 style={{ left: `calc(${STOPS[i].right} * var(--px))`, top: `calc(${STOPS[i].baseline} * var(--px))` }}
                 aria-current={isCurrent ? "page" : undefined}
-                onClick={(e) => (isCurrent ? e.preventDefault() : onNavClick(e, s.path))}
+                aria-label={s.comingSoon ? `${s.label} (coming soon)` : undefined}
+                onClick={(e) => {
+                  if (!isCurrent && !s.comingSoon) return onNavClick(e, s.path);
+                  e.preventDefault();
+                  if (!s.comingSoon) return;
+                  play("station.click");
+                  showSoon();
+                }}
                 onPointerEnter={(e) => e.pointerType !== "touch" && enter()}
                 onPointerLeave={leave}
                 onFocus={(e) => e.currentTarget.matches(":focus-visible") && enter()}
@@ -197,6 +210,14 @@ export default function Keychain({ open }: { open: boolean }) {
             );
           })}
         </nav>
+        <span
+          ref={soonToastRef}
+          className="keychain__soon"
+          role="status"
+          style={{ right: `calc(${CARD.w - SOON.right} * var(--px))`, top: `calc(${SOON.baseline} * var(--px))` }}
+        >
+          {soonShown ? "coming soon!" : ""}
+        </span>
         {META.map((m) => (
           <span
             key={m.text}
