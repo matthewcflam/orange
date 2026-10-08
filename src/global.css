@@ -29,14 +29,12 @@
      the composition instead of leaving the right side empty. Use it for x
      positions only; sizes stay in --px. */
   --vx: calc(100vw / 1767);
-  /* Station pages (About (2).png): the name, the glyphs and the Map pill sit
-     on one line, the name and the pill the same distance from their edges.
-     Unitless mockup px. */
+  /* Station pages (About (2).png): the header's inset from the top and the
+     sides (user request: the same on both). The name's cap top and left, and
+     the Map pill's top and right, sit this far in. Unitless mockup px. */
   --station-edge: 30;
-  --station-mid: 52;
-  /* The same as lengths: the compact layout replaces these with its own. */
+  /* The same as a length: the compact layout replaces it with its own. */
   --station-edge-len: calc(var(--station-edge) * var(--px));
-  --station-mid-len: calc(var(--station-mid) * var(--px));
   /* Corner rounding on every photo (user request): 10 mockup px. */
   --image-radius: calc(10 * var(--px));
 }
@@ -44,7 +42,6 @@
 @media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
   :root {
     --station-edge-len: var(--gutter);
-    --station-mid-len: 34px;
   }
 }
 

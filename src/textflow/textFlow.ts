@@ -67,6 +67,8 @@ export class TextFlow {
   private spaceWidth = 0;
   private width = 0;
   private lineHeight = 0;
+  /** Extra px between paragraphs (--type-para-gap). */
+  private paraGap = 0;
   /** CSS px per mockup px. */
   private unit = 0;
   /** Height of the text with no obstacle; the drag bounds' bottom. */
@@ -128,9 +130,12 @@ export class TextFlow {
     // so round once and render the spans at the same size.
     const fontPx = Math.round(parseFloat(cs.fontSize));
     const lineHeight = Math.round(parseFloat(cs.lineHeight));
+    // The box carries the paragraph gap as its row-gap (project.css): a
+    // custom property would come back unresolved.
+    const paraGap = Math.round(parseFloat(cs.rowGap)) || 0;
     const width = box.clientWidth;
     const font = fontString(400, fontPx, FAMILY.body);
-    if (font === this.font && width === this.width && lineHeight === this.lineHeight) return;
+    if (font === this.font && width === this.width && lineHeight === this.lineHeight && paraGap === this.paraGap) return;
 
     if (font !== this.font) {
       if (!document.fonts.check(font)) {
@@ -147,10 +152,11 @@ export class TextFlow {
     layer.style.lineHeight = `${lineHeight}px`;
     this.width = width;
     this.lineHeight = lineHeight;
+    this.paraGap = paraGap;
     this.unit = width / DESIGN_WIDTH;
     let lines = 0;
     for (const p of this.prepared) lines += layout(p, width, lineHeight).lineCount;
-    this.freeHeight = lines * lineHeight;
+    this.freeHeight = lines * lineHeight + Math.max(0, this.prepared.length - 1) * paraGap;
 
     obstacle.style.width = `${shape.width * this.unit}px`;
     obstacle.style.height = `${shape.height * this.unit}px`;
@@ -249,7 +255,7 @@ export class TextFlow {
    */
   private reflow(ticks: boolean) {
     const { shape, box } = this.o;
-    const { width, lineHeight: lh, unit, out } = this;
+    const { width, lineHeight: lh, paraGap, unit, out } = this;
     if (!unit) return;
     const pad = OBSTACLE.PADDING_PX * unit;
     const minSlot = OBSTACLE.MIN_SLOT_PX * unit;
@@ -258,13 +264,16 @@ export class TextFlow {
     const oy = this.pos.y;
     let line = 0;
     let n = 0;
+    // px of paragraph gaps above the current line.
+    let gaps = 0;
 
-    for (const prepared of this.prepared) {
+    for (const [i, prepared] of this.prepared.entries()) {
+      if (i > 0) gaps += paraGap;
       const segments = prepared.segments.length;
       let cursor = START;
       let done = segments === 0;
       while (!done && line < MAX_LINES) {
-        const top = line * lh;
+        const top = line * lh + gaps;
         // Slots: the full line, or the parts left and right of the obstacle.
         let leftEnd = width;
         let rightStart = width;
@@ -302,7 +311,7 @@ export class TextFlow {
         f.el.hidden = true;
       }
     }
-    const height = line * lh;
+    const height = line * lh + gaps;
     if (height !== this.height) {
       this.height = height;
       box.style.height = `${height}px`;

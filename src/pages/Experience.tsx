@@ -11,6 +11,16 @@ import { whenPageShown } from "../lib/pageReveal";
 import { isUnderPointer } from "../lib/pointer";
 import { EXPERIENCE } from "../config/timings";
 import extras from "../../assets-src/svg/extras.svg";
+import line1 from "../../assets-src/svg/line1.svg";
+import line2 from "../../assets-src/svg/line2.svg";
+import line3 from "../../assets-src/svg/line3.svg";
+
+/** About's hand-drawn dashes, recycled down each job's points. */
+const DASHES = [
+  { src: line1, mod: "" },
+  { src: line2, mod: " experience__dash--mid" },
+  { src: line3, mod: " experience__dash--thin" },
+];
 
 /** Show or hide a job's photos (the later one lands on top, second). */
 function setPhotos(els: HTMLElement[], on: boolean) {
@@ -45,7 +55,7 @@ const noHover = () => window.matchMedia("(hover: none)").matches;
 
 /**
  * One job: a full-width band from its header's top to the foot of its copy.
- * The role and date hang left of the line; the photos show only while the
+ * The company and date hang left of the line; the photos show only while the
  * cursor is over the band or a shown photo (a tap toggles them on touch
  * screens).
  */
@@ -100,16 +110,17 @@ function JobRow({ job, extrasMark }: { job: Job; extrasMark?: boolean }) {
       onPointerLeave={hasPhotos ? (e) => e.pointerType !== "touch" && toggle(false) : undefined}
       onClick={hasPhotos ? () => noHover() && toggle(!shown.current) : undefined}
     >
-      <div className="experience__role" data-reveal>
+      <div className="experience__company" data-reveal>
         {extrasMark && <img className="experience__extras" src={extras} alt="Extras" />}
-        <p className="experience__title">{job.role}</p>
+        <p className="experience__title">{job.company}</p>
         <p className="experience__date">{job.date}</p>
       </div>
-      <h2 className="experience__company" data-reveal>
-        {job.company}
+      <h2 className="experience__role" data-reveal>
+        {job.role}
       </h2>
-      {job.body.map((para) => (
+      {job.body.map((para, i) => (
         <p key={para} className="experience__para" data-reveal>
+          <img className={"experience__dash" + DASHES[i % 3].mod} src={DASHES[i % 3].src} alt="" />
           {para}
         </p>
       ))}

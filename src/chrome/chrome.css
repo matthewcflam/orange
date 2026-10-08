@@ -141,17 +141,21 @@
 }
 
 /* Station pages (About (2).png): the glyphs and the Map pill are one row
-   (StationChrome.tsx), centred on the station midline with its right end on
-   the station edge, so they stay locked to the corner and to each other
-   whatever size the floors give them. The glyph group (148 wide at scale 1)
-   ends 27 px left of the pill; the toast drops below it, right-aligned. */
+   (StationChrome.tsx), the pill's top and right on the station edge (user
+   request: the top margin matches the side), the glyphs centred on the pill,
+   so they stay locked to the corner and to each other. The glyph group (148
+   wide at scale 1) ends 27 px left of the pill; the toast drops below it,
+   right-aligned. */
 .station-chrome__row {
-  /* Zero height on the midline, centring its items on it. No transform: that
+  /* Zero height on the pill's centre (half its 2.2em below the edge),
+     centring its items on it. No transform: that
      would make the row a stacking context, and the open keychain must sit
-     between the glyphs and the pill. */
+     between the glyphs and the pill. The glyphs and Map are fixed at their
+     floor (user request), so the unit is fixed here; home's stays scaling. */
+  --iu: calc(var(--type-station-small) / 20);
   position: absolute;
   right: var(--station-edge-len);
-  top: var(--station-mid-len);
+  top: calc(var(--station-edge-len) + 1.1 * var(--type-station-small));
   height: 0;
   display: flex;
   align-items: center;
@@ -173,18 +177,17 @@
 }
 
 /* ---- Station pages: the Map pill, at the end of the station row (About
-   (2).png). 91×44, a near-square rectangle (user change: was a full pill),
-   growing with its label once --type-small hits its floor. The label is
-   --type-small, the footer's size (user request). Above the open keychain
-   card, which covers the glyphs. ---- */
+   (2).png). A near-square rectangle (user change: was a full pill), fixed
+   (user request): a 16px label (--type-station-small) in a 4.6em × 2.2em box (the mockup's 91×44 at 20px).
+   Above the open keychain card, which covers the glyphs. ---- */
 .map-button {
   position: relative;
   z-index: 2;
   flex: none;
-  width: max(91 * var(--px), 4.6em);
-  height: max(44 * var(--px), 2.2em);
-  border-radius: calc(4 * var(--px));
-  font-size: var(--type-small);
+  width: 4.6em;
+  height: 2.2em;
+  border-radius: 0.2em;
+  font-size: var(--type-station-small);
   line-height: 1;
   background: var(--color-map-pill);
   color: var(--color-map-pill-text);
@@ -196,13 +199,14 @@
 }
 
 /* portfolio-scribble.svg under "Map": the mockup's 78×85 box (drawn for the
-   old 143×68 pill), scaled with the pill by 44/68. */
+   old 143×68 pill), scaled with the pill by 44/68, in em (mockup px / 20)
+   so it stays fixed with the button. */
 .map-button__scribble {
   position: absolute;
-  left: calc(21 * var(--px));
-  top: calc(34 * var(--px));
-  width: calc(50 * var(--px));
-  height: calc(55 * var(--px));
+  left: 1.05em;
+  top: 1.7em;
+  width: 2.5em;
+  height: 2.75em;
   pointer-events: none;
 }
 
@@ -214,7 +218,7 @@
 
 .map-button__scribble path {
   vector-effect: non-scaling-stroke;
-  stroke-width: max(1.5px, calc(2 * var(--px)));
+  stroke-width: 1.5px;
 }
 
 /* ---- Mute toggle, home only (open question #6) ---- */

@@ -158,11 +158,19 @@
 .project__body {
   margin-top: calc(24 * var(--apx));
   text-align: justify;
+  /* Not a layout gap (the box is a block): TextFlow reads the paragraph gap
+     from here, resolved to px. */
+  row-gap: var(--type-para-gap);
 }
 
 .project__body p,
 .project__date {
   margin: 0;
+}
+
+/* The gap between paragraphs (TextFlow lays the same gap). */
+.project__body p + p {
+  margin-top: var(--type-para-gap);
 }
 
 .project__date {

@@ -9,16 +9,18 @@
   min-height: 100vh;
 }
 
-/* "Matthew Lam", the home name's size (--type-name, user request; About
-   (2).png has 38): on the station edge, its cap centre on the station
-   midline (Inter's cap height is 0.727em, its cap top 0.136em below the
-   box). */
+/* "Matthew Lam", a fixed 28px (--type-station-name, the home name's floor;
+   user request: it never scales): its left on the station edge, its caps
+   centred on the glyph and Map row (user request: in line with them; the
+   row's centre is 1.1 × --type-station-small below the edge, see
+   .station-chrome__row). Inter's cap top is 0.136em below the box and its
+   caps are 0.727em tall, so the cap centre is 0.4995em down. */
 .station-page__title {
   position: absolute;
   left: var(--station-edge-len);
-  top: calc(var(--station-mid-len) - (0.727 / 2 + 0.136) * 1em);
+  top: calc(var(--station-edge-len) + 1.1 * var(--type-station-small) - 0.4995em);
   margin: 0;
-  font-size: var(--type-name);
+  font-size: var(--type-station-name);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -44,8 +46,8 @@
   outline-offset: 4px;
 }
 
-/* Credit line (About (7).png): --type-small (Map / Close's size, user
-   request), weight 300; ink right edge 39 from
+/* Credit line (About (7).png): --type-footer, a fixed 13px at every size
+   (user request), weight 300; ink right edge 39 from
    the frame's right, its box's foot on the station edge. At the page's foot,
    so on scrolling pages it sits under the content. */
 .station-page__footer {
@@ -53,7 +55,7 @@
   right: calc(39 * var(--px));
   bottom: var(--station-edge-len);
   margin: 0;
-  font-size: var(--type-small);
+  font-size: var(--type-footer);
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -100,14 +102,15 @@
   --group-left: calc(50% - (var(--copy-w) + 503.25 * var(--px)) / 2);
 }
 
-/* Mockup: Inter 16/19 on a 19px grid (the home bio's tracking); one blank
-   line between paragraphs, two before "Connect"; Inter's cap top sits 3.7
-   below the line box. Scaled by --cp, the block (246 tall, cap top to the
-   last line's foot) stays centred on mockup y 514, the photo's middle. */
+/* The body size on the reference spacing (tokens.css: line-height 1.6, a
+   small gap between paragraphs, a wider one before "Connect"), with the
+   mockup's tracking (the home bio's). The block, however tall, stays
+   centred on mockup y 514, the photo's middle. */
 .about__copy {
   position: absolute;
   left: var(--group-left);
-  top: round(calc(514 * var(--px) - (123 + 3.7) * var(--cp)), 1px);
+  top: round(calc(514 * var(--px)), 1px);
+  translate: 0 round(-50%, 1px);
   width: var(--copy-w);
   font-size: var(--type-body);
   line-height: var(--type-body-lh);
@@ -116,15 +119,16 @@
 
 .about__copy p + p,
 .about__list {
-  margin: round(calc(19 * var(--cp)), 1px) 0 0;
+  margin: var(--type-para-gap) 0 0;
 }
 
 .about__copy .about__connect {
-  margin-top: round(calc(38 * var(--cp)), 1px);
+  margin-top: var(--type-section-gap);
 }
 
 /* Hand-drawn dashes (line1–3.svg, 1:1 at 16px): no list markers, the text
-   15 in. The line grid and the dash offsets are rounded to whole px, so each
+   15 in. Their offsets were measured in a 19 * --cp line box; --lead adds
+   the taller line's extra half-leading. The line grid and the dash offsets are rounded to whole px, so each
    1px-ish stroke lands on the same pixel phase and the three match. */
 .about__list {
   padding: 0;
@@ -132,6 +136,7 @@
 }
 
 .about__list li {
+  --lead: calc((var(--type-body-lh) - 19 * var(--cp)) / 2);
   position: relative;
   padding-left: calc(15 * var(--cp));
 }
@@ -139,17 +144,17 @@
 .about__dash {
   position: absolute;
   left: calc(2 * var(--cp));
-  top: round(calc(10.2 * var(--cp)), 1px);
+  top: round(calc(var(--lead) + 10.2 * var(--cp)), 1px);
   width: calc(8 * var(--cp));
   height: calc(2 * var(--cp));
 }
 
 .about__list li:nth-child(2) .about__dash {
-  top: round(calc(9.2 * var(--cp)), 1px);
+  top: round(calc(var(--lead) + 9.2 * var(--cp)), 1px);
 }
 
 .about__dash--thin {
-  top: round(calc(11.2 * var(--cp)), 1px);
+  top: round(calc(var(--lead) + 11.2 * var(--cp)), 1px);
   height: calc(1 * var(--cp));
 }
 
@@ -204,10 +209,10 @@
 }
 
 /* ---- Experience (Experience (2).png; scrolls) ---- */
-/* Headers (role, company) are Inter 24 and dates and copy 18 (user
+/* Headers (role, company), dates and copy are all the body size (user
    choice). Rows flow: each job is a full-width band from its header's box
    top to the foot of its copy (the photos' hover area), so the page is as
-   long as its content. With line-height 1, a 24px header's cap top sits 3.26
+   long as its content. With line-height 1, an 18px header's cap top sits 2.45
    below its box. */
 .experience__list {
   /* Body text never drops below 16px: --eu is --px floored at 16/18. The
@@ -219,7 +224,7 @@
   --grow: clamp(0px, 640 * (var(--eu) - var(--px)), 100vw - 16px - 1698 * var(--px));
   position: relative;
   /* The first header's cap top at mockup y 238. */
-  padding: calc((238 - 3.26) * var(--px)) 0 calc(200 * var(--px));
+  padding: calc((238 - 2.45) * var(--px)) 0 calc(200 * var(--px));
 }
 
 /* Vertical (the mockup's tilts from 479 to 468: a slip), from y 157 to just
@@ -232,7 +237,7 @@
 
 .experience__job {
   position: relative;
-  /* Contains the floated role block (below). */
+  /* Contains the floated company block (below). */
   display: flow-root;
 }
 
@@ -250,15 +255,15 @@
   margin-top: calc(51 * var(--px));
 }
 
-/* Role and date, right-aligned to x 419 and sharing the company's cap top.
-   A role too long for the space left of x 419 (with a 16px gutter) wraps
-   instead of running off screen (user request: "Lifeguard & Swim
-   Instructor" on small screens, where headers stop shrinking at --tu).
-   Floated so a wrapped role pushes the next row down; the negative bottom
-   margin takes the date out of the row's height, so an unwrapped role adds
-   nothing (its title is the company's height). Clear of the company, whose
+/* Company and date, right-aligned to x 419 and sharing the role's cap top.
+   A company too long for the space left of x 419 (with a 16px gutter) wraps
+   instead of running off screen (user request: long names on small
+   screens, where headers stop shrinking at --tu).
+   Floated so a wrapped company pushes the next row down; the negative bottom
+   margin takes the date out of the row's height, so an unwrapped company adds
+   nothing (its title is the role's height). Clear of the role, whose
    margin starts at 533. */
-.experience__role {
+.experience__company {
   position: relative;
   float: left;
   box-sizing: border-box;
@@ -269,20 +274,20 @@
   white-space: nowrap;
 }
 
-.experience__role .experience__title {
+.experience__company .experience__title {
   white-space: normal;
   text-wrap: balance;
 }
 
 .experience__title,
-.experience__company {
+.experience__role {
   margin: 0;
-  font-size: var(--type-head);
+  font-size: var(--type-body);
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
-/* Cap top 29 below the role's. */
+/* Cap top 29 below the company's. */
 .experience__date {
   margin: calc(5.8 * var(--px)) 0 0;
   color: var(--color-experience-date);
@@ -295,27 +300,27 @@
 .experience__extras {
   position: absolute;
   right: 0;
-  bottom: calc(100% + (19 - 3.26) * var(--px));
+  bottom: calc(100% + (19 - 2.45) * var(--px));
   width: calc(126 * var(--px));
   height: calc(34 * var(--px));
 }
 
-.experience__company,
+.experience__role,
 .experience__para {
   margin-left: calc(533 * var(--px));
   width: calc(640 * var(--px) + var(--grow));
 }
 
-.experience__company {
+.experience__role {
   font-weight: 700;
   letter-spacing: -0.03em;
 }
 
-/* 18 on the mockup's 16/19 grid scaled by 18/16; the first line's cap top 44
-   below the header's; a blank line between paragraphs. */
+/* The body size on the reference spacing (tokens.css), with the
+   paragraph gap between points. */
 .experience__para {
   --lh: var(--type-body-lh);
-  margin-top: var(--lh);
+  margin-top: var(--type-para-gap);
   /* The job is a flow root, so a <p>'s default bottom margin would no
      longer collapse into the gap between jobs. */
   margin-bottom: 0;
@@ -327,8 +332,34 @@
   letter-spacing: -0.02em;
 }
 
-.experience__company + .experience__para {
+.experience__role + .experience__para {
   margin-top: calc(19 * var(--eu));
+}
+
+/* Hand-drawn dashes (About's line1–3.svg, recycled; 1:1 at 16px, scaled to
+   the body size like About's), hanging 9 left of each point's first line with
+   About's vertical offsets. */
+.experience__para {
+  --cp: calc(var(--tu) * 18 / 16);
+  --lead: calc((var(--type-body-lh) - 19 * var(--cp)) / 2);
+  position: relative;
+}
+
+.experience__dash {
+  position: absolute;
+  left: calc(-17 * var(--cp));
+  top: round(calc(var(--lead) + 10.2 * var(--cp)), 1px);
+  width: calc(8 * var(--cp));
+  height: calc(2 * var(--cp));
+}
+
+.experience__dash--mid {
+  top: round(calc(var(--lead) + 9.2 * var(--cp)), 1px);
+}
+
+.experience__dash--thin {
+  top: round(calc(var(--lead) + 11.2 * var(--cp)), 1px);
+  height: calc(1 * var(--cp));
 }
 
 /* Hover photos: mockup box x from the page's left, dy from the header's cap
@@ -339,10 +370,11 @@
 .experience__photo {
   position: absolute;
   left: calc(var(--x) * var(--px) + var(--grow));
-  top: calc((var(--dy) + 3.26) * var(--px));
+  top: calc((var(--dy) + 2.45) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));
-  border-radius: var(--image-radius);
+  /* User request: a fixed 5px (About keeps --image-radius). */
+  border-radius: 5px;
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
@@ -422,20 +454,21 @@
 }
 
 /* ---- Compact layout (global.css): stacked and scrolling. The header row
-   (title, glyphs, Map) sits on --station-mid-len; the content runs under it
+   (title, glyphs, Map) hangs from --station-edge-len; the content runs under it
    on a centred column (--compact-w), the footer under the content. ---- */
 @media (max-width: 760px), (max-aspect-ratio: 1/1), (max-height: 500px) {
   .station-page {
     padding: 88px 0 calc(var(--station-edge-len) + 48px);
   }
 
-  /* The glyphs and Map keep their floor (user request), so on the narrowest
+  /* The glyphs and Map keep their fixed size (user request), so on narrow
      phones the name gives way instead: it shrinks to fit the space left of
-     the chrome row (237.4 --iu: glyphs 118.4, gap 27, Map 92) with a 12px
-     gap. "Matthew Lam" is ~6.25em wide. Only bites under ~375px. */
+     the chrome row (237.4 units of --type-station-small / 20: glyphs 118.4,
+     gap 27, Map 92) with a 12px gap. "Matthew Lam" is ~6.25em wide. */
   .station-page__title {
-    font-size: min(var(--type-name),
-      (100vw - 2 * var(--station-edge-len) - 237.4 * var(--iu) - 12px) / 6.25);
+    font-size: min(var(--type-station-name),
+      (100vw - 2 * var(--station-edge-len)
+        - 237.4 * var(--type-station-small) / 20 - 12px) / 6.25);
   }
 
   /* About: the photo, then the copy. */
@@ -451,6 +484,7 @@
     position: relative;
     left: auto;
     top: auto;
+    translate: none;
   }
 
   /* On the copy's left edge, at most 400 wide (a tablet's column is 640). */
@@ -467,7 +501,7 @@
     aspect-ratio: var(--w) / var(--h);
   }
 
-  /* Experience: each job is the company, the role and date, its photos (a
+  /* Experience: each job is the role, the company and date, its photos (a
      strip, always shown: touch has no hover; user decision), then the copy. */
   .experience__list {
     --grow: 0px;
@@ -496,11 +530,11 @@
     margin-top: 48px;
   }
 
-  .experience__company {
+  .experience__role {
     order: 1;
   }
 
-  .experience__role {
+  .experience__company {
     position: static;
     order: 2;
     float: none;
@@ -511,7 +545,7 @@
     white-space: normal;
   }
 
-  .experience__role .experience__title {
+  .experience__company .experience__title {
     text-wrap: wrap;
   }
 
@@ -519,17 +553,23 @@
     margin-top: 6px;
   }
 
-  .experience__company,
+  .experience__role,
   .experience__para {
     width: auto;
     margin-left: 0;
   }
 
+  /* The gutter can't hold a hanging dash: indent the points (About's list). */
   .experience__para {
     order: 4;
+    padding-left: calc(15 * var(--cp));
   }
 
-  .experience__company + .experience__para {
+  .experience__dash {
+    left: calc(2 * var(--cp));
+  }
+
+  .experience__role + .experience__para {
     margin-top: 12px;
   }
 
