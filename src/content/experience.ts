@@ -72,12 +72,12 @@ export const JOBS: Job[] = [
     ],
   },
   {
-    role: "Operations Lead",
+    role: "Software & Operations Lead",
     date: "2024-2026",
     company: "UBC Third Quadrant Design",
     body: [
       "Shipped a full-stack hiring portal and reviewer board using React, Next.js, and Supabase, enabling real-time sync, reviewer authentication, and schema validation for 100+ applications",
-      "Coordinated design iterations for a team of 4, producing the narrative, UX, and renders for an Iranian ice house retrofit submitted to the Buildner Re:Form architecture competition",
+      "Led the design system for the team's web product and brand, standardizing UI components and visual guidelines across 10+ pages and physical assets to speed up feature work and keep every touchpoint on-brand",
     ],
     photos: [
       photo(tqd, "The Third Quadrant Design logo", 1263, 11, 224, 108),

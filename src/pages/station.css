@@ -494,17 +494,18 @@
     translate: none;
   }
 
-  /* On the copy's left edge, at most 400 wide (a tablet's column is 640). */
+  /* Centred on the viewport (user request), at most 400 wide (a tablet's
+     column is 640) and 55svh tall. The height cap goes through the width, so
+     the box always keeps the photo's aspect (a max-height alone squashed it
+     on short windows). */
   .about-photo {
     position: relative;
     left: auto;
     top: auto;
     order: -1;
-    align-self: flex-start;
-    margin-left: calc((100% - var(--compact-w)) / 2);
-    width: min(var(--compact-w), 400px);
+    align-self: center;
+    width: min(var(--compact-w), 400px, 55svh * var(--w) / var(--h));
     height: auto;
-    max-height: 55svh;
     aspect-ratio: var(--w) / var(--h);
   }
 
